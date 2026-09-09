@@ -1,0 +1,47 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: condotrack-api
+  datasource:
+    url: jdbc:postgresql://localhost:5432/condotrack_db
+    username: condotrack_user
+    password: condotrack_pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+  mail:
+    host: localhost
+    port: 1025
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+app:
+  security:
+    jwt:
+      secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration-ms: 86400000 # 24h
+  cors:
+    allowed-origins: http://localhost:3000
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
