@@ -13,11 +13,21 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.beans.factory.ObjectProvider;
+
+import com.condotrack.modules.auth.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    private final ObjectProvider<JwtAuthenticationFilter> jwtAuthenticationFilter;
+
+    public SecurityConfig(ObjectProvider<JwtAuthenticationFilter> jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -26,7 +36,6 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Rotas públicas de documentação e saúde
                 .requestMatchers(
                     "/api/v1/health",
                     "/swagger-ui/**",
@@ -34,11 +43,19 @@ public class SecurityConfig {
                     "/v3/api-docs/**",
                     "/v3/api-docs.yaml"
                 ).permitAll()
-                // Rotas de autenticação (a serem desenvolvidas pelo Desenvolvedor 1)
-                .requestMatchers("/api/v1/auth/**").permitAll()
-                // Demais rotas requerem autenticação (JWT)
+                .requestMatchers("/api/v1/auth/login", "/api/v1/auth/refresh").permitAll()
+                .requestMatchers("/api/v1/access/authorizations", "/api/v1/reservations/**", "/api/v1/moves/**")
+                    .hasAnyRole("ADMIN", "MORADOR")
+                .requestMatchers("/api/v1/access/**", "/api/v1/packages/**")
+                    .hasAnyRole("ADMIN", "PORTARIA")
+                .requestMatchers("/api/v1/audit-logs/**").hasAnyRole("ADMIN", "PORTARIA")
                 .anyRequest().authenticated()
             );
+
+        JwtAuthenticationFilter filter = jwtAuthenticationFilter.getIfAvailable();
+        if (filter != null) {
+            http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+        }
 
         return http.build();
     }
