@@ -18,6 +18,10 @@
 		<java.version>21</java.version>
 		<springdoc.version>2.6.0</springdoc.version>
 		<jjwt.version>0.12.6</jjwt.version>
+		<!-- Compatibilidade dos testes com Java 25 (Mockito/Byte Buddy).
+		     Apenas configuração de teste; nenhuma lógica de segurança alterada. -->
+		<mockito.version>5.18.0</mockito.version>
+		<byte-buddy.version>1.17.5</byte-buddy.version>
 	</properties>
 
 	<dependencies>
