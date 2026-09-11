@@ -35,14 +35,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            // This is a stateless REST API: the client sends the JWT with every request.
             .csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            // Return standard HTTP status codes instead of redirecting to an HTML login page.
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 .accessDeniedHandler(new AccessDeniedHandlerImpl())
             )
             .authorizeHttpRequests(auth -> auth
+                // Health checks and API documentation are intentionally public.
                 .requestMatchers(
                     "/api/v1/health",
                     "/swagger-ui/**",
@@ -50,7 +53,9 @@ public class SecurityConfig {
                     "/v3/api-docs/**",
                     "/v3/api-docs.yaml"
                 ).permitAll()
+                // Authentication endpoints must be reachable before the user has a token.
                 .requestMatchers("/api/v1/auth/login", "/api/v1/auth/refresh").permitAll()
+                // hasAnyRole automatically looks for authorities such as ROLE_ADMIN.
                 .requestMatchers("/api/v1/access/authorizations", "/api/v1/reservations/**", "/api/v1/moves/**")
                     .hasAnyRole("ADMIN", "MORADOR")
                 .requestMatchers("/api/v1/access/**", "/api/v1/packages/**")
@@ -61,6 +66,7 @@ public class SecurityConfig {
 
         JwtAuthenticationFilter filter = jwtAuthenticationFilter.getIfAvailable();
         if (filter != null) {
+            // Read the JWT before Spring's username/password authentication filter runs.
             http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
         }
 
@@ -69,6 +75,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // Passwords are stored as BCrypt hashes, never as plain text.
         return new BCryptPasswordEncoder();
     }
 

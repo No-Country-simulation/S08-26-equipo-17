@@ -35,18 +35,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         HttpServletResponse response,
         FilterChain filterChain
     ) throws ServletException, IOException {
+        // A client authenticates by sending: Authorization: Bearer <access-token>.
         String authorization = request.getHeader("Authorization");
         if (authorization == null || !authorization.startsWith("Bearer ")) {
+            // Requests without a token continue normally; protected endpoints will later return 401.
             filterChain.doFilter(request, response);
             return;
         }
 
         String token = authorization.substring(7);
         try {
+            // Refresh tokens are deliberately not accepted for normal API requests.
             if (jwtService.isAccessToken(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
                 String username = jwtService.extractUsername(token);
                 var userDetails = userDetailsService.loadUserByUsername(username);
                 if (userDetails.isEnabled()) {
+                    // Store the authenticated user in Spring's security context for this request.
                     var authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -54,6 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (JwtException | IllegalArgumentException | UsernameNotFoundException exception) {
+            // Invalid, expired, or unknown-user tokens are treated as unauthenticated.
             SecurityContextHolder.clearContext();
         }
 
