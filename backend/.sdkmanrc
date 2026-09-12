@@ -1,0 +1,3 @@
+# SDKMAN! local Java version for this project (backend requires Java 21, see pom.xml).
+# Enable with SDKMAN: `sdk env` (or `sdk env install` to install 21-tem first).
+java=21.0.12-tem
