@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, TouchEvent } from 'react';
+import { NativeSwipeButton } from './NativeSwipeButton';
 
 const slides = [
   {
@@ -114,6 +115,7 @@ export function SlideCardLogin() {
           />
         ))}
       </div>
+      <NativeSwipeButton></NativeSwipeButton>
     </div>
   );
 }
