@@ -15,6 +15,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Business rules for residents (users linked to housing units).
+ *
+ * <p>Responsibilities:</p>
+ * <ul>
+ *   <li>List who lives in a unit.</li>
+ *   <li>Link an existing user to a unit (e.g. a new tenant moves in).</li>
+ *   <li>Create a brand-new user profile and link it in one step.</li>
+ *   <li>Unlink a resident who moved out.</li>
+ *   <li>List / fetch generic user profiles.</li>
+ * </ul>
+ */
 @Service
 @Transactional(readOnly = true)
 public class ResidentService {
@@ -34,6 +46,7 @@ public class ResidentService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /** Return every resident linked to the given unit. Throws 404 if the unit does not exist. */
     public List<ResidentResponse> listResidents(UUID unitId) {
         findUnit(unitId);
         return userUnitRepository.findResidentsByUnitId(unitId).stream()
@@ -41,6 +54,10 @@ public class ResidentService {
             .toList();
     }
 
+    /**
+     * Link an already-registered user to a unit.
+     * Fails with 409 (conflict) if the link already exists.
+     */
     @Transactional
     public ResidentResponse associateResident(UUID unitId, AssociateResidentRequest req) {
         Unit unit = findUnit(unitId);
@@ -48,12 +65,18 @@ public class ResidentService {
         if (userUnitRepository.existsByUserIdAndUnitId(user.getId(), unit.getId())) {
             throw new ConflictException("User " + user.getId() + " is already a resident of unit " + unit.getId());
         }
-        RelationshipType type = req.relationshipType() != null ? req.relationshipType() : RelationshipType.INQUILINO;
+        // Default relationship is TENANT (renter); owners/family are set explicitly.
+        RelationshipType type = req.relationshipType() != null ? req.relationshipType() : RelationshipType.TENANT;
+        // Default to primary contact unless the caller says otherwise.
         boolean primary = req.primary() == null || req.primary();
         UserUnit link = new UserUnit(user, unit, type, primary);
         return ResidentResponse.from(userUnitRepository.save(link));
     }
 
+    /**
+     * Create a new user account and immediately link it to the unit.
+     * Fails with 409 if the e-mail is already registered.
+     */
     @Transactional
     public ResidentResponse createResidentProfile(UUID unitId, CreateResidentProfileRequest req) {
         Unit unit = findUnit(unitId);
@@ -62,12 +85,13 @@ public class ResidentService {
         });
         User user = ResidentUserFactory.create(req, passwordEncoder);
         User saved = userRepository.save(user);
-        RelationshipType type = req.relationshipType() != null ? req.relationshipType() : RelationshipType.INQUILINO;
+        RelationshipType type = req.relationshipType() != null ? req.relationshipType() : RelationshipType.TENANT;
         boolean primary = req.primary() == null || req.primary();
         UserUnit link = new UserUnit(saved, unit, type, primary);
         return ResidentResponse.from(userUnitRepository.save(link));
     }
 
+    /** Remove the link between a user and a unit (move-out). Throws 404 if the link is missing. */
     @Transactional
     public void removeResident(UUID unitId, UUID userId) {
         UserUnit link = userUnitRepository.findByUserIdAndUnitId(userId, unitId)
@@ -75,31 +99,36 @@ public class ResidentService {
         userUnitRepository.delete(link);
     }
 
-    // ---- Perfiles de usuario ----
+    // ---- User profiles (generic account directory) ----
 
+    /** List every user account, regardless of unit. Used by admins and concierge staff. */
     public List<UserProfileResponse> listUsers() {
         return userRepository.findAll().stream().map(this::toProfile).toList();
     }
 
+    /** Fetch a single user profile by id. Throws 404 when unknown. */
     public UserProfileResponse getUser(UUID id) {
         return toProfile(findUser(id));
     }
 
+    /** Convert a User entity + its unit links into an API-friendly profile object. */
     private UserProfileResponse toProfile(User user) {
         List<UUID> units = userUnitRepository.findByUserId(user.getId()).stream()
             .map(uu -> uu.getUnit().getId())
             .toList();
         return new UserProfileResponse(
             user.getId(), user.getName(), user.getEmail(), user.getPhone(),
-            user.getRole() != null ? user.getRole() : Role.MORADOR,
+            user.getRole() != null ? user.getRole() : Role.RESIDENT,
             user.isEnabled(), user.getCreatedAt(), units);
     }
 
+    /** Helper: load a unit or fail with 404. */
     private Unit findUnit(UUID id) {
         return unitRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Unit not found: " + id));
     }
 
+    /** Helper: load a user or fail with 404. */
     private User findUser(UUID id) {
         return userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("User not found: " + id));

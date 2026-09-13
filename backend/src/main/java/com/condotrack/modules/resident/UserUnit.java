@@ -6,11 +6,21 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 /**
- * Vínculo entre {@link User} y {@link Unit}.
+ * Link between a {@link User} and a {@link Unit} (apartment / office).
  *
- * <p>Tabla canónica: {@code user_units} (ver {@code V1__init_schema.sql}).
- * La vista de compatibilidad {@code unit_residents} (ver {@code V3__seed_demo_data.sql})
- * expone las mismas columnas para el módulo "Desarrollador 3".
+ * <p>Example: "Sofia (user) lives in Unit 101 (unit) as OWNER".</p>
+ *
+ * <p>Canonical table: {@code user_units} (see {@code V1__init_schema.sql}).
+ * The compatibility view {@code unit_residents} (see
+ * {@code V3__seed_demo_data.sql}) exposes the same columns for reporting.</p>
+ *
+ * <p>Fields:</p>
+ * <ul>
+ *   <li>{@code user} - who lives / owns there.</li>
+ *   <li>{@code unit} - which apartment / office.</li>
+ *   <li>{@code relationshipType} - OWNER, TENANT or FAMILY_MEMBER.</li>
+ *   <li>{@code primary} - true for the main household contact of the unit.</li>
+ * </ul>
  */
 @Entity
 @Table(name = "user_units", uniqueConstraints = {
@@ -32,7 +42,7 @@ public class UserUnit {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "relationship_type", nullable = false, length = 20)
-    private RelationshipType relationshipType = RelationshipType.INQUILINO;
+    private RelationshipType relationshipType = RelationshipType.TENANT;
 
     @Column(name = "is_primary", nullable = false)
     private boolean primary = true;
@@ -42,7 +52,8 @@ public class UserUnit {
     public UserUnit(User user, Unit unit, RelationshipType relationshipType, boolean primary) {
         this.user = user;
         this.unit = unit;
-        this.relationshipType = relationshipType != null ? relationshipType : RelationshipType.INQUILINO;
+        // Default to TENANT when the caller does not specify a relationship.
+        this.relationshipType = relationshipType != null ? relationshipType : RelationshipType.TENANT;
         this.primary = primary;
     }
 

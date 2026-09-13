@@ -16,6 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+// A system user: admin, concierge operator, or resident.
+// One row in the "users" table = one login (email + password hash).
+// A user can be linked to zero or more housing units (see UserUnit).
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
@@ -54,7 +57,8 @@ public class User implements UserDetails {
         this.email = email;
         this.passwordHash = passwordHash;
         this.phone = phone;
-        this.role = role != null ? role : Role.MORADOR;
+        // Default to RESIDENT when no role is given, so sign-up flows stay safe.
+        this.role = role != null ? role : Role.RESIDENT;
         this.active = true;
         this.createdAt = java.time.OffsetDateTime.now();
     }

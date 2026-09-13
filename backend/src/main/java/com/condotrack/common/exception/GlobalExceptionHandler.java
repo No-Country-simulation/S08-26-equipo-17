@@ -16,6 +16,14 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Single place that converts Java exceptions into clean HTTP error responses.
+ *
+ * <p>Beginner note: when a controller throws (for example) a
+ * {@link ResourceNotFoundException}, Spring jumps here, and we return a
+ * standard {@code ProblemDetail} JSON body with the right status code
+ * (404, 409, 400, ...) instead of a raw stack trace.</p>
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -24,7 +32,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ProblemDetail handleResourceNotFound(ResourceNotFoundException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
-        problem.setTitle("Recurso Não Encontrado");
+        problem.setTitle("Resource Not Found");
         problem.setType(URI.create("https://condotrack.com/errors/not-found"));
         problem.setProperty("timestamp", Instant.now());
         return problem;
@@ -33,7 +41,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public ProblemDetail handleConflict(ConflictException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
-        problem.setTitle("Conflito de Estado");
+        problem.setTitle("State Conflict");
         problem.setType(URI.create("https://condotrack.com/errors/conflict"));
         problem.setProperty("timestamp", Instant.now());
         return problem;
@@ -42,7 +50,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     public ProblemDetail handleBusinessException(BusinessException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
-        problem.setTitle("Regra de Negócio Violada");
+        problem.setTitle("Business Rule Violated");
         problem.setType(URI.create("https://condotrack.com/errors/bad-request"));
         problem.setProperty("timestamp", Instant.now());
         return problem;
@@ -50,8 +58,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidationException(MethodArgumentNotValidException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Erro na validação dos campos da requisição.");
-        problem.setTitle("Dados de Entrada Inválidos");
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Request field validation failed.");
+        problem.setTitle("Invalid Input Data");
         problem.setType(URI.create("https://condotrack.com/errors/validation-error"));
         problem.setProperty("timestamp", Instant.now());
 
@@ -66,8 +74,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ProblemDetail handleAccessDenied(AccessDeniedException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "Acesso não autorizado para o seu perfil.");
-        problem.setTitle("Acesso Negado");
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "Access denied for your role.");
+        problem.setTitle("Access Denied");
         problem.setType(URI.create("https://condotrack.com/errors/forbidden"));
         problem.setProperty("timestamp", Instant.now());
         return problem;
@@ -75,8 +83,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ProblemDetail handleAuthenticationException(AuthenticationException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Credenciais inválidas ou token expirado.");
-        problem.setTitle("Não Autenticado");
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Invalid credentials or expired token.");
+        problem.setTitle("Not Authenticated");
         problem.setType(URI.create("https://condotrack.com/errors/unauthorized"));
         problem.setProperty("timestamp", Instant.now());
         return problem;
@@ -84,9 +92,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGenericException(Exception ex) {
-        log.error("Erro interno não tratado no servidor: ", ex);
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro interno inesperado.");
-        problem.setTitle("Erro Interno do Servidor");
+        log.error("Unhandled internal server error: ", ex);
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected internal error occurred.");
+        problem.setTitle("Internal Server Error");
         problem.setType(URI.create("https://condotrack.com/errors/internal-error"));
         problem.setProperty("timestamp", Instant.now());
         return problem;

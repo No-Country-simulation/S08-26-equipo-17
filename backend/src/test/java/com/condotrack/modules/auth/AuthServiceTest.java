@@ -45,8 +45,8 @@ class AuthServiceTest {
     private User user(Role role, boolean active) {
         User user = new User();
         ReflectionTestUtils.setField(user, "id", UUID.randomUUID());
-        ReflectionTestUtils.setField(user, "name", "Teste");
-        ReflectionTestUtils.setField(user, "email", "teste@condotrack.com");
+        ReflectionTestUtils.setField(user, "name", "Test user");
+        ReflectionTestUtils.setField(user, "email", "test@condotrack.com");
         ReflectionTestUtils.setField(user, "passwordHash", "hash");
         ReflectionTestUtils.setField(user, "role", role);
         ReflectionTestUtils.setField(user, "active", active);
@@ -54,12 +54,12 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("1. Login com credenciais válidas retorna access e refresh token")
+    @DisplayName("1. Login with valid credentials returns access and refresh tokens")
     void loginWithValidCredentials() {
-        User user = user(Role.MORADOR, true);
+        User user = user(Role.RESIDENT, true);
         when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(user));
 
-        AuthResponse response = authService.login(new LoginRequest("teste@condotrack.com", "password123"));
+        AuthResponse response = authService.login(new LoginRequest("test@condotrack.com", "password123"));
 
         assertThat(response.accessToken()).isNotBlank();
         assertThat(response.refreshToken()).isNotBlank();
@@ -68,19 +68,19 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("2. Login com credenciais inválidas lança exceção de autenticação")
+    @DisplayName("2. Login with invalid credentials throws authentication exception")
     void loginWithInvalidCredentials() {
         when(authenticationManager.authenticate(any()))
             .thenThrow(new BadCredentialsException("Bad credentials"));
 
-        assertThatThrownBy(() -> authService.login(new LoginRequest("teste@condotrack.com", "errada")))
+        assertThatThrownBy(() -> authService.login(new LoginRequest("test@condotrack.com", "wrong")))
             .isInstanceOf(BadCredentialsException.class);
     }
 
     @Test
-    @DisplayName("3. Refresh token válido emite novos tokens")
+    @DisplayName("3. Valid refresh token issues new tokens")
     void refreshWithValidToken() {
-        User user = user(Role.PORTARIA, true);
+        User user = user(Role.CONCIERGE, true);
         String refresh = jwtService.generateRefreshToken(user);
         when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(user));
 
@@ -91,9 +91,9 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("4. Access token é rejeitado no endpoint de refresh")
+    @DisplayName("4. Access token is rejected at refresh endpoint")
     void refreshWithAccessTokenIsRejected() {
-        User user = user(Role.MORADOR, true);
+        User user = user(Role.RESIDENT, true);
         String access = jwtService.generateAccessToken(user);
 
         assertThatThrownBy(() -> authService.refresh(new RefreshTokenRequest(access)))
@@ -101,21 +101,21 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("8a. Usuário inativo não consegue fazer login")
+    @DisplayName("8a. Inactive user cannot log in")
     void inactiveUserCannotLogin() {
-        User user = user(Role.MORADOR, false);
+        User user = user(Role.RESIDENT, false);
         when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(user));
 
-        assertThatThrownBy(() -> authService.login(new LoginRequest("teste@condotrack.com", "password123")))
+        assertThatThrownBy(() -> authService.login(new LoginRequest("test@condotrack.com", "password123")))
             .isInstanceOf(BadCredentialsException.class);
     }
 
     @Test
-    @DisplayName("8b. Usuário inativo não consegue renovar tokens")
+    @DisplayName("8b. Inactive user cannot refresh tokens")
     void inactiveUserCannotRefresh() {
-        User active = user(Role.MORADOR, true);
+        User active = user(Role.RESIDENT, true);
         String refresh = jwtService.generateRefreshToken(active);
-        User inactive = user(Role.MORADOR, false);
+        User inactive = user(Role.RESIDENT, false);
         when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(inactive));
 
         assertThatThrownBy(() -> authService.refresh(new RefreshTokenRequest(refresh)))
@@ -123,19 +123,19 @@ class AuthServiceTest {
     }
 
     @Test
-    @DisplayName("Refresh malformado é rejeitado")
+    @DisplayName("Malformed refresh token is rejected")
     void refreshWithMalformedTokenIsRejected() {
         assertThatThrownBy(() -> authService.refresh(new RefreshTokenRequest("not-a-jwt")))
             .isInstanceOf(BadCredentialsException.class);
     }
 
     @Test
-    @DisplayName("Conta desabilitada no AuthenticationManager impede login")
+    @DisplayName("Disabled account in AuthenticationManager blocks login")
     void disabledAccountCannotLogin() {
         when(authenticationManager.authenticate(any()))
             .thenThrow(new DisabledException("User is disabled"));
 
-        assertThatThrownBy(() -> authService.login(new LoginRequest("teste@condotrack.com", "password123")))
+        assertThatThrownBy(() -> authService.login(new LoginRequest("test@condotrack.com", "password123")))
             .isInstanceOf(DisabledException.class);
     }
 }

@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+// A housing unit (apartment / office) inside a Building.
+// Example: "Tower A, unit 101, floor 1".
+// Residents are linked to units via the UserUnit table.
 @Entity
 @Table(name = "units", uniqueConstraints = {
     @UniqueConstraint(name = "uq_building_unit", columnNames = {"building_id", "block", "number_code"})

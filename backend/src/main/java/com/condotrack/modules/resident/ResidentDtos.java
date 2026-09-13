@@ -7,8 +7,15 @@ import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+/**
+ * Request/response shapes (DTOs) for the resident module.
+ *
+ * <p>Beginner note: a DTO (Data Transfer Object) is just the JSON shape the
+ * API sends or receives. Records keep them short and immutable.</p>
+ */
 public class ResidentDtos {
 
+    /** Resident data returned to the frontend, including the unit link. */
     public record ResidentResponse(
         UUID userId,
         String name,
@@ -18,6 +25,7 @@ public class ResidentDtos {
         String relationshipType,
         boolean primary
     ) {
+        /** Build a response from a UserUnit link (user + unit + relationship). */
         public static ResidentResponse from(UserUnit uu) {
             return new ResidentResponse(
                 uu.getUser().getId(),
@@ -31,12 +39,14 @@ public class ResidentDtos {
         }
     }
 
+    /** Payload to link an existing user to a unit. */
     public record AssociateResidentRequest(
         @NotNull UUID userId,
         RelationshipType relationshipType,
         Boolean primary
     ) {}
 
+    /** Payload to create a new user and link them to a unit in one call. */
     public record CreateResidentProfileRequest(
         @NotBlank String name,
         @NotBlank @Email String email,
@@ -47,6 +57,7 @@ public class ResidentDtos {
         Boolean primary
     ) {}
 
+    /** Generic user profile with the list of linked unit ids. */
     public record UserProfileResponse(
         UUID id,
         String name,

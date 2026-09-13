@@ -35,35 +35,35 @@ class AuthControllerTest {
 
     private static AuthResponse response() {
         return new AuthResponse("access-token", "refresh-token", "Bearer", 3600L,
-            new AuthUserResponse(UUID.randomUUID(), "Teste", "teste@condotrack.com", Role.MORADOR, List.of()));
+            new AuthUserResponse(UUID.randomUUID(), "Test user", "test@condotrack.com", Role.RESIDENT, List.of()));
     }
 
     @Test
-    @DisplayName("1. Login com credenciais válidas retorna 200 com tokens")
+    @DisplayName("1. Login with valid credentials returns 200 with tokens")
     void loginValid() throws Exception {
         when(authService.login(any())).thenReturn(response());
 
         mockMvc.perform(post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\":\"teste@condotrack.com\",\"password\":\"password123\"}"))
+                .content("{\"email\":\"test@condotrack.com\",\"password\":\"password123\"}"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.accessToken").value("access-token"))
             .andExpect(jsonPath("$.refreshToken").value("refresh-token"));
     }
 
     @Test
-    @DisplayName("2. Login com credenciais inválidas retorna 401")
+    @DisplayName("2. Login with invalid credentials returns 401")
     void loginInvalid() throws Exception {
         when(authService.login(any())).thenThrow(new BadCredentialsException("Invalid credentials"));
 
         mockMvc.perform(post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\":\"teste@condotrack.com\",\"password\":\"errada\"}"))
+                .content("{\"email\":\"test@condotrack.com\",\"password\":\"errada\"}"))
             .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @DisplayName("3. Refresh token válido retorna 200 com novos tokens")
+    @DisplayName("3. Valid refresh token returns 200 with new tokens")
     void refreshValid() throws Exception {
         when(authService.refresh(any())).thenReturn(response());
 
@@ -75,7 +75,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("4. Access token no endpoint de refresh retorna 401")
+    @DisplayName("4. Access token at refresh endpoint returns 401")
     void refreshWithAccessToken() throws Exception {
         when(authService.refresh(any())).thenThrow(new BadCredentialsException("Invalid refresh token"));
 
@@ -86,13 +86,13 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("8. Usuário inativo não consegue autenticar (401)")
+    @DisplayName("8. Inactive user cannot authenticate (401)")
     void loginInactiveUser() throws Exception {
         when(authService.login(any())).thenThrow(new DisabledException("User is disabled"));
 
         mockMvc.perform(post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\":\"inativo@condotrack.com\",\"password\":\"password123\"}"))
+                .content("{\"email\":\"inactive@condotrack.com\",\"password\":\"password123\"}"))
             .andExpect(status().isUnauthorized());
     }
 }
