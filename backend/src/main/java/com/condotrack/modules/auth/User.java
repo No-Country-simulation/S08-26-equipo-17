@@ -32,6 +32,9 @@ public class User implements UserDetails {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
+    @Column(length = 30)
+    private String phone;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -39,7 +42,21 @@ public class User implements UserDetails {
     @Column(name = "is_active", nullable = false)
     private boolean active;
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private java.time.OffsetDateTime createdAt = java.time.OffsetDateTime.now();
+
     protected User() {
+    }
+
+    public User(String name, String email, String passwordHash, String phone, Role role) {
+        this.id = UUID.randomUUID();
+        this.name = name;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.phone = phone;
+        this.role = role != null ? role : Role.MORADOR;
+        this.active = true;
+        this.createdAt = java.time.OffsetDateTime.now();
     }
 
     public UUID getId() {
@@ -56,6 +73,18 @@ public class User implements UserDetails {
 
     public Role getRole() {
         return role;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public java.time.OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 
     @Override
