@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+// A building (residential or commercial complex) that contains many units.
+// Example: "Sunset Towers, 123 Main St" with 40 units.
 @Entity
 @Table(name = "buildings")
 public class Building {

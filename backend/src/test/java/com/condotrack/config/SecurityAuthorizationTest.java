@@ -24,6 +24,12 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Verifies that each role can only open its own doors (endpoints).
+ *
+ * <p>Beginner note: we fake (mock) the user database, create a real JWT for a
+ * fake user, and then ask: "does this token get 200 OK or 403 Forbidden?"</p>
+ */
 @WebMvcTest(TestProtectedController.class)
 @Import({SecurityConfig.class, CorsConfig.class, JwtService.class, JwtAuthenticationFilter.class})
 @TestPropertySource(properties = {
@@ -43,9 +49,10 @@ class SecurityAuthorizationTest {
     @MockBean
     private CustomUserDetailsService userDetailsService;
 
+    // Test accounts, one per role + one disabled account.
     private User admin;
-    private User portaria;
-    private User morador;
+    private User concierge;
+    private User resident;
     private User inactive;
 
     private static User buildUser(String email, Role role, boolean active) {
@@ -68,9 +75,9 @@ class SecurityAuthorizationTest {
     @BeforeEach
     void setUp() {
         admin = buildUser("admin@condotrack.com", Role.ADMIN, true);
-        portaria = buildUser("portaria@condotrack.com", Role.PORTARIA, true);
-        morador = buildUser("morador@condotrack.com", Role.MORADOR, true);
-        inactive = buildUser("inativo@condotrack.com", Role.MORADOR, false);
+        concierge = buildUser("concierge@condotrack.com", Role.CONCIERGE, true);
+        resident = buildUser("resident@condotrack.com", Role.RESIDENT, true);
+        inactive = buildUser("inactive@condotrack.com", Role.RESIDENT, false);
     }
 
     private void mockUser(User user) throws Exception {
@@ -78,7 +85,7 @@ class SecurityAuthorizationTest {
     }
 
     @Test
-    @DisplayName("5. Endpoint protegido sem token retorna 401")
+    @DisplayName("5. Protected endpoint without token returns 401")
     void protectedEndpointWithoutTokenIs401() throws Exception {
         mockMvc.perform(get("/api/v1/incidents/test")).andExpect(status().isUnauthorized());
         mockMvc.perform(get("/api/v1/access/authorizations")).andExpect(status().isUnauthorized());
@@ -86,37 +93,37 @@ class SecurityAuthorizationTest {
     }
 
     @Test
-    @DisplayName("Token malformado resulta em acesso não autenticado (401)")
+    @DisplayName("Malformed token results in unauthenticated access (401)")
     void malformedTokenIs401() throws Exception {
         mockMvc.perform(get("/api/v1/incidents/test").header("Authorization", "Bearer not-a-jwt"))
             .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @DisplayName("Refresh token não acessa endpoint protegido (401)")
+    @DisplayName("Refresh token cannot access protected endpoint (401)")
     void refreshTokenCannotAccessProtectedEndpoint() throws Exception {
-        mockUser(morador);
-        String refresh = jwtService.generateRefreshToken(morador);
+        mockUser(resident);
+        String refresh = jwtService.generateRefreshToken(resident);
 
         mockMvc.perform(get("/api/v1/incidents/test").header("Authorization", "Bearer " + refresh))
             .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @DisplayName("6a. MORADOR acessa operações de moradores")
-    void moradorCanAccessResidentOperations() throws Exception {
-        mockUser(morador);
-        String token = jwtService.generateAccessToken(morador);
+    @DisplayName("6a. RESIDENT can access resident operations")
+    void residentCanAccessResidentOperations() throws Exception {
+        mockUser(resident);
+        String token = jwtService.generateAccessToken(resident);
 
         mockMvc.perform(get("/api/v1/access/authorizations").header("Authorization", "Bearer " + token))
             .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("6b. PORTARIA acessa operações de portaria/pacotes e auditoria")
-    void portariaCanAccessPortariaOperations() throws Exception {
-        mockUser(portaria);
-        String token = jwtService.generateAccessToken(portaria);
+    @DisplayName("6b. CONCIERGE can access front-desk/package and audit operations")
+    void conciergeCanAccessConciergeOperations() throws Exception {
+        mockUser(concierge);
+        String token = jwtService.generateAccessToken(concierge);
 
         mockMvc.perform(get("/api/v1/packages/tracking").header("Authorization", "Bearer " + token))
             .andExpect(status().isOk());
@@ -125,30 +132,30 @@ class SecurityAuthorizationTest {
     }
 
     @Test
-    @DisplayName("6c. Usuário autenticado acessa endpoint genérico")
+    @DisplayName("6c. Authenticated user can access generic endpoint")
     void authenticatedUserAccessesGenericEndpoint() throws Exception {
-        mockUser(morador);
-        String token = jwtService.generateAccessToken(morador);
+        mockUser(resident);
+        String token = jwtService.generateAccessToken(resident);
 
         mockMvc.perform(get("/api/v1/incidents/test").header("Authorization", "Bearer " + token))
             .andExpect(status().isOk());
     }
 
     @Test
-    @DisplayName("7a. PORTARIA não acessa operações de moradores (403)")
-    void portariaForbiddenOnResidentOperations() throws Exception {
-        mockUser(portaria);
-        String token = jwtService.generateAccessToken(portaria);
+    @DisplayName("7a. CONCIERGE cannot access resident operations (403)")
+    void conciergeForbiddenOnResidentOperations() throws Exception {
+        mockUser(concierge);
+        String token = jwtService.generateAccessToken(concierge);
 
         mockMvc.perform(get("/api/v1/access/authorizations").header("Authorization", "Bearer " + token))
             .andExpect(status().isForbidden());
     }
 
     @Test
-    @DisplayName("7b. MORADOR não acessa operações de portaria nem auditoria (403)")
-    void moradorForbiddenOnPortariaOperations() throws Exception {
-        mockUser(morador);
-        String token = jwtService.generateAccessToken(morador);
+    @DisplayName("7b. RESIDENT cannot access front-desk or audit operations (403)")
+    void residentForbiddenOnConciergeOperations() throws Exception {
+        mockUser(resident);
+        String token = jwtService.generateAccessToken(resident);
 
         mockMvc.perform(get("/api/v1/packages/tracking").header("Authorization", "Bearer " + token))
             .andExpect(status().isForbidden());
@@ -157,7 +164,7 @@ class SecurityAuthorizationTest {
     }
 
     @Test
-    @DisplayName("8. Usuário inativo não acessa endpoint protegido (401)")
+    @DisplayName("8. Inactive user cannot access protected endpoint (401)")
     void inactiveUserCannotAccessProtectedEndpoint() throws Exception {
         mockUser(inactive);
         String token = jwtService.generateAccessToken(inactive);

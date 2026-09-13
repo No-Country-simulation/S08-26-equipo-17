@@ -56,11 +56,13 @@ public class SecurityConfig {
                 // Authentication endpoints must be reachable before the user has a token.
                 .requestMatchers("/api/v1/auth/login", "/api/v1/auth/refresh").permitAll()
                 // hasAnyRole automatically looks for authorities such as ROLE_ADMIN.
+                // ADMIN + RESIDENT can create guest passes, amenity bookings and move requests.
                 .requestMatchers("/api/v1/access/authorizations", "/api/v1/reservations/**", "/api/v1/moves/**")
-                    .hasAnyRole("ADMIN", "MORADOR")
+                    .hasAnyRole("ADMIN", "RESIDENT")
+                // ADMIN + CONCIERGE (front desk) validate entries and handle packages.
                 .requestMatchers("/api/v1/access/**", "/api/v1/packages/**")
-                    .hasAnyRole("ADMIN", "PORTARIA")
-                .requestMatchers("/api/v1/audit-logs/**").hasAnyRole("ADMIN", "PORTARIA")
+                    .hasAnyRole("ADMIN", "CONCIERGE")
+                .requestMatchers("/api/v1/audit-logs/**").hasAnyRole("ADMIN", "CONCIERGE")
                 .anyRequest().authenticated()
             );
 
