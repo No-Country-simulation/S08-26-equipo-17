@@ -12,16 +12,17 @@
   --font-sans: var(--font-plus-jakarta), sans-serif;
   --color-card: var(--card);
 }
-/* color #fefefe */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-plus-jakarta), sans-serif;
+  padding: 30px;
+}
+
 /* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
 } */
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-plus-jakarta), sans-serif;
-}

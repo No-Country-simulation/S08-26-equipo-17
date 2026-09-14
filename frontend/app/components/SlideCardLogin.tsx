@@ -65,7 +65,7 @@ export function SlideCardLogin() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-6 w-10/12 max-w-md mx-auto select-none">
+    <div className="flex flex-col items-center gap-6 w-12/12 max-w-md mx-auto select-none">
       {/* Contenedor de la Tarjeta con Listeners Táctiles */}
       <div
         onTouchStart={handleTouchStart}
