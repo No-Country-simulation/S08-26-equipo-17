@@ -91,7 +91,7 @@ export const NativeSwipeButton: React.FC<SwipeButtonProps> = ({
     >
       {/* Fondo amarillo que se expande */}
       <div
-        className={`absolute left-0 top-0 bottom-0 bg-amber-200 transition-all ${
+        className={`absolute left-0 top-0 bottom-0 bg-yellowbrand transition-all ${
           !isDragging ? 'duration-300 ease-out' : 'duration-75 ease-linear'
         }`}
         style={{ width: `${fillWidth}px` }}
@@ -113,7 +113,7 @@ export const NativeSwipeButton: React.FC<SwipeButtonProps> = ({
       <div
         onMouseDown={(e) => handleStart(e.clientX)}
         onTouchStart={(e) => handleStart(e.touches[0].clientX)}
-        className={`z-10 flex items-center justify-center w-12 h-12 bg-[#feea2c] rounded-full cursor-grab active:cursor-grabbing shadow-md ${
+        className={`z-10 flex items-center justify-center w-12 h-12 bg-yellowbrand rounded-full cursor-grab active:cursor-grabbing shadow-md ${
           !isDragging ? 'transition-transform duration-300 ease-out' : ''
         }`}
         style={{ transform: `translateX(${dragX}px)` }}

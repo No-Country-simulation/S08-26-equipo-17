@@ -4,11 +4,13 @@
   --background: #f6f7f4;
   --foreground: #171717;
   --card: #fefefe;
+  --yellowbrand: #efec08;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-yellowbrand: var(--yellowbrand);
   --font-sans: var(--font-plus-jakarta), sans-serif;
   --color-card: var(--card);
 }
