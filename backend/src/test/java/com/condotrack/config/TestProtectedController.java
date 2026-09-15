@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Controller auxiliar exclusivo para os testes de autorização (MVP segurança). */
+/** Test-only controller used to verify endpoint authorization rules. */
 @RestController
 public class TestProtectedController {
 
