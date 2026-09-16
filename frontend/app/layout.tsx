@@ -15,8 +15,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="en" className={`${plusJakartaSans.variable} h-full`}>
-      <body className="grid ">{children}</body>
+    <html
+      lang="en"
+      className={`${plusJakartaSans.variable} h-full grid place-items-center bg-taupe-400`}
+    >
+      <body className="grid w-[390] h-[844]">{children}</body>
     </html>
   );
 }

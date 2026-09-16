@@ -1,16 +1,18 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #f6f7f4;
+  --background: #f4f5f1;
   --foreground: #171717;
   --card: #fefefe;
   --yellowbrand: #efec08;
+  --secondarytext: #515456;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-yellowbrand: var(--yellowbrand);
+  --color-secondarytext: var(--secondarytext);
   --font-sans: var(--font-plus-jakarta), sans-serif;
   --color-card: var(--card);
 }
@@ -19,7 +21,6 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-plus-jakarta), sans-serif;
-  padding: 30px;
 }
 
 /* @media (prefers-color-scheme: dark) {
