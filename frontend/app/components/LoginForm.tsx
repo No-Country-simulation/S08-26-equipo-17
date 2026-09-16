@@ -5,9 +5,9 @@ import Image from 'next/image';
 import logo_vector from '@/public/logo_vector.svg';
 
 const Logo = () => (
-  <div className="flex gap-2">
-    <Image src={logo_vector} alt="CondoTrack logo" width={40} height={40} />
-    <h1 className="text-2xl font-extrabold tracking-tight text-black">
+  <div className="flex items-center justify-center gap-2">
+    <Image src={logo_vector} alt="CondoTrack logo" width={32} height={32} />
+    <h1 className="text-xl font-extrabold tracking-tight text-black">
       Condo<span className="text-yellowbrand">Track</span>
     </h1>
   </div>
@@ -102,13 +102,13 @@ const EyeOffIcon = () => (
   </svg>
 );
 
-export const LoginForm = () => {
+type AuthView = 'login' | 'forgot-password';
+
+const LoginView = ({ onForgotPassword }: { onForgotPassword: () => void }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="flex w-full flex-col gap-6 px-6 py-8">
-      <Logo />
-
+    <>
       <div className="w-full text-center">
         <h2 className="text-3xl font-bold">Ingresá a CondoTrack</h2>
         <p className="text-secondarytext">
@@ -155,9 +155,13 @@ export const LoginForm = () => {
         </div>
 
         <div className="text-right">
-          <a href="/olvide-contrasena" className="text-sm text-gray-500">
+          <button
+            type="button"
+            onClick={onForgotPassword}
+            className="text-sm text-gray-500"
+          >
             Olvidé mi contraseña
-          </a>
+          </button>
         </div>
 
         <button
@@ -195,6 +199,83 @@ export const LoginForm = () => {
           CondoTrack.
         </p>
       </div>
+    </>
+  );
+};
+
+const ForgotPasswordView = ({ onBack }: { onBack: () => void }) => {
+  const [email, setEmail] = useState('');
+  const [sent, setSent] = useState(false);
+
+  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // TODO: conectar con el endpoint real de recuperación
+    setSent(true);
+  };
+
+  return (
+    <>
+      <div className="w-full text-center">
+        <h2 className="text-3xl font-bold">Recuperá tu acceso</h2>
+        <p className="text-secondarytext">
+          Te mandamos un enlace para crear una contraseña nueva.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div className="flex items-center gap-3 rounded-full border border-gray-200 bg-white px-5 py-4">
+          <span className="text-gray-400">
+            <MailIcon />
+          </span>
+          <input
+            type="email"
+            name="email"
+            placeholder="Correo electrónico"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full rounded-full bg-yellowbrand py-4 font-semibold text-black"
+        >
+          Enviar enlace
+        </button>
+      </form>
+
+      {sent && (
+        <p className="text-center text-sm text-gray-500">
+          Si el correo existe en nuestro sistema, vas a recibir un enlace en
+          unos minutos.
+        </p>
+      )}
+
+      <button
+        type="button"
+        onClick={onBack}
+        className="text-center text-sm text-gray-500"
+      >
+        Volver a ingresar
+      </button>
+    </>
+  );
+};
+
+export const LoginForm = () => {
+  const [view, setView] = useState<AuthView>('login');
+
+  return (
+    <div className="flex w-full flex-col gap-6 px-6 py-8">
+      <Logo />
+
+      {view === 'login' ? (
+        <LoginView onForgotPassword={() => setView('forgot-password')} />
+      ) : (
+        <ForgotPasswordView onBack={() => setView('login')} />
+      )}
     </div>
   );
 };
