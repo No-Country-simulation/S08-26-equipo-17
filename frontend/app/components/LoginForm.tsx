@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import Image from 'next/image';
 import logo_vector from '@/public/logo_vector.svg';
 
@@ -101,14 +101,19 @@ const EyeOffIcon = () => (
     <path d="M1 1l22 22" />
   </svg>
 );
+type View = 'login' | 'forgot-password' | 'loading';
 
-type AuthView = 'login' | 'forgot-password';
-
-const LoginView = ({ onForgotPassword }: { onForgotPassword: () => void }) => {
+const Login = ({
+  onForgotPassword,
+  handleSubmit,
+}: {
+  onForgotPassword: () => void;
+  handleSubmit: () => void;
+}) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <>
+    <div className="grid p-5 gap-10">
       <div className="w-full text-center">
         <h2 className="text-3xl font-bold">Ingresá a CondoTrack</h2>
         <p className="text-secondarytext">
@@ -117,7 +122,13 @@ const LoginView = ({ onForgotPassword }: { onForgotPassword: () => void }) => {
         </p>
       </div>
 
-      <form className="flex flex-col gap-4">
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleSubmit();
+        }}
+      >
         <div className="flex items-center gap-3 rounded-full border border-gray-200 bg-white px-5 py-4">
           <span className="text-gray-400">
             <MailIcon />
@@ -199,7 +210,7 @@ const LoginView = ({ onForgotPassword }: { onForgotPassword: () => void }) => {
           CondoTrack.
         </p>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -214,7 +225,7 @@ const ForgotPasswordView = ({ onBack }: { onBack: () => void }) => {
   };
 
   return (
-    <>
+    <div className="w-[390px] h-[844px] grid place-items-center p-4">
       <div className="w-full text-center">
         <h2 className="text-3xl font-bold">Recuperá tu acceso</h2>
         <p className="text-secondarytext">
@@ -260,22 +271,58 @@ const ForgotPasswordView = ({ onBack }: { onBack: () => void }) => {
       >
         Volver a ingresar
       </button>
-    </>
+    </div>
   );
 };
 
+const LoadingView = () => (
+  <div className="bg-black w-[390px] h-[844px] grid place-items-center">
+    <div>
+      <div className="flex items-center justify-center gap-2">
+        <Image src={logo_vector} alt="CondoTrack logo" width={80} height={32} />
+        <h1 className="text-4xl font-extrabold tracking-tight text-white">
+          Condo<span className="text-yellowbrand">Track</span>
+        </h1>
+      </div>
+
+      {/* Contenedor de la barra (fondo tenue) */}
+      <div className="mt-10 mx-auto w-6/12 h-1 bg-white/10 overflow-hidden relative rounded-full">
+        {/* Línea amarilla animada */}
+        <div className="h-full bg-yellowbrand w-1/2 absolute rounded-full animate-loading-bar" />
+      </div>
+    </div>
+
+    {/* Animación CSS inyectada */}
+    <style>{`
+        @keyframes bounce-x {
+          0%, 100% { left: 0; }
+          50% { left: 50%; }
+        }
+        .animate-loading-bar {
+          animation: bounce-x 1.4s ease-in-out infinite;
+        }
+      `}</style>
+  </div>
+);
+
 export const LoginForm = () => {
-  const [view, setView] = useState<AuthView>('login');
+  const [view, setView] = useState<View>('login');
+
+  const views: Record<View, ReactNode> = {
+    login: (
+      <Login
+        onForgotPassword={() => setView('forgot-password')}
+        handleSubmit={() => setView('loading')}
+      />
+    ),
+    'forgot-password': <ForgotPasswordView onBack={() => setView('login')} />,
+    loading: <LoadingView />,
+  };
 
   return (
-    <div className="flex w-full flex-col gap-6 px-6 py-8">
-      <Logo />
-
-      {view === 'login' ? (
-        <LoginView onForgotPassword={() => setView('forgot-password')} />
-      ) : (
-        <ForgotPasswordView onBack={() => setView('login')} />
-      )}
+    <div className="flex w-full flex-col gap-6 h-full">
+      {/* <Logo /> */}
+      {views[view]}
     </div>
   );
 };

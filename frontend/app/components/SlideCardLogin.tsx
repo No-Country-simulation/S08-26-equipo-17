@@ -63,7 +63,7 @@ export function SlideCardLogin({ sendIsLogged }: SlideCardLoginProps) {
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto">
+    <div className="w-full max-w-sm p-4">
       {/* Tarjeta principal con bordes redondeados globales y de corte (overflow-hidden) */}
       <div
         onTouchStart={handleTouchStart}

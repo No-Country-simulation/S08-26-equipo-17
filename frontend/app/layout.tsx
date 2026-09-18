@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
+import ThemeToggle from './components/ThemeToggle';
 import './globals.css';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -17,9 +18,13 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html
       lang="en"
-      className={`${plusJakartaSans.variable} h-full grid place-items-center bg-taupe-400`}
+      className={`${plusJakartaSans.variable} h-full bg-background text-foreground`}
+      suppressHydrationWarning
     >
-      <body className="grid w-[390] h-[844]">{children}</body>
+      <body className="min-h-screen bg-background text-foreground antialiased">
+        <ThemeToggle />
+        {children}
+      </body>
     </html>
   );
 }

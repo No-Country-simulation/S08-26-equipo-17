@@ -1,11 +1,21 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f4f5f1;
   --foreground: #171717;
   --card: #fefefe;
   --yellowbrand: #efec08;
   --secondarytext: #515456;
+}
+
+.dark {
+  --background: #111827;
+  --foreground: #f3f4f6;
+  --card: #1f2937;
+  --yellowbrand: #facc15;
+  --secondarytext: #cbd5e1;
 }
 
 @theme inline {
@@ -17,15 +27,16 @@
   --color-card: var(--card);
 }
 
+html,
 body {
+  min-height: 100%;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-plus-jakarta), sans-serif;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} */
+body {
+  font-family: var(--font-plus-jakarta), sans-serif;
+}
