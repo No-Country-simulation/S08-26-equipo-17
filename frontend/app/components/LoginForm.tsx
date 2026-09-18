@@ -5,10 +5,10 @@ import Image from 'next/image';
 import logo_vector from '@/public/logo_vector.svg';
 
 const Logo = () => (
-  <div className="flex items-center justify-center gap-2">
+  <div className="flex items-center justify-center gap-2 pt-2">
     <Image src={logo_vector} alt="CondoTrack logo" width={32} height={32} />
-    <h1 className="text-xl font-extrabold tracking-tight text-black">
-      Condo<span className="text-yellowbrand">Track</span>
+    <h1 className="text-xl font-extrabold tracking-tight text-white">
+      Condo<span className="text-[#e2f026]">Track</span>
     </h1>
   </div>
 );
@@ -53,7 +53,6 @@ const MailIcon = () => (
   </svg>
 );
 
-// MARK: ICONS
 const LockIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -102,6 +101,7 @@ const EyeOffIcon = () => (
     <path d="M1 1l22 22" />
   </svg>
 );
+
 type View = 'login' | 'forgot-password' | 'loading';
 
 // MARK: Login
@@ -115,10 +115,14 @@ const Login = ({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="grid min-h-full w-full p-5 gap-10">
-      <div className="w-full text-center">
-        <h2 className="text-3xl font-bold">Ingresá a CondoTrack</h2>
-        <p className="text-secondarytext">
+    <div className="flex flex-col gap-8 w-full">
+      <Logo />
+
+      <div className="w-full text-center space-y-2">
+        <h2 className="text-3xl font-extrabold text-white tracking-tight">
+          Ingresá a CondoTrack
+        </h2>
+        <p className="text-sm text-gray-400 max-w-xs mx-auto leading-relaxed">
           Accedé a la gestión de tu edificio: visitas, entregas, reservas y
           reclamos.
         </p>
@@ -131,7 +135,7 @@ const Login = ({
           handleSubmit();
         }}
       >
-        <div className="flex items-center gap-3 rounded-full border border-gray-200 bg-white px-5 py-4">
+        <div className="flex items-center gap-3 rounded-full border border-neutral-800 bg-neutral-900/80 px-5 py-4 focus-within:border-neutral-700 transition">
           <span className="text-gray-400">
             <MailIcon />
           </span>
@@ -140,11 +144,11 @@ const Login = ({
             name="email"
             placeholder="Correo electrónico"
             autoComplete="email"
-            className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+            className="w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-500"
           />
         </div>
 
-        <div className="flex items-center gap-3 rounded-full border border-gray-200 bg-white px-5 py-4">
+        <div className="flex items-center gap-3 rounded-full border border-neutral-800 bg-neutral-900/80 px-5 py-4 focus-within:border-neutral-700 transition">
           <span className="text-gray-400">
             <LockIcon />
           </span>
@@ -153,7 +157,7 @@ const Login = ({
             name="password"
             placeholder="Contraseña"
             autoComplete="current-password"
-            className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+            className="w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-500"
           />
           <button
             type="button"
@@ -161,7 +165,7 @@ const Login = ({
             aria-label={
               showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
             }
-            className="text-gray-400"
+            className="text-gray-400 hover:text-gray-200 transition"
           >
             {showPassword ? <EyeOffIcon /> : <EyeIcon />}
           </button>
@@ -171,7 +175,7 @@ const Login = ({
           <button
             type="button"
             onClick={onForgotPassword}
-            className="text-sm text-gray-500"
+            className="text-sm font-medium text-gray-300 underline underline-offset-4 decoration-gray-600 hover:decoration-gray-400"
           >
             Olvidé mi contraseña
           </button>
@@ -179,37 +183,51 @@ const Login = ({
 
         <button
           type="submit"
-          className="w-full rounded-full bg-yellowbrand py-4 font-semibold text-black"
+          className="w-full rounded-full border border-neutral-300 bg-black/40 py-4 font-semibold text-white transition hover:bg-neutral-800 active:scale-[0.99]"
         >
           Ingresar
         </button>
       </form>
 
-      <div className="flex flex-col gap-3">
-        <p className="text-xs text-gray-500">CUENTAS DE DEMOSTRACIÓN</p>
+      {/* Contenedor de Cuentas Demo */}
+      <div className="flex flex-col gap-3 rounded-3xl border border-neutral-800/80 bg-neutral-900/50 p-4">
+        <p className="text-[11px] font-bold tracking-wider text-gray-400 uppercase px-1">
+          CUENTAS DE DEMOSTRACIÓN
+        </p>
 
-        {demoAccounts.map((account) => (
-          <div
-            key={account.email}
-            className="flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-4 py-3"
-          >
-            <div>
-              <p className="text-sm font-semibold">{account.name}</p>
-              <p className="text-xs text-gray-500">{account.email}</p>
+        <div className="flex flex-col gap-2">
+          {demoAccounts.map((account) => (
+            <div
+              key={account.email}
+              className="flex items-center justify-between rounded-2xl bg-neutral-800/50 border border-neutral-800/40 px-4 py-3 cursor-pointer hover:bg-neutral-800/80 transition"
+            >
+              <div>
+                <p className="text-sm font-semibold text-gray-200">
+                  {account.name}
+                </p>
+                <p className="text-xs text-gray-400">{account.email}</p>
+              </div>
+              <span className="text-xs text-gray-400">{account.role}</span>
             </div>
-            <span className="text-xs text-gray-500">{account.role}</span>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
-      <div className="text-center text-xs text-gray-500">
+      <div className="text-center text-xs text-gray-400 space-y-3 leading-relaxed px-2">
         <p>
           ¿Todavía no tenés acceso? El alta la hace la administración de tu
           edificio.
         </p>
         <p>
-          Al ingresar aceptás los Términos y las Políticas de privacidad de
-          CondoTrack.
+          Al ingresar aceptás los{' '}
+          <span className="font-semibold text-gray-200 underline">
+            Términos
+          </span>{' '}
+          y las{' '}
+          <span className="font-semibold text-gray-200 underline">
+            Políticas de privacidad
+          </span>{' '}
+          de CondoTrack.
         </p>
       </div>
     </div>
@@ -223,21 +241,24 @@ const ForgotPasswordView = ({ onBack }: { onBack: () => void }) => {
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: conectar con el endpoint real de recuperación
     setSent(true);
   };
 
   return (
-    <div className="grid min-h-full w-full place-items-center p-4">
-      <div className="w-full text-center">
-        <h2 className="text-3xl font-bold">Recuperá tu acceso</h2>
-        <p className="text-secondarytext">
+    <div className="flex flex-col gap-8 w-full my-auto">
+      <Logo />
+
+      <div className="w-full text-center space-y-2">
+        <h2 className="text-3xl font-extrabold text-white tracking-tight">
+          Recuperá tu acceso
+        </h2>
+        <p className="text-sm text-gray-400 max-w-xs mx-auto">
           Te mandamos un enlace para crear una contraseña nueva.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="flex items-center gap-3 rounded-full border border-gray-200 bg-white px-5 py-4">
+        <div className="flex items-center gap-3 rounded-full border border-neutral-800 bg-neutral-900/80 px-5 py-4">
           <span className="text-gray-400">
             <MailIcon />
           </span>
@@ -248,20 +269,20 @@ const ForgotPasswordView = ({ onBack }: { onBack: () => void }) => {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+            className="w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-500"
           />
         </div>
 
         <button
           type="submit"
-          className="w-full rounded-full bg-yellowbrand py-4 font-semibold text-black"
+          className="w-full rounded-full bg-[#e2f026] py-4 font-bold text-black hover:opacity-90 transition"
         >
           Enviar enlace
         </button>
       </form>
 
       {sent && (
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-gray-400">
           Si el correo existe en nuestro sistema, vas a recibir un enlace en
           unos minutos.
         </p>
@@ -270,7 +291,7 @@ const ForgotPasswordView = ({ onBack }: { onBack: () => void }) => {
       <button
         type="button"
         onClick={onBack}
-        className="text-center text-sm text-gray-500"
+        className="text-center text-sm text-gray-400 hover:text-white transition"
       >
         Volver a ingresar
       </button>
@@ -280,32 +301,27 @@ const ForgotPasswordView = ({ onBack }: { onBack: () => void }) => {
 
 // MARK: LOADING VIEW
 const LoadingView = () => (
-  <div className="bg-black grid place-items-center h-full w-full">
-    <div>
-      <div className="flex items-center justify-center gap-2">
-        <Image src={logo_vector} alt="CondoTrack logo" width={80} height={32} />
-        <h1 className="text-4xl font-extrabold tracking-tight text-white">
-          Condo<span className="text-yellowbrand">Track</span>
-        </h1>
-      </div>
-
-      {/* Contenedor de la barra (fondo tenue) */}
-      <div className="mt-10 mx-auto w-6/12 h-1 bg-white/10 overflow-hidden relative rounded-full">
-        {/* Línea amarilla animada */}
-        <div className="h-full bg-yellowbrand w-1/2 absolute rounded-full animate-loading-bar" />
-      </div>
+  <div className="flex flex-col items-center justify-center my-auto w-full">
+    <div className="flex items-center justify-center gap-2">
+      <Image src={logo_vector} alt="CondoTrack logo" width={80} height={32} />
+      <h1 className="text-4xl font-extrabold tracking-tight text-white">
+        Condo<span className="text-[#e2f026]">Track</span>
+      </h1>
     </div>
 
-    {/* Animación CSS inyectada */}
+    <div className="mt-10 w-6/12 h-1 bg-white/10 overflow-hidden relative rounded-full">
+      <div className="h-full bg-[#e2f026] w-1/2 absolute rounded-full animate-loading-bar" />
+    </div>
+
     <style>{`
-        @keyframes bounce-x {
-          0%, 100% { left: 0; }
-          50% { left: 50%; }
-        }
-        .animate-loading-bar {
-          animation: bounce-x 1.4s ease-in-out infinite;
-        }
-      `}</style>
+      @keyframes bounce-x {
+        0%, 100% { left: 0; }
+        50% { left: 50%; }
+      }
+      .animate-loading-bar {
+        animation: bounce-x 1.4s ease-in-out infinite;
+      }
+    `}</style>
   </div>
 );
 
@@ -324,9 +340,12 @@ export const LoginForm = () => {
   };
 
   return (
-    <div className="flex h-full w-full flex-col gap-6">
-      {/* <Logo /> */}
-      {views[view]}
+    <div className="max-w-sm w-full mx-auto p-4">
+      <div>
+        <div className="relative z-10 flex h-full w-full flex-col">
+          {views[view]}
+        </div>
+      </div>
     </div>
   );
 };

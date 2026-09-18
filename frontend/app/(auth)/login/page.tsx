@@ -1,6 +1,6 @@
 'use client';
 
-import { SlideCardLogin } from '@/app/components/SlideCardLogin';
+import { OnboardingCard } from '@/app/components/OnboardingCard';
 import { LoginForm } from '@/app/components/LoginForm';
 import { useState } from 'react';
 
@@ -12,7 +12,7 @@ export default function LoginPage() {
       {isLogged ? (
         <LoginForm></LoginForm>
       ) : (
-        <SlideCardLogin sendIsLogged={() => setIsLogged(true)} />
+        <OnboardingCard sendIsLogged={() => setIsLogged(true)} />
       )}
     </main>
   );

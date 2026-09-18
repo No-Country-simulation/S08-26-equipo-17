@@ -11,7 +11,7 @@
 }
 
 .dark {
-  --background: #111827;
+  --background: rgb(30, 27, 27);
   --foreground: #f3f4f6;
   --card: #1f2937;
   --yellowbrand: #facc15;
