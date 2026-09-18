@@ -8,7 +8,7 @@ export default function LoginPage() {
   const [isLogged, setIsLogged] = useState(false);
 
   return (
-    <main className="flex flex-col items-center justify-center w-[390] h-[844]">
+    <main className="h-full w-full grid place-items-center">
       {isLogged ? (
         <LoginForm></LoginForm>
       ) : (

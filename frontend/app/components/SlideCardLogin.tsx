@@ -63,7 +63,7 @@ export function SlideCardLogin({ sendIsLogged }: SlideCardLoginProps) {
   };
 
   return (
-    <div className="w-full max-w-sm p-4">
+    <div className="max-w-sm p-4">
       {/* Tarjeta principal con bordes redondeados globales y de corte (overflow-hidden) */}
       <div
         onTouchStart={handleTouchStart}
@@ -138,7 +138,7 @@ export function SlideCardLogin({ sendIsLogged }: SlideCardLoginProps) {
           </div>
 
           {/* Botón de acción */}
-          <div className="w-full pt-1">
+          <div className="flex w-full justify-center pt-1">
             <NativeSwipeButton onSuccess={sendIsLogged} text="Empezar" />
           </div>
         </div>

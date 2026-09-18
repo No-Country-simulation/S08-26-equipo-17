@@ -53,6 +53,7 @@ const MailIcon = () => (
   </svg>
 );
 
+// MARK: ICONS
 const LockIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -103,6 +104,7 @@ const EyeOffIcon = () => (
 );
 type View = 'login' | 'forgot-password' | 'loading';
 
+// MARK: Login
 const Login = ({
   onForgotPassword,
   handleSubmit,
@@ -113,7 +115,7 @@ const Login = ({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="grid p-5 gap-10">
+    <div className="grid min-h-full w-full p-5 gap-10">
       <div className="w-full text-center">
         <h2 className="text-3xl font-bold">Ingresá a CondoTrack</h2>
         <p className="text-secondarytext">
@@ -214,6 +216,7 @@ const Login = ({
   );
 };
 
+// MARK: FORGOT PASS
 const ForgotPasswordView = ({ onBack }: { onBack: () => void }) => {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
@@ -225,7 +228,7 @@ const ForgotPasswordView = ({ onBack }: { onBack: () => void }) => {
   };
 
   return (
-    <div className="w-[390px] h-[844px] grid place-items-center p-4">
+    <div className="grid min-h-full w-full place-items-center p-4">
       <div className="w-full text-center">
         <h2 className="text-3xl font-bold">Recuperá tu acceso</h2>
         <p className="text-secondarytext">
@@ -275,8 +278,9 @@ const ForgotPasswordView = ({ onBack }: { onBack: () => void }) => {
   );
 };
 
+// MARK: LOADING VIEW
 const LoadingView = () => (
-  <div className="bg-black w-[390px] h-[844px] grid place-items-center">
+  <div className="bg-black grid place-items-center h-full w-full">
     <div>
       <div className="flex items-center justify-center gap-2">
         <Image src={logo_vector} alt="CondoTrack logo" width={80} height={32} />
@@ -320,7 +324,7 @@ export const LoginForm = () => {
   };
 
   return (
-    <div className="flex w-full flex-col gap-6 h-full">
+    <div className="flex h-full w-full flex-col gap-6">
       {/* <Logo /> */}
       {views[view]}
     </div>

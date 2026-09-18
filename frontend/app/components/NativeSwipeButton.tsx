@@ -87,7 +87,7 @@ export const NativeSwipeButton: React.FC<SwipeButtonProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative flex items-center justify-between w-80 h-16 bg-[#18181b] rounded-full p-1.5 overflow-hidden select-none shadow-lg"
+      className="relative flex items-center justify-between w-full max-w-[320px] h-16 bg-[#18181b] rounded-full p-1.5 overflow-hidden select-none shadow-lg"
     >
       {/* Fondo amarillo que se expande */}
       <div
