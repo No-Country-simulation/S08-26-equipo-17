@@ -1,0 +1,69 @@
+"use client";
+import { useState } from "react";
+import { Icon } from "../ui/Icon";
+import { TopBar } from "../ui/TopBar";
+import { Chips } from "../ui/Chips";
+import { Vacio } from "../ui/Vacio";
+import { FinLista } from "../ui/FinLista";
+import { AVISOS, type Vista } from "@/lib/data";
+import { avisosExpensa } from "@/lib/expensas";
+import { useApp } from "@/lib/estado";
+
+type Filtro = "todas" | "sinleer" | "archivada";
+const FILTROS = [
+  { id: "todas" as const, rotulo: "Todas" },
+  { id: "sinleer" as const, rotulo: "No leídas" },
+  { id: "archivada" as const, rotulo: "Archivadas" },
+];
+
+export function R03({ ir }: { ir: (v: Vista, ref?: string) => void }) {
+  const { estado, hacer } = useApp();
+  const [f, setF] = useState<Filtro>("todas");
+
+  /* Marcar todo como leído cambia el estado de verdad; si no, el botón es
+     un adorno y el contador de Más nunca baja.
+     Los avisos de expensa se arman con la fecha de vencimiento real. */
+  const avisos = [...avisosExpensa(), ...AVISOS].map((a) =>
+    estado.avisosLeidos && a.estado === "sinleer" ? { ...a, estado: "leida" as const } : a
+  );
+  const lista = avisos.filter((a) =>
+    f === "todas" ? a.estado !== "archivada" : a.estado === f);
+  const sinLeer = avisos.filter((a) => a.estado === "sinleer").length;
+
+  return (
+    <div className="vista" id="r03">
+      <TopBar volverA="mas" ir={ir} />
+      <div className="tit"><h1>Notificaciones</h1><p>Todo lo que pasó en tu unidad.</p></div>
+      <Chips etiqueta="Filtro de notificaciones" opciones={FILTROS} valor={f} onCambio={setF} />
+
+      {lista.length === 0 ? (
+        <Vacio icono="campana" titulo="Nada por acá"
+          texto="Cuando llegue un paquete, se confirme una reserva o avance un reclamo, te avisamos en esta pantalla." />
+      ) : (
+        <>
+          <div className="dia">{f === "archivada" ? "Archivadas" : "Recientes"}</div>
+          <div className="noti">
+            {lista.map((a) => (
+              <button key={a.id} type="button" onClick={() => a.va && ir(a.va)}>
+                <span className={"ic" + (a.estado === "sinleer" ? " am" : "")}>
+                  <Icon n={a.icono} s={19} w={a.icono === "check" ? 2.2 : 1.8} />
+                </span>
+                <span className="d">
+                  <span className="h"><b>{a.titulo}</b><time>{a.cuando}</time></span>
+                  <span className="desc">{a.desc}</span>
+                  {a.estado === "sinleer" && <span className="sinleer"><i />Sin leer</span>}
+                </span>
+              </button>
+            ))}
+          </div>
+          {sinLeer > 0 && (
+            <button className="marcar" type="button" onClick={() => hacer({ t: "avisos/leer" })}>
+              Marcar todo como leído
+            </button>
+          )}
+          <FinLista texto="No hay más notificaciones" />
+        </>
+      )}
+    </div>
+  );
+}
