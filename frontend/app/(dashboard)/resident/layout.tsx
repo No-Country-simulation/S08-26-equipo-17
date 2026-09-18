@@ -1,0 +1,15 @@
+import { Navbar } from '@/app/components/Navbar';
+
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="h-full w-full">
+      {children}
+      <div className="absolute inset-0 bg-linear-to-b from-black/60 via-transparent to-[#1e201f] pointer-events-none" />
+      <Navbar />
+    </div>
+  );
+}
