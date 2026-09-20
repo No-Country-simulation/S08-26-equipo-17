@@ -111,7 +111,7 @@ export const Navbar = () => {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 pb-4">
-      <div className="relative flex w-full max-w-lg items-center justify-between rounded-4xl bg-black/60 px-6 pb-3 pt-5 shadow-xl backdrop-blur-md">
+      <div className="relative flex w-full max-w-lg items-center justify-between rounded-4xl bg-[#131815] px-6 pb-3 pt-5 shadow-xl backdrop-blur-md">
         {leftItems.map(({ href, label, Icon }) => {
           const active = pathname === href;
           return (
@@ -141,7 +141,7 @@ export const Navbar = () => {
           className="absolute left-1/2 top-0 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1"
         >
           <span
-            className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-yellowbrand text-black shadow-[0_0_20px_4px_rgba(226,240,38,0.5)] transition-transform ${
+            className={`flex h-12 w-17 items-center justify-center rounded-2xl bg-yellowbrand text-black shadow-[0_0_20px_4px_rgba(226,240,38,0.5)] transition-transform ${
               isScanActive ? 'scale-105' : ''
             }`}
           >

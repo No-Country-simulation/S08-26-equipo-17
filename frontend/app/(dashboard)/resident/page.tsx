@@ -1,7 +1,13 @@
-import React from 'react';
+'use client';
+
+import { Hub } from '@/app/components/Hub';
 
 const page = () => {
-  return <div>hello</div>;
+  return (
+    <div>
+      <Hub />
+    </div>
+  );
 };
 
 export default page;
