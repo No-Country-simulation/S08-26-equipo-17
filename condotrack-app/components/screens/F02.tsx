@@ -21,7 +21,6 @@ export function F02({ ir }: { ir: (v: Vista, ref?: string) => void }) {
           titulo="Reclamo creado"
           principal={hecho}
           secundario="Administración lo ve ahora en su panel"
-          registro="Cada cambio de estado te va a llegar como aviso y queda en el historial del reclamo."
           accion="Seguir el reclamo"
           onAccion={() => ir("r09")}
           alterna="Volver a Más"
@@ -34,10 +33,7 @@ export function F02({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   return (
     <div className="vista" id="f02">
       <TopBar volverA="r09" ir={ir} />
-      <div className="tit">
-        <h1>Hacer un reclamo</h1>
-        <p>Contá qué pasa y dónde. Lo vas a poder seguir.</p>
-      </div>
+      <div className="tit"><h1>Hacer un reclamo</h1></div>
 
       <PanelReclamo onListo={setHecho} onCancelar={() => ir("r09")} />
     </div>

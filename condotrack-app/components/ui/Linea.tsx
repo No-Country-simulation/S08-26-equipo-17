@@ -16,7 +16,14 @@ export type Hito = {
   autor: string;
   rol: string;
   destacado?: boolean;
+  /** Cómo se sabe que pasó (D-17, preparado para cuando exista el dato):
+   *  registrado lo capturó un sistema, declarado lo afirma una persona,
+   *  pendiente todavía no pasó. Cambia la forma del nodo y lleva texto:
+   *  nunca sólo el color. Si no viene, es registrado. */
+  certeza?: "registrado" | "declarado" | "pendiente";
 };
+
+const ROTULO_CERTEZA = { registrado: "", declarado: "Declarado", pendiente: "Pendiente" };
 
 export function Linea({
   hitos, relativo = false, soloLaHora = false,
@@ -28,26 +35,33 @@ export function Linea({
   soloLaHora?: boolean;
 }) {
   return (
-    <ol className="linea-t">
-      {hitos.map((h) => (
-        <li key={h.id} className={h.destacado ? "hito on" : "hito"}>
-          <span className="marca" aria-hidden="true">
-            <Icon n={h.icono} s={15} w={1.9} />
-          </span>
-          <div className="c">
-            <div className="arr">
-              <b>{h.titulo}</b>
-              <time dateTime={h.cuando}>
-                {relativo ? hace(h.cuando) : soloLaHora ? soloHora(h.cuando) : fechaHora(h.cuando)}
-              </time>
-            </div>
-            {h.detalle && <p>{h.detalle}</p>}
-            <span className="quien">
-              {h.autor} · {h.rol}
+    /* Con la hora sola (lista agrupada por día), la hora va en su propia
+       columna a la izquierda de la línea: es lo primero que se escanea en
+       un historial, antes que el evento (ronda visual 01, §12). */
+    <ol className={"linea-t" + (soloLaHora ? " con-hora" : "")}>
+      {hitos.map((h) => {
+        const certeza = h.certeza ?? "registrado";
+        const hora = relativo ? hace(h.cuando) : soloLaHora ? soloHora(h.cuando) : fechaHora(h.cuando);
+        return (
+          <li key={h.id} className={"hito " + certeza + (h.destacado ? " on" : "")}>
+            {soloLaHora && <time className="hora-col" dateTime={h.cuando}>{hora}</time>}
+            <span className="marca" aria-hidden="true">
+              <Icon n={h.icono} s={14} />
             </span>
-          </div>
-        </li>
-      ))}
+            <div className="c">
+              <div className="arr">
+                <b>{h.titulo}</b>
+                {!soloLaHora && <time dateTime={h.cuando}>{hora}</time>}
+              </div>
+              {h.detalle && <p>{h.detalle}</p>}
+              <span className="quien">
+                {ROTULO_CERTEZA[certeza] && <em className="certeza">{ROTULO_CERTEZA[certeza]} · </em>}
+                {h.autor} · {h.rol}
+              </span>
+            </div>
+          </li>
+        );
+      })}
     </ol>
   );
 }

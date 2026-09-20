@@ -2,6 +2,7 @@
 import {
   useCallback, useEffect, useRef, useState, type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 
 /** Hoja: panel que sube desde abajo.
  *
@@ -38,22 +39,45 @@ export function Hoja({
   alto?: "auto" | "alta";
 }) {
   const caja = useRef<HTMLDivElement | null>(null);
+  /* La hoja se dibuja en el marco de la pantalla, no adentro de la vista.
+     Si cuelga de la vista —que es la que scrollea— el velo se posiciona
+     contra el contenido scrolleado: con la pantalla bajada, la hoja
+     aparecía a mitad de camino y el velo tapaba media pantalla. */
+  const [marco, setMarco] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    setMarco((document.querySelector(".device") as HTMLElement) ?? document.body);
+  }, []);
   const [cerrando, setCerrando] = useState(false);
   const [arrastre, setArrastre] = useState(0);
   const inicio = useRef<number | null>(null);
   const relojes = useRef<number[]>([]);
 
+  /* cerrar y confirmarYCerrar tienen que ser ESTABLES (lock V02, A2).
+     Antes dependían de `cerrando` y de los callbacks del padre: al empezar
+     a cerrar cambiaban de identidad, el efecto del foco se re-ejecutaba y
+     su limpieza borraba el temporizador que desmonta la hoja. Resultado:
+     la hoja se veía cerrada pero el velo invisible quedaba encima de la
+     pantalla comiéndose los toques. "Se traba" era esto. Los callbacks se
+     leen de refs y el estado de cierre también. */
+  const alCancelar = useRef(onCancelar);
+  alCancelar.current = onCancelar;
+  const alConfirmar = useRef(onConfirmar);
+  alConfirmar.current = onConfirmar;
+  const yaCerrando = useRef(false);
+
   const cerrar = useCallback(() => {
-    if (cerrando) return;
+    if (yaCerrando.current) return;
+    yaCerrando.current = true;
     setCerrando(true);
-    relojes.current.push(window.setTimeout(onCancelar, SALIDA));
-  }, [cerrando, onCancelar]);
+    relojes.current.push(window.setTimeout(() => alCancelar.current(), SALIDA));
+  }, []);
 
   const confirmarYCerrar = useCallback(() => {
-    if (cerrando || !onConfirmar) return;
+    if (yaCerrando.current || !alConfirmar.current) return;
+    yaCerrando.current = true;
     setCerrando(true);
-    relojes.current.push(window.setTimeout(onConfirmar, SALIDA));
-  }, [cerrando, onConfirmar]);
+    relojes.current.push(window.setTimeout(() => alConfirmar.current?.(), SALIDA));
+  }, []);
 
   /* Bloqueo del scroll del fondo. El contenedor que scrollea no es el body
      sino la vista o el cuerpo del escritorio, así que se busca el que
@@ -95,22 +119,39 @@ export function Hoja({
 
   /* Arrastre hacia abajo. Sólo desde el agarre y la cabecera: si tomara
      toda la hoja, no se podría scrollear su contenido. */
+  /* La captura del puntero se toma recién cuando el gesto baja más de
+     8 px. Si se tomaba al apoyar el dedo, el click posterior quedaba
+     redirigido a la zona de arrastre y la X de cerrar —que vive adentro—
+     nunca se enteraba: la hoja no cerraba con la X. Mismo bug que BUG-01
+     en el calendario, con la misma solución. */
+  const capturado = useRef(false);
   function tomar(e: React.PointerEvent) {
     inicio.current = e.clientY;
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    capturado.current = false;
   }
   function mover(e: React.PointerEvent) {
     if (inicio.current == null) return;
-    setArrastre(Math.max(0, e.clientY - inicio.current));
+    const dy = e.clientY - inicio.current;
+    if (!capturado.current) {
+      if (dy < 8) return;
+      capturado.current = true;
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    }
+    setArrastre(Math.max(0, dy));
   }
-  function soltar() {
+  function soltar(e: React.PointerEvent) {
     if (inicio.current == null) return;
     inicio.current = null;
+    const el = e.currentTarget as HTMLElement;
+    if (capturado.current && el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    capturado.current = false;
     if (arrastre >= UMBRAL) { setArrastre(0); cerrar(); }
     else setArrastre(0);
   }
 
-  return (
+  if (!marco) return null;
+
+  return createPortal(
     <div className={"velo" + (cerrando ? " sale" : "")}
       onClick={(e) => { if (e.target === e.currentTarget) cerrar(); }}>
       <div
@@ -137,15 +178,16 @@ export function Hoja({
         {!sinAcciones && (
           <div className="hoja-acciones">
             {confirmar && onConfirmar && (
-              <button className={peligro ? "peligro" : "entrar"} type="button"
+              <button className={"entrar" + (peligro ? " peligro" : "")} type="button"
                 onClick={confirmarYCerrar}>
                 {confirmar}
               </button>
             )}
-            <button className="volver-txt" type="button" onClick={cerrar}>{cerrarRotulo}</button>
+            <button className="btn-ter" type="button" onClick={cerrar}>{cerrarRotulo}</button>
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    marco
   );
 }

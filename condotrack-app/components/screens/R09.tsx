@@ -9,7 +9,7 @@ import { PanelReclamo } from "../paneles/PanelReclamo";
 import { Aviso } from "../ui/Estados";
 import { FinLista } from "../ui/FinLista";
 import type { Vista } from "@/lib/data";
-import { ROTULO_RECLAMO, rotuloCategoria, type EstadoReclamo } from "@/lib/gestiones";
+import { PASOS_RECLAMO, ROTULO_RECLAMO, rotuloCategoria, type EstadoReclamo } from "@/lib/gestiones";
 import { hace } from "@/lib/formato";
 import { useApp } from "@/lib/estado";
 
@@ -34,7 +34,12 @@ const FILTROS: { id: Filtro; rotulo: string }[] = [
 
 export function R09({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   const { estado } = useApp();
-  const [f, setF] = useState<Filtro>("abiertos");
+  /* Entrar a una pestaña vacía teniendo reclamos en otra hacía ver la
+     pantalla como si no hubiera nada: abre en la primera con contenido. */
+  const [f, setF] = useState<Filtro>(() => {
+    const con = (x: Filtro) => estado.reclamos.some((r) => ESTADOS_DE[x].includes(r.estado));
+    return con("abiertos") ? "abiertos" : con("seguimiento") ? "seguimiento" : "abiertos";
+  });
   const [abre, setAbre] = useState(false);
   const [nuevo, setNuevo] = useState<string | null>(null);
 
@@ -45,18 +50,17 @@ export function R09({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   return (
     <div className="vista" id="r09">
       <TopBar volverA="mas" ir={ir} />
-      <div className="tit"><h1>Reclamos</h1><p>Lo que pediste y en qué quedó.</p></div>
+      <div className="tit"><h1>Reclamos</h1></div>
 
       {/* Hacer un reclamo sube desde abajo: es una tarea corta que no
           justifica salir de la lista donde después lo vas a seguir. */}
       <button className="entrar" type="button" onClick={() => setAbre(true)} style={{ marginTop: 18 }}>
-        <Icon n="mas" s={17} w={2.4} />Hacer un reclamo
+        <Icon n="mas" s={20} w={2.4} />Hacer un reclamo
       </button>
 
       {nuevo && (
         <Aviso icono="check">
-          Listo: el reclamo {nuevo} quedó creado y administración ya lo ve en su
-          panel. Te avisamos cada vez que cambie de estado.
+          Reclamo {nuevo} creado.
         </Aviso>
       )}
 
@@ -66,36 +70,43 @@ export function R09({ ir }: { ir: (v: Vista, ref?: string) => void }) {
 
       {lista.length === 0 ? (
         <Vacio icono="chat"
-          titulo={f === "abiertos" ? "No hay reclamos sin tomar"
-            : f === "seguimiento" ? "No hay nada en seguimiento"
-            : "Todavía no cerraste ningún reclamo"}
-          texto={f === "abiertos"
-            ? "Cuando haya algo roto o algo que no funciona, contalo acá y lo vas a poder seguir."
-            : f === "seguimiento"
-            ? "Acá vas a ver los reclamos que administración ya tomó y está resolviendo."
-            : "Los reclamos resueltos quedan acá, con todo lo que pasó desde que los hiciste."}
-          accion={f === "cerrados" ? undefined : "Hacer un reclamo"}
-          onAccion={() => setAbre(true)} />
+          titulo={f === "abiertos" ? "Sin reclamos abiertos"
+            : f === "seguimiento" ? "Nada en seguimiento"
+            : "Sin reclamos cerrados"} />
       ) : (
         <>
           {lista.map((r) => {
             const ultima = r.acciones[r.acciones.length - 1];
             const cerrado = r.estado === "resuelto" || r.estado === "cerrado";
             return (
-              <button className="reclamo-f" type="button" key={r.id} onClick={() => ir("g10", r.id)}>
+              /* El estado no depende de la pastilla: lleva un filo del color
+                 del estado, el ícono, y el avance en cuatro pasos con su
+                 texto. Se lee de lejos y se lee sin color. */
+              <button className={"reclamo-f est-" + (cerrado ? "ok" : r.estado === "nuevo" ? "nuevo" : "curso")}
+                type="button" key={r.id} onClick={() => ir("g10", r.id)}>
                 <div className="arr">
                   <span className="cod">{r.codigo}</span>
-                  <span className={"pastilla" + (cerrado ? " gris" : "")}>
-                    <Icon n={cerrado ? "check" : "reloj"} s={12} w={2.2} />
+                  <span className="estado-r">
+                    <Icon n={cerrado ? "check" : r.estado === "nuevo" ? "reloj" : "herramienta"} s={13} />
                     {ROTULO_RECLAMO[r.estado]}
                   </span>
                 </div>
                 <h3>{rotuloCategoria(r.categoria)}</h3>
-                <p className="ub"><Icon n="pin" s={15} />{r.ubicacion}</p>
+                {(() => {
+                  const i = Math.max(0, PASOS_RECLAMO.indexOf(r.estado === "cerrado" ? "resuelto" : r.estado));
+                  return (
+                    <span className="avance-mini" aria-label={"Paso " + (i + 1) + " de " + PASOS_RECLAMO.length}>
+                      {PASOS_RECLAMO.map((p, n) => (
+                        <i key={p} className={n < i ? "hecho" : n === i ? "ahora" : ""} />
+                      ))}
+                    </span>
+                  );
+                })()}
+                <p className="ub"><Icon n="pin" s={16} />{r.ubicacion}</p>
                 <p className="ult">{ultima.texto}</p>
                 <span className="pie">
                   {ultima.autor} · {hace(ultima.cuando)}
-                  <span className="flech"><Icon n="chevron" s={15} w={2.2} /></span>
+                  <span className="flech"><Icon n="chevron" s={16} w={2.2} /></span>
                 </span>
               </button>
             );

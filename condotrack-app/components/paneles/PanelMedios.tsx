@@ -1,62 +1,71 @@
 "use client";
 import { Icon } from "../ui/Icon";
 import { Descarga, Copiar } from "../ui/Descarga";
-import { Aviso } from "../ui/Estados";
-import { MEDIOS_PAGO, ROTULO_MEDIO, archivoMedios } from "@/lib/expensas";
+import { MEDIOS_PAGO, archivoMedios } from "@/lib/expensas";
+import { RESIDENTE } from "@/lib/data";
 
-/** El contenido de medios de pago, sin pantalla alrededor.
- *  Lo usan la hoja que sube desde la expensa y la vista R22, que sigue
- *  existiendo para el enlace directo. */
+/** Cómo pagar, sin pantalla alrededor (ronda visual 01, §5.5).
+ *
+ *  Antes eran tres bloques iguales con titular, CBU, alias, banco y nota
+ *  cada uno, más un aviso largo: la misma densidad para el medio que usa
+ *  casi todo el mundo y para los otros dos. Ahora la transferencia manda
+ *  —el alias es lo que se copia, el CBU queda al lado— y débito y pago
+ *  presencial son una línea cada uno.
+ *
+ *  Lo usan la hoja "Pagar" de la expensa y la vista R22 del enlace
+ *  directo. */
 export function PanelMedios() {
+  const trans = MEDIOS_PAGO.find((m) => m.tipo === "transferencia");
+  const debito = MEDIOS_PAGO.find((m) => m.tipo === "debito");
+  const presencial = MEDIOS_PAGO.find((m) => m.tipo === "presencial");
+
   return (
-    <>
-      {MEDIOS_PAGO.map((m) => (
-        <section className="medio" key={m.tipo}>
-          <div className="arr">
-            <span className="ic">
-              <Icon n={m.tipo === "presencial" ? "persona" : m.tipo === "debito" ? "reloj" : "credencial"}
-                s={19} w={1.8} />
-            </span>
-            <h2>{ROTULO_MEDIO[m.tipo]}</h2>
-          </div>
-
-          <div className="campos-copia">
-            <div className="cp">
-              <span className="k">Titular</span>
-              <span className="v">{m.titular}</span>
+    <div className="medios">
+      {trans && (
+        <section className="medio-principal">
+          <span className="k">Transferencia</span>
+          {trans.alias && (
+            <div className="copia grande">
+              <span className="v mono">{trans.alias}</span>
+              <Copiar valor={trans.alias} etiqueta="el alias" />
             </div>
-            {m.cbu && (
-              <div className="cp">
-                <span className="k">CBU</span>
-                <span className="v mono">{m.cbu}</span>
-                <Copiar valor={m.cbu} etiqueta="el CBU" />
-              </div>
-            )}
-            {m.alias && (
-              <div className="cp">
-                <span className="k">Alias</span>
-                <span className="v mono">{m.alias}</span>
-                <Copiar valor={m.alias} etiqueta="el alias" />
-              </div>
-            )}
-            {m.banco && (
-              <div className="cp">
-                <span className="k">Banco</span>
-                <span className="v">{m.banco}</span>
-              </div>
-            )}
-          </div>
-
-          {m.nota && <p className="nota-medio">{m.nota}</p>}
+          )}
+          {trans.cbu && (
+            <div className="copia">
+              <span className="k">CBU</span>
+              <span className="v mono">{trans.cbu}</span>
+              <Copiar valor={trans.cbu} etiqueta="el CBU" />
+            </div>
+          )}
+          <p className="meta">
+            {trans.titular}{trans.banco ? " · " + trans.banco.split(" · ")[0] : ""}
+          </p>
+          <p className="meta fuerte">Referencia: <b>{RESIDENTE.unidad}</b></p>
         </section>
-      ))}
+      )}
 
-      <Aviso icono="info">
-        Pagar por transferencia no avisa solo: informá el pago desde la app para que
-        administración lo concilie y la expensa deje de figurar pendiente.
-      </Aviso>
+      <div className="medios-otros">
+        {debito && (
+          <div className="otro">
+            <span className="ic"><Icon n="reloj" s={20} /></span>
+            <span className="d">
+              <b>Débito automático</b>
+              <i>Desde tu home banking · día 20</i>
+            </span>
+          </div>
+        )}
+        {presencial && (
+          <div className="otro">
+            <span className="ic"><Icon n="persona" s={20} /></span>
+            <span className="d">
+              <b>En recepción</b>
+              <i>Efectivo · lun a vie · 09:00–18:00</i>
+            </span>
+          </div>
+        )}
+      </div>
 
-      <Descarga rotulo="Descargar los datos en PDF" archivo={archivoMedios()} peso="62 KB" />
-    </>
+      <Descarga chico rotulo="PDF" archivo={archivoMedios()} />
+    </div>
   );
 }

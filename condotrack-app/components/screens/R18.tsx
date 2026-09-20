@@ -30,7 +30,10 @@ function Fila({ r, onCancelar }: { r: Reserva; onCancelar?: () => void }) {
   const porRecurso = espacio?.tipoReserva === "recurso";
   const mia = r.unidad === RESIDENTE.unidad;
   return (
-    <div className={"reserva" + (cerrada ? " fin" : "")}>
+    /* Ticket: arriba el lugar y cuándo, sobre la foto del espacio; abajo,
+       separado por el corte, el estado y la única acción que queda. */
+    <div className={"reserva ticket" + (cerrada ? " fin" : "")}>
+      {espacio?.img && <img src={espacio.img} alt="" aria-hidden="true" />}
       <div className="bo">
         <div>
           <h3>{espacio?.nombre}</h3>
@@ -44,16 +47,19 @@ function Fila({ r, onCancelar }: { r: Reserva; onCancelar?: () => void }) {
             {mia ? "Tu unidad" : `Unidad ${r.unidad}`}
           </div>
         </div>
-        <span className={"pastilla" + (cerrada ? " gris" : "")}>
+      </div>
+      <div className="corte" aria-hidden="true" />
+      <div className="tk-pie">
+        <span className={"tk-estado" + (cerrada ? " gris" : "")}>
           {r.estado === "confirmada" ? "Confirmada"
             : r.estado === "cancelada" ? "Cancelada" : "Finalizada"}
         </span>
+        {onCancelar && (
+          <button className="btn-ter peligro" type="button" onClick={onCancelar}>
+            Cancelar la reserva
+          </button>
+        )}
       </div>
-      {onCancelar && (
-        <button className="cancelar-r" type="button" onClick={onCancelar}>
-          Cancelar la reserva
-        </button>
-      )}
     </div>
   );
 }
@@ -71,10 +77,10 @@ export function R18({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   return (
     <div className="vista" id="r18">
       <TopBar volverA="r05" ir={ir} />
-      <div className="tit"><h1>Mis reservas</h1><p>Tus espacios y los del edificio.</p></div>
+      <div className="tit"><h1>Mis reservas</h1></div>
 
       <button className="entrar" type="button" onClick={() => ir("r05")} style={{ marginTop: 18 }}>
-        <Icon n="mas" s={17} w={2.4} />Reservar un espacio
+        <Icon n="mas" s={20} w={2.4} />Reservar un espacio
       </button>
 
       <Chips etiqueta="Filtro de reservas" opciones={FILTROS} valor={f} onCambio={setF} />
@@ -86,15 +92,9 @@ export function R18({ ir }: { ir: (v: Vista, ref?: string) => void }) {
         <span>{lista.length}</span>
       </div>
 
-      {f === "edificio" && (
-        <p className="bajada">Todas las unidades. Sirve para ver cuánto se usa cada espacio.</p>
-      )}
 
       {lista.length === 0 ? (
-        <Vacio icono="calendario" titulo="No hay reservas acá"
-          texto={f === "proximas"
-            ? "Elegí un espacio y una franja; la confirmación es inmediata."
-            : "Todavía no hay reservas terminadas para mostrar."}
+        <Vacio icono="calendario" titulo="Sin reservas"
           accion={f === "proximas" ? "Reservar espacio" : undefined}
           onAccion={() => ir("r05")} />
       ) : (
@@ -113,7 +113,7 @@ export function R18({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       {cancelar && (
         <Hoja
           titulo="Cancelar la reserva"
-          texto={`${espacioDe(cancelar.recursoId)?.nombre} · ${cuandoLargo(cancelar)}. El turno vuelve a quedar libre para el resto del edificio y la cancelación queda registrada.`}
+          texto={`${espacioDe(cancelar.recursoId)?.nombre} · ${cuandoLargo(cancelar)}.`}
           confirmar="Cancelar la reserva"
           peligro
           onConfirmar={() => {

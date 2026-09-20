@@ -22,7 +22,7 @@ function Pregunta({ p, r }: { p: string; r: string }) {
     <div className={"faq-f" + (abierta ? " on" : "")}>
       <button type="button" aria-expanded={abierta} onClick={() => setAbierta(!abierta)}>
         <span>{p}</span>
-        <span className="chev" aria-hidden="true"><Icon n="chevron" s={15} w={2.2} /></span>
+        <span className="chev" aria-hidden="true"><Icon n="chevron" s={16} w={2.2} /></span>
       </button>
       {abierta && <p>{r}</p>}
     </div>
@@ -37,7 +37,6 @@ export function R19({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       <TopBar volverA="mas" ir={ir} />
       <div className="tit">
         <h1>{f === "faq" ? "Preguntas frecuentes" : "Reglamento"}</h1>
-        <p>Cómo funciona el edificio, en criollo.</p>
       </div>
 
       <Chips etiqueta="Preguntas o reglamento" opciones={FILTROS} valor={f} onCambio={setF} />

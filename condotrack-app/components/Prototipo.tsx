@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Onboarding } from "./Onboarding";
 import { Login } from "./Login";
 import { Recuperar } from "./Recuperar";
@@ -41,7 +41,9 @@ const MARCO: Record<Perfil, { clase: string; medida: string }> = {
      ?perfil=administracion&p=app&v=a05&ref=7D
    Cada vista queda en su propia URL para poder importarla de a una
    (html.to.design y similares capturan una URL, no un estado interno).
-   limpio=1 oculta la barra del escenario para que no entre en la captura. */
+   limpio=1 oculta la barra del escenario para que no entre en la captura.
+   motionforce=1 muestra el movimiento aunque el sistema pida reducirlo:
+   es para la demo, no para el uso. */
 function deLaUrl() {
   if (typeof window === "undefined") return null;
   const q = new URLSearchParams(window.location.search);
@@ -57,6 +59,10 @@ function deLaUrl() {
     perfil: perfil && PERFILES.includes(perfil) ? perfil : null,
     tema: q.get("tema"),
     limpio: q.get("limpio") === "1",
+    /* El prototipo se muestra con movimiento salvo que se pida lo
+       contrario: ?motionreduce=1 vuelve a respetar la preferencia del
+       sistema. motionforce=1 se acepta por compatibilidad. */
+    quieto: q.get("motionreduce") === "1",
   };
 }
 function guardar(k: string, v: string) { try { localStorage.setItem(k, v); } catch { /* modo privado */ } }
@@ -82,6 +88,7 @@ export function Prototipo() {
   useEffect(() => {
     const u = deLaUrl();
     if (u?.limpio) setLimpio(true);
+    if (!u?.quieto) document.documentElement.setAttribute("data-movimiento", "forzado");
     if (u?.tema === "claro" || u?.tema === "oscuro") {
       document.documentElement.setAttribute("data-tema", u.tema);
     }
@@ -89,7 +96,7 @@ export function Prototipo() {
     if (u?.vista) setVista(u.vista);
     if (u?.vistaP) { setVistaP(u.vistaP); if (!u.perfil) setPerfil("recepcion"); }
     if (u?.vistaA) { setVistaA(u.vistaA); if (!u.perfil) setPerfil("administracion"); }
-    if (u?.refe) setRefe(u.refe);
+    if (u?.refe) { setRefe(u.refe); refeParaVolver.current = u.refe; }
     if (u?.pantalla) { setPantalla(u.pantalla); return; }
     if (leer(CLAVE)) setPantalla("login");
   }, []);
@@ -102,20 +109,39 @@ export function Prototipo() {
     setPila((p) => [...p, { v: actual, ref }].slice(-24));
   }, []);
 
+  /* Lo que se guarda en la pila al irse de una pantalla no es siempre el
+     ref con el que se entró (lock V02, A4 y A5):
+     · si la pantalla cambió de contexto adentro —elegiste Cowork en
+       Reservas—, al volver tiene que estar Cowork, no el de la entrada;
+     · si el ref era una orden de un solo uso —"pagar" abre la hoja—, al
+       volver no se tiene que repetir.
+     Cada pantalla lo corrige con reemplazarRef(). Es una ref y no estado a
+     propósito: cambiarlo no re-renderiza ni mueve el scroll. Se asigna en
+     el momento de navegar, antes de que la pantalla nueva monte, así su
+     propio efecto puede pisarlo. */
+  const refeParaVolver = useRef<string | undefined>(undefined);
+  const reemplazarRef = useCallback((r?: string) => { refeParaVolver.current = r; }, []);
+
+  const [direccion, setDireccion] = useState<"adelante" | "atras">("adelante");
   const ir = useCallback((v: Vista, ref?: string) => {
     if (v === vista && ref === refe) return;
-    apilar(vista, refe); setVista(v); setRefe(ref);
+    setDireccion("adelante");
+    apilar(vista, refeParaVolver.current); refeParaVolver.current = ref;
+    setVista(v); setRefe(ref);
   }, [vista, refe, apilar]);
   const irP = useCallback((v: VistaP, ref?: string) => {
     if (v === vistaP && ref === refe) return;
-    apilar(vistaP, refe); setVistaP(v); setRefe(ref);
+    apilar(vistaP, refeParaVolver.current); refeParaVolver.current = ref;
+    setVistaP(v); setRefe(ref);
   }, [vistaP, refe, apilar]);
   const irA = useCallback((v: VistaA, ref?: string) => {
     if (v === vistaA && ref === refe) return;
-    apilar(vistaA, refe); setVistaA(v); setRefe(ref);
+    apilar(vistaA, refeParaVolver.current); refeParaVolver.current = ref;
+    setVistaA(v); setRefe(ref);
   }, [vistaA, refe, apilar]);
 
   const volver = useCallback(() => {
+    setDireccion("atras");
     setPila((p) => {
       const previa = p[p.length - 1];
       if (!previa) return p;
@@ -123,18 +149,21 @@ export function Prototipo() {
       else if (perfil === "recepcion") setVistaP(previa.v as VistaP);
       else setVistaA(previa.v as VistaA);
       setRefe(previa.ref);
+      refeParaVolver.current = previa.ref;
       return p.slice(0, -1);
     });
   }, [perfil]);
 
   const navegacion = useMemo(
-    () => ({ volver, hayVuelta: pila.length > 0 }), [volver, pila.length]);
+    () => ({ volver, hayVuelta: pila.length > 0, reemplazarRef }),
+    [volver, pila.length, reemplazarRef]);
 
   const entrar = useCallback((p: Perfil) => {
     setPerfil(p);
     setPantalla("carga");
     setRefe(undefined);
     setPila([]);
+    refeParaVolver.current = undefined;
     // representa la resolución de sesión y contexto, sin demora inventada
     window.setTimeout(() => {
       if (p === "residente") setVista("r01");
@@ -180,7 +209,7 @@ export function Prototipo() {
           {pantalla === "recuperar" && <Recuperar onVolver={() => setPantalla("login")} />}
           {pantalla === "carga" && <Carga />}
           {pantalla === "app" && perfil === "residente" && (
-            <ShellResidente vista={vista} refe={refe} ir={ir} onSalir={salir} />
+            <ShellResidente vista={vista} refe={refe} ir={ir} onSalir={salir} direccion={direccion} />
           )}
           {pantalla === "app" && perfil === "recepcion" && (
             <ShellRecepcion vista={vistaP} refe={refe} ir={irP} onSalir={salir} />

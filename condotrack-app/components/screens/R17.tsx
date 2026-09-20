@@ -82,7 +82,6 @@ export function R17({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       <TopBar volverA="r02" ir={ir} />
       <div className="tit">
         <h1>Historial de la unidad</h1>
-        <p>Todo lo que pasó en la {RESIDENTE.unidad}, con quién lo hizo.</p>
       </div>
 
       {/* El filtro era una tira de cinco pastillas amarillas peleando con
@@ -95,12 +94,11 @@ export function R17({ ir }: { ir: (v: Vista, ref?: string) => void }) {
           <b>{f === "todo" ? "Todos los movimientos" : rotuloFiltro}</b>
         </span>
         <span className="n">{lista.length}</span>
-        <span className="flech"><Icon n="chevron" s={15} w={2.2} /></span>
+        <span className="flech"><Icon n="chevron" s={16} w={2.2} /></span>
       </button>
 
       {lista.length === 0 ? (
-        <Vacio icono="lista" titulo="No hay movimientos de este tipo"
-          texto="Cambiá el filtro o mirá todo el historial de la unidad." />
+        <Vacio icono="lista" titulo="Sin movimientos" />
       ) : (
         <>
           {grupos.map((g) => (
@@ -116,11 +114,6 @@ export function R17({ ir }: { ir: (v: Vista, ref?: string) => void }) {
         </>
       )}
 
-      <p className="apunte-pie">
-        Cada línea la escribe quien hizo la operación: residente, recepción o
-        administración. Lo que hagas en cualquiera de los tres perfiles aparece
-        acá, con su hora y su responsable.
-      </p>
 
       {abreFiltro && (
         <Hoja titulo="Qué querés ver" onCancelar={() => setAbreFiltro(false)}
@@ -137,7 +130,7 @@ export function R17({ ir }: { ir: (v: Vista, ref?: string) => void }) {
                     <b>{o.rotulo}</b>
                     <i>{cuantos === 1 ? "1 movimiento" : `${cuantos} movimientos`}</i>
                   </span>
-                  {o.id === f && <Icon n="check" s={17} w={2.4} />}
+                  {o.id === f && <Icon n="check" s={16} w={2.4} />}
                 </button>
               );
             })}

@@ -1,9 +1,13 @@
 "use client";
+import { useState } from "react";
 import { Icon } from "../ui/Icon";
-import { TopBar } from "../ui/TopBar";
+import { Hoja } from "../ui/Hoja";
+import { ZonaContexto } from "../ui/ZonaContexto";
 import { FinLista } from "../ui/FinLista";
 import { SubNav } from "../ui/SubNav";
 import { EDIFICIO, RECEPCION, ADMINISTRACION, ESPACIOS, PESTANAS_EDIFICIO, type Vista } from "@/lib/data";
+import { SIN_FOTO, cupoDelDia, diaCon, diaEnPalabras, proximoLibre } from "@/lib/reservas";
+import { useApp } from "@/lib/estado";
 
 /** G15 · Mi edificio.
  *  Antes era R02. R02 pasó a ser Mi unidad, que es lo que dice el mapeo de
@@ -11,99 +15,136 @@ import { EDIFICIO, RECEPCION, ADMINISTRACION, ESPACIOS, PESTANAS_EDIFICIO, type 
  *  patrón genérico de detalle de contexto. Ver 04_MAPEO_IDS_A_PATRONES. */
 
 export function G15({ ir }: { ir: (v: Vista, ref?: string) => void }) {
+  const { estado } = useApp();
+  const hoy = diaCon(0);
   return (
     <div className="vista" id="g15">
-      <TopBar volverA="r01" ir={ir} contexto={EDIFICIO.nombreLargo} />
-      <div className="tit"><h1>Mi edificio</h1><p>Tu contexto y con quién hablar.</p></div>
+      {/* La foto del edificio ya es la zona de arriba: la card con la misma
+          foto que había acá abajo la repetía. */}
+      <ZonaContexto ir={ir} volverA="r01" foto="/img/fachada.jpg"
+        contexto={EDIFICIO.ciudad}
+        titulo={EDIFICIO.nombre}>
+        <SubNav etiqueta="Secciones de Mi edificio" opciones={PESTANAS_EDIFICIO}
+          valor={"g15" as Vista} onCambio={(v) => ir(v)} />
+      </ZonaContexto>
 
-      <SubNav etiqueta="Secciones de Mi edificio" opciones={PESTANAS_EDIFICIO}
-        valor={"g15" as Vista} onCambio={(v) => ir(v)} />
+      {/* Los dos contactos con la misma forma: quién, rol y horario en una
+          línea, y cómo hablarle. Los atajos a reclamos y entregas que tenía
+          cada uno repetían la barra y el home (lock V02). */}
+      <h2 className="sec">Contactos</h2>
+      <Contacto iniciales={ADMINISTRACION.iniciales} nombre={ADMINISTRACION.nombre}
+        rol="Administración" horario="Lun a vie · 10:00–17:00"
+        telefono={ADMINISTRACION.telefono} mail={ADMINISTRACION.mail} />
+      <Contacto iniciales={RECEPCION.iniciales} nombre={RECEPCION.nombre}
+        rol="Recepción" horario={EDIFICIO.horarioRecepcion}
+        telefono={RECEPCION.telefono} extra={RECEPCION.interno} />
 
-      <div className="hero-ed mat-foto">
-        <img src="/img/edificio.jpg" alt="" />
-        <div className="tx">
-          <div className="lb">Edificio</div>
-          <h2>{EDIFICIO.nombre}</h2>
-          <p>{EDIFICIO.ciudad}</p>
-        </div>
-      </div>
-
-      <h2 className="sec">Con quién hablar</h2>
-
-      <div className="contacto">
-        <div className="arr">
-          <span className="av">{ADMINISTRACION.iniciales}</span>
-          <span className="d">
-            <b>{ADMINISTRACION.nombre}</b>
-            <i>Administración · {ADMINISTRACION.estudio}</i>
-          </span>
-        </div>
-        <div className="datos">
-          <p><Icon n="reloj" s={15} />Lun a vie · 10:00–17:00</p>
-          <p><Icon n="sobre" s={15} />{EDIFICIO.mail}</p>
-          <p><Icon n="chat" s={15} />{EDIFICIO.telefono}</p>
-        </div>
-        <div className="acciones-panel">
-          <button className="principal" type="button">
-            <Icon n="sobre" s={16} w={1.9} />Escribir
-          </button>
-          <button className="secundario" type="button" onClick={() => ir("r09")}>
-            Hacer un reclamo
-          </button>
-        </div>
-      </div>
-
-      <div className="contacto">
-        <div className="arr">
-          <span className="av">{RECEPCION.iniciales}</span>
-          <span className="d">
-            <b>{RECEPCION.nombre}</b>
-            <i>Recepción · {RECEPCION.turno}</i>
-          </span>
-        </div>
-        <div className="datos">
-          <p><Icon n="reloj" s={15} />{EDIFICIO.horarioRecepcion}</p>
-          <p><Icon n="pin" s={15} />Hall de entrada</p>
-        </div>
-        <div className="acciones-panel">
-          <button className="principal" type="button">
-            <Icon n="chat" s={16} w={1.9} />Llamar a recepción
-          </button>
-          <button className="secundario" type="button" onClick={() => ir("r08")}>
-            Ver entregas
-          </button>
-        </div>
-      </div>
-
-      <h2 className="sec">Espacios del edificio</h2>
+      {/* Las cards completas de los espacios viven acá (lock V02): la foto
+          lleva al espacio, "Reservar" abre el calendario con ese espacio
+          elegido. En Reservas no se repiten. */}
+      <h2 className="sec">Espacios</h2>
       <div className="dos">
-        {ESPACIOS.map((e) => (
-          <button className="esp mat-foto" type="button" key={e.id} onClick={() => ir("r13", e.id)}>
-            <img src={e.img} alt="" />
-            <span className="sobre">
-              <span className="tx"><b>{e.nombre}</b><i>{e.piso}</i></span>
-            </span>
-          </button>
-        ))}
+        {ESPACIOS.map((e) => {
+          const cupo = cupoDelDia(e, hoy, estado.reservas);
+          const proximo = cupo > 0 ? null : proximoLibre(e, hoy, estado.reservas);
+          const cupoProx = proximo ? cupoDelDia(e, proximo, estado.reservas) : 0;
+          const cuantos = (n: number) => (n === 1 ? "1 horario" : n + " horarios");
+          const dia = proximo ? diaEnPalabras(proximo) : "";
+          const texto = cupo > 0 ? `Hoy · ${cuantos(cupo)}`
+            : proximo ? `${dia.charAt(0).toUpperCase() + dia.slice(1)} · ${cuantos(cupoProx)}` : "Sin horarios";
+          const sinFoto = SIN_FOTO.has(e.id);
+          return (
+            <div className={"esp " + (sinFoto ? "mat-carbon sin-foto" : "mat-foto")} key={e.id}>
+              {!sinFoto && <img src={e.img} alt="" />}
+              {sinFoto && <span className="ic-grande" aria-hidden="true"><Icon n="rayo" s={30} /></span>}
+              <button className="esp-ver" type="button" onClick={() => ir("r13", e.id)}
+                aria-label={"Ver " + e.nombre} />
+              <span className="sobre">
+                <span className="tx"><b>{e.nombre}</b><i>{texto}</i></span>
+              </span>
+              <button className="esp-reservar" type="button" onClick={() => ir("r05", e.id)}>
+                Reservar
+              </button>
+            </div>
+          );
+        })}
       </div>
 
       <h3 className="grupo">Documentos y reglas</h3>
       <div className="menu">
         <button type="button" onClick={() => ir("r19")}>
           <span className="d"><b>Reglamento de convivencia</b><i>Horarios, espacios, accesos y expensas</i></span>
-          <span className="flech"><Icon n="chevron" s={17} w={2.1} /></span>
+          <span className="flech"><Icon n="chevron" s={16} w={2.1} /></span>
         </button>
         <button type="button" onClick={() => ir("r14")}>
           <span className="d"><b>Documentos</b><i>Actas, pólizas, rendiciones y planos</i></span>
-          <span className="flech"><Icon n="chevron" s={17} w={2.1} /></span>
+          <span className="flech"><Icon n="chevron" s={16} w={2.1} /></span>
         </button>
         <button type="button" onClick={() => ir("r21")}>
           <span className="d"><b>Gastos del consorcio</b><i>En qué se fue la plata del período</i></span>
-          <span className="flech"><Icon n="chevron" s={17} w={2.1} /></span>
+          <span className="flech"><Icon n="chevron" s={16} w={2.1} /></span>
         </button>
       </div>
 
       <FinLista texto={EDIFICIO.nombreLargo} />
+    </div>
+  );
+}
+
+function Contacto({ iniciales, nombre, rol, horario, telefono, mail, extra }: {
+  iniciales: string; nombre: string; rol: string; horario: string;
+  telefono: string; mail?: string; extra?: string;
+}) {
+  /* Los botones abrían la nada. Ahora levantan una hoja corta con las
+     formas reales de hablarle: el teléfono, el interno y el correo. */
+  const [abre, setAbre] = useState(false);
+  return (
+    <div className="contacto">
+      <div className="arr">
+        <span className="av">{iniciales}</span>
+        <span className="d"><b>{nombre}</b><i>{rol}</i><i className="hor">{horario}</i></span>
+      </div>
+      <div className="ct-acciones">
+        {mail && (
+          <button className="circulo" type="button" aria-label={"Escribir a " + nombre}
+            onClick={() => setAbre(true)}><Icon n="sobre" s={20} /></button>
+        )}
+        <button className="circulo llamar" type="button" aria-label={"Llamar a " + nombre}
+          onClick={() => setAbre(true)}><Icon n="telefono" s={20} /></button>
+      </div>
+
+      {abre && (
+        <Hoja titulo={nombre} texto={`${rol} · ${horario}`} onCancelar={() => setAbre(false)}
+          cerrarRotulo="Cerrar" sinAcciones>
+          <ul className="opciones-hoja">
+            <li>
+              <a href={"tel:" + telefono.replace(/\s/g, "")} onClick={() => setAbre(false)}>
+                <span className="ic"><Icon n="telefono" s={20} /></span>
+                <b>Llamar</b>
+                <span className="val">{telefono}</span>
+              </a>
+            </li>
+            {extra && (
+              <li>
+                <span className="solo-dato">
+                  <span className="ic"><Icon n="info" s={20} /></span>
+                  <b>{extra}</b>
+                </span>
+              </li>
+            )}
+            {mail && (
+              <li>
+                <a href={"mailto:" + mail} onClick={() => setAbre(false)}>
+                  <span className="ic"><Icon n="sobre" s={20} /></span>
+                  <b>Escribir</b>
+                  <span className="val">{mail}</span>
+                </a>
+              </li>
+            )}
+          </ul>
+          <div style={{ height: 12 }} />
+        </Hoja>
+      )}
     </div>
   );
 }

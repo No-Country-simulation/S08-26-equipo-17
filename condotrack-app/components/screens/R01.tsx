@@ -1,34 +1,35 @@
 "use client";
+import { useState } from "react";
 import { Icon, type NombreIcono } from "../ui/Icon";
 import { BotonGlass } from "../ui/BotonGlass";
 import { WidgetPrincipal, type EstadoWidget } from "../ui/WidgetPrincipal";
 import { PilaVivas, type Viva } from "../ui/PilaVivas";
-import { EDIFICIO, RECEPCION, RESIDENTE, type Vista } from "@/lib/data";
-import { DESGLOSE, PARTICIPACION, expensaDelMes } from "@/lib/expensas";
-import { pesos, periodoLargo, vencimientoEnPalabras } from "@/lib/formato";
+import { HojaPagar } from "../paneles/HojaPagar";
+import { EDIFICIO, RESIDENTE, type Vista } from "@/lib/data";
+import { expensaDelMes } from "@/lib/expensas";
+import { pesos, diaMes, hace } from "@/lib/formato";
 import { useApp } from "@/lib/estado";
 import { proximas, cuandoCorto, espacioDe } from "@/lib/reservas";
+import { historialOrdenado } from "@/lib/unidad";
 
-/** R01 · Inicio del residente.
+/** R01 · Inicio del residente (ronda visual 01).
  *
- *  La jerarquía es la de 03_INFORMATION_ARCHITECTURE y no se negocia:
+ *  Dos zonas, no una colección de cards:
  *
- *    CONTEXTO → ESTADO → ACCIONES FRECUENTES → CONTENIDO VIVO
+ *  · EL CAMPO, arriba y a sangre: carbón con luz cálida, el isotipo grande
+ *    casi invisible. Adentro va el header —que orienta y no domina—, el
+ *    estado de la unidad con la cifra sin caja y su acción, y los cuatro
+ *    accesos como una familia de círculos.
+ *  · LO DE HOY, abajo: la pila de objetos vivos del día.
  *
- *  · Contexto: la franja de arriba. Edificio y unidad, sin hero y sin
- *    saludo grande (D-15). El home no empieza felicitándote, empieza
- *    diciéndote dónde estás.
- *  · Estado: un solo widget con cuatro caras —expensas, visitas, entregas,
- *    reservas—. La cifra no lleva card propia: se apoya sobre el campo
- *    tonal del fondo.
- *  · Acciones: las tres que se hacen seguido, con el botón firma (D-06).
- *  · Contenido vivo: la pila. Apilan sólo objetos equivalentes (D-09), y
- *    por eso la expensa NO está ahí: es plata, no es un objeto del día. */
+ *  Administración y Recepción dejaron de ser dos filas con peso de acción
+ *  principal (§2): son un acceso más, "Contactar", que lleva a Mi
+ *  edificio, donde están los dos con horarios y canales. */
 
-const ACCIONES: { icono: NombreIcono; rotulo: [string, string]; va: Vista }[] = [
-  { icono: "personaMas", rotulo: ["Autorizar", "visita"], va: "f01" },
-  { icono: "chat",       rotulo: ["Hacer", "reclamo"],    va: "f02" },
-  { icono: "calendario", rotulo: ["Reservar", "espacio"], va: "r05" },
+const ACCIONES: { icono: NombreIcono; rotulo: string; etiqueta: string; va: Vista }[] = [
+  { icono: "personaMas", rotulo: "Autorizar", etiqueta: "Autorizar una visita", va: "f01" },
+  { icono: "chat",       rotulo: "Reclamar",  etiqueta: "Hacer un reclamo",     va: "f02" },
+  { icono: "calendario", rotulo: "Reservar",  etiqueta: "Reservar un espacio",  va: "r05" },
 ];
 
 const dos = (n: number) => String(n).padStart(2, "0");
@@ -36,105 +37,108 @@ const dos = (n: number) => String(n).padStart(2, "0");
 export function R01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   const { estado } = useApp();
   const exp = expensaDelMes();
+  /* Pagar es una acción: abre la hoja acá, no manda a otra pantalla. */
+  const [pagar, setPagar] = useState(false);
 
   const visitasHoy = estado.visitas.filter(
     (v) => v.cuando === "hoy" && v.estado !== "cancelada"
   );
-  const pasesVigentes = estado.visitas.filter((v) => v.estado === "vigente").length;
+  const vigentes = estado.visitas.filter((v) => v.estado === "vigente");
   const paraRetirar = estado.entregas.filter(
     (e) => e.unidad === RESIDENTE.unidad && e.estado === "retirar"
   );
   const proxima = proximas(estado.reservas)[0];
   const espacio = proxima ? espacioDe(proxima.recursoId) : undefined;
+  const pagada = exp.estado === "pagada";
 
-  /* "asuntos para revisar" no es un número escrito a mano: es lo que
-     efectivamente tenés pendiente hoy. */
-  const asuntos = paraRetirar.length + (exp.estado === "pagada" ? 0 : 1);
-  const comunes = DESGLOSE.comunes.reduce((a, l) => a + l.monto, 0);
-  const propios = DESGLOSE.propios.reduce((a, l) => a + l.monto, 0);
+  /* La card del historial muestra lo último que pasó: un dato real, no
+     un resumen que suena bien. */
+  const ultimo = historialOrdenado(estado.eventos)[0];
 
-  /* ── el widget: cuatro caras del mismo estado ─────────────────────── */
+  /* ── el estado: cuatro caras, una pregunta y una acción cada una ──── */
   const ESTADOS: EstadoWidget[] = [
     {
       id: "expensa",
       rotulo: "Expensas",
-      volanta: "Expensa del mes",
+      volanta: "",
       titular: pesos(exp.total),
-      detalle: periodoLargo(exp.periodo) + " · "
-        + vencimientoEnPalabras(exp.vencimiento).toLowerCase(),
-      pastilla: exp.estado === "pagada"
-        ? { texto: "Pagada", icono: "check", apagada: true }
-        : { texto: exp.estado === "vencida" ? "Vencida" : "Pendiente", icono: "reloj" },
-      datos: [
-        { k: "Gastos comunes", v: pesos(comunes) },
-        { k: "De tu unidad", v: pesos(propios) },
-        { k: "Tu parte", v: PARTICIPACION.toLocaleString("es-AR") + "%" },
+      detalle: pagada ? "Pagada" : "Vence " + diaMes(exp.vencimiento),
+      pastilla: pagada ? undefined
+        : { texto: exp.estado === "vencida" ? "Vencida" : "Pendiente" },
+      primaria: pagada ? undefined : { rotulo: "Pagar", onIr: () => setPagar(true) },
+      enlaces: [
+        { rotulo: "Composición", icono: "torta", onIr: () => ir("r21") },
+        { rotulo: "Movimientos", icono: "lista", onIr: () => ir("r23") },
       ],
-      accion: {
-        rotulo: "Ver el detalle y los gastos del consorcio",
-        icono: "documento",
-        onIr: () => ir("r20"),
-      },
     },
     {
       id: "visitas",
       rotulo: "Visitas",
-      volanta: "Visitas de hoy",
-      titular: dos(visitasHoy.length),
-      detalle: pasesVigentes === 0
-        ? "Ningún pase vigente ahora mismo"
-        : pasesVigentes === 1
-        ? "1 pase vigente"
-        : pasesVigentes + " pases vigentes",
-      accion: { rotulo: "Ver mis visitas y pases", icono: "credencial", onIr: () => ir("r06") },
+      volanta: "Hoy",
+      titular: visitasHoy.length === 1 ? "1 visita" : visitasHoy.length + " visitas",
+      titularTexto: true,
+      detalle: vigentes.length === 0
+        ? "Sin pase activo"
+        : vigentes.length === 1
+        ? "Pase activo · " + vigentes[0].nombre
+        : vigentes.length + " pases activos",
+      primaria: vigentes.length > 0
+        ? { rotulo: "Ver pase", icono: "qr", onIr: () => ir("r07", vigentes[0].id) }
+        : { rotulo: "Autorizar visita", icono: "personaMas", onIr: () => ir("f01") },
+      enlaces: [{ rotulo: "Visitas", onIr: () => ir("r06") }],
     },
     {
       id: "entregas",
       rotulo: "Entregas",
-      volanta: "En recepción",
-      titular: dos(paraRetirar.length),
-      detalle: paraRetirar.length === 0
-        ? "No hay nada esperándote"
-        : paraRetirar.length === 1
-        ? "1 paquete para retirar"
-        : paraRetirar.length + " paquetes para retirar",
-      accion: { rotulo: "Ver las entregas de la unidad", icono: "caja", onIr: () => ir("r08") },
+      volanta: paraRetirar.length === 0 ? "Entregas" : "Entrega pendiente",
+      titular: paraRetirar.length === 0 ? "Nada pendiente"
+        : paraRetirar.length === 1 ? "1 paquete" : paraRetirar.length + " paquetes",
+      titularTexto: true,
+      detalle: paraRetirar.length === 0 ? undefined : paraRetirar[0].titulo,
+      primaria: paraRetirar.length > 0
+        ? { rotulo: "Ver entrega", icono: "caja", onIr: () => ir("g11", paraRetirar[0].id) }
+        : undefined,
+      enlaces: [{ rotulo: "Entregas", onIr: () => ir("r08") }],
     },
     {
       id: "reservas",
       rotulo: "Reservas",
       volanta: proxima ? "Tu próxima reserva" : "Espacios del edificio",
       titular: proxima && espacio ? espacio.nombre : "Sin reservas",
-      detalle: proxima ? cuandoCorto(proxima) : "SUM, cowork, parrilla y lavandería",
-      accion: proxima
-        ? { rotulo: "Ver mis reservas", icono: "calendario", onIr: () => ir("r18") }
-        : { rotulo: "Reservar un espacio", icono: "calendario", onIr: () => ir("r05") },
+      titularTexto: true,
+      detalle: proxima ? cuandoCorto(proxima) : undefined,
+      primaria: proxima
+        ? { rotulo: "Ver reserva", icono: "calendario", onIr: () => ir("r18") }
+        : { rotulo: "Reservar", icono: "calendario", onIr: () => ir("r05") },
+      enlaces: proxima ? [{ rotulo: "Reservar otro", onIr: () => ir("r05") }] : undefined,
     },
   ];
 
-  /* ── la pila: objetos equivalentes, y nada más (D-09) ─────────────── */
+  /* ── la pila: objetos del día, y nada más (D-09) ─────────────────── */
   const VIVAS: Viva[] = [];
 
-  if (visitasHoy.length > 0 || pasesVigentes > 0) {
+  if (visitasHoy.length > 0 || vigentes.length > 0) {
     VIVAS.push({
       id: "visitas",
+      rotulo: "Visitas de hoy",
       nodo: (
         <div className="viva visitas">
           <div className="osc">
             <img src="/img/visitas_fondo.jpg" alt="" />
             <div className="c">
-              <div className="et">Visitas hoy</div>
-              <div className="n">{dos(visitasHoy.length)}</div>
+              <div className="et">Hoy</div>
+              <div className="n">{visitasHoy.length === 1 ? "1 visita" : visitasHoy.length + " visitas"}</div>
             </div>
             <span className="ir">
               <BotonGlass etiqueta="Ver mis visitas" tono="claro" onClick={() => ir("r06")} />
             </span>
           </div>
-          {pasesVigentes > 0 && (
-            <button className="pase-fila" type="button" onClick={() => ir("r07")}>
-              <span className="punto" aria-hidden="true" />
-              <b>{pasesVigentes === 1 ? "1 pase vigente" : pasesVigentes + " pases vigentes"}</b>
-              <span className="ver">Ver<Icon n="chevron" s={14} w={2.2} /></span>
+          {vigentes.length > 0 && (
+            <button className="pase-fila amarilla" type="button"
+              onClick={() => ir("r07", vigentes[0].id)}>
+              <Icon n="qr" s={17} />
+              <b>{vigentes.length === 1 ? "Pase activo" : vigentes.length + " pases activos"}</b>
+              <span className="ver-pase">Ver pase<Icon n="chevron" s={14} /></span>
             </button>
           )}
         </div>
@@ -144,15 +148,16 @@ export function R01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
 
   VIVAS.push({
     id: "estado",
+    rotulo: "Historial",
     nodo: (
       <button className="viva hero mat-foto" type="button" onClick={() => ir("r17")}
         aria-label="Ver el historial de la unidad">
         <img src="/img/hero_araoz.jpg" alt="" />
-        <span className="et">Hoy</span>
+        <span className="et">Hoy, en casa</span>
         <span className="sobre">
           <span className="tx">
-            <h2>Todo en orden</h2>
-            <p>{asuntos === 1 ? "1 asunto para revisar" : asuntos + " asuntos para revisar"}</p>
+            <h2>{ultimo ? ultimo.titulo : "Sin movimientos"}</h2>
+            <p>{ultimo ? "Historial · " + hace(ultimo.cuando) : "Historial"}</p>
           </span>
         </span>
       </button>
@@ -162,6 +167,7 @@ export function R01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   if (proxima && espacio) {
     VIVAS.push({
       id: "reserva",
+      rotulo: "Próxima reserva",
       nodo: (
         <button className="viva mat-foto" type="button" onClick={() => ir("r18")}>
           <img src={espacio.img} alt="" />
@@ -180,72 +186,62 @@ export function R01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   if (paraRetirar.length > 0) {
     VIVAS.push({
       id: "entrega",
+      rotulo: "Entrega pendiente",
       nodo: (
-        <button className="viva paquete" type="button" onClick={() => ir("r08")}>
-          <span className="ic"><Icon n="caja" s={30} w={1.7} /></span>
-          <span className="tx">
-            <b>{paraRetirar.length === 1
-              ? "1 paquete para retirar"
-              : paraRetirar.length + " paquetes para retirar"}</b>
-            <i>Te lo guarda {RECEPCION.nombre} en recepción</i>
+        <button className="viva paquete mat-foto" type="button" onClick={() => ir("g11", paraRetirar[0].id)}>
+          <img src="/img/hero_lobby.jpg" alt="" aria-hidden="true" />
+          <span className="et">En recepción</span>
+          <span className="sobre">
+            <span className="tx">
+              <b>{paraRetirar.length === 1
+                ? "1 paquete para retirar"
+                : paraRetirar.length + " paquetes para retirar"}</b>
+              <i>Te lo entregan cuando bajes</i>
+            </span>
+            <span className="flech"><Icon n="chevron" s={16} /></span>
           </span>
-          <span className="flech"><Icon n="chevron" s={17} w={2.1} /></span>
         </button>
       ),
     });
   }
 
   return (
-    <div className="vista sandwich" id="r01">
-      {/* CONTEXTO — silencioso: dónde estás, no cómo te llamás (D-15) */}
-      <header className="cabezal">
-        <span className="marca-cab">
-          <img src="/brand/CT_LOGO_DARK_V2.png" alt="CondoTrack" width={780} height={170} />
-        </span>
-        <h1>{EDIFICIO.nombre} · Unidad {RESIDENTE.unidad}</h1>
-        <button className="circulo claro" type="button" onClick={() => ir("mas")}
-          aria-label={"Tu perfil, " + RESIDENTE.nombre}>
-          {RESIDENTE.iniciales}
-        </button>
-      </header>
+    <div className="vista inicio" id="r01">
+      {/* EL CAMPO — contexto, estado y accesos en una sola superficie */}
+      <section className="home-campo" aria-label="Tu unidad hoy">
+        {/* la fachada va atrás del campo, no en lugar del campo */}
+        <img className="campo-foto" src="/img/fachada.jpg" alt="" aria-hidden="true" />
 
-      {/* ESTADO */}
-      <WidgetPrincipal estados={ESTADOS} etiqueta="Estado de tu unidad" />
-
-      {/* ACCIONES FRECUENTES */}
-      <div className="tres">
-        {ACCIONES.map((a) => (
-          <button className="acceso" type="button" key={a.rotulo.join(" ")}
-            onClick={() => ir(a.va)}>
-            <span className="glifo" aria-hidden="true"><Icon n={a.icono} s={22} w={1.8} /></span>
-            <BotonGlass etiqueta="" tamano="s" decorativo />
-            <span className="rot">{a.rotulo[0]}<br />{a.rotulo[1]}</span>
+        <header className="home-cab">
+          <img className="marca" src="/brand/CT_LOGO_DARK_V2.png" alt="CondoTrack"
+            width={780} height={170} />
+          <h1>{EDIFICIO.nombre} · Unidad {RESIDENTE.unidad}</h1>
+          <button className="circulo claro perfil" type="button" onClick={() => ir("mas")}
+            aria-label={"Tu perfil, " + RESIDENTE.nombre}>
+            {RESIDENTE.iniciales}
           </button>
-        ))}
-      </div>
+        </header>
 
-      <div className="directos">
-        <button className="directo" type="button" onClick={() => ir("g15")}>
-          <span className="ic"><Icon n="sobre" s={17} w={1.8} /></span>
-          <span className="d">
-            <b>Administración</b>
-            <i>{EDIFICIO.administracion}</i>
-          </span>
-          <BotonGlass etiqueta="" tamano="s" decorativo />
-        </button>
-        <button className="directo" type="button" onClick={() => ir("g15")}>
-          <span className="ic"><Icon n="chat" s={17} w={1.8} /></span>
-          <span className="d">
-            <b>Recepción</b>
-            <i>{RECEPCION.nombre}</i>
-          </span>
-          <BotonGlass etiqueta="" tamano="s" decorativo />
-        </button>
-      </div>
+        <WidgetPrincipal estados={ESTADOS} etiqueta="Estado de tu unidad" />
 
-      {/* CONTENIDO VIVO */}
-      <h2 className="sec">Lo de hoy</h2>
-      <PilaVivas items={VIVAS} etiqueta="Lo que está pasando hoy en tu unidad" />
+        <nav className="home-acciones" aria-label="Accesos rápidos">
+          {ACCIONES.map((a) => (
+            <button key={a.va + a.rotulo} type="button" aria-label={a.etiqueta}
+              onClick={() => ir(a.va)}>
+              <span className="circ" aria-hidden="true"><Icon n={a.icono} s={24} /></span>
+              <span className="rot" aria-hidden="true">{a.rotulo}</span>
+            </button>
+          ))}
+        </nav>
+      </section>
+
+      {/* LO DE HOY */}
+      <PilaVivas items={VIVAS} titulo="En tu edificio" etiqueta="Lo que está pasando hoy en tu unidad" />
+
+      {pagar && (
+        <HojaPagar onCerrar={() => setPagar(false)}
+          onInformar={() => { setPagar(false); ir("f03"); }} />
+      )}
     </div>
   );
 }

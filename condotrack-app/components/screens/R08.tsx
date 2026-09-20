@@ -22,18 +22,17 @@ export function R08({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   return (
     <div className="vista" id="r08">
       <TopBar volverA="r02" ir={ir} />
-      <div className="tit"><h1>Entregas</h1><p>Paquetes y correspondencia de tu unidad.</p></div>
+      <div className="tit"><h1>Entregas</h1></div>
 
       {lista.length === 0 ? (
-        <Vacio icono="caja" titulo="No hay entregas"
-          texto="Cuando recepción reciba algo para tu unidad te avisamos y aparece acá." />
+        <Vacio icono="caja" titulo="Sin entregas" />
       ) : (
         <>
           {lista.map((e) => {
             const paraRetirar = e.estado === "retirar";
             return (
               <button className="entrega" type="button" key={e.id} onClick={() => setAbierta(e.id)}>
-                <span className={"ic" + (paraRetirar ? " am" : "")}><Icon n="caja" s={24} w={1.8} /></span>
+                <span className={"ic" + (paraRetirar ? " am" : "")}><Icon n="caja" s={20} w={1.8} /></span>
                 <span className="d">
                   <b>{e.titulo}</b>
                   <span className="m">
@@ -54,10 +53,6 @@ export function R08({ ir }: { ir: (v: Vista, ref?: string) => void }) {
         </>
       )}
 
-      <Aviso icono="info">
-        El retiro lo registra recepción cuando te la entrega: queda quién la recibió,
-        quién la retiró y a qué hora, en el historial de tu unidad.
-      </Aviso>
 
       {/* El detalle de una entrega no necesita una pantalla: son cuatro
           datos y un historial de dos líneas. */}

@@ -20,6 +20,7 @@ D-18 a D-24 son decisiones tomadas al implementar.
 | 07 | `07_ROUTE_MAP.md` | Todas las vistas, sus IDs y sus padres |
 | 08 | `08_ACCEPTANCE_CRITERIA.md` | La compuerta de cada fase |
 | 09 | `09_FIGMA_HANDOFF.md` | Qué se exporta y en qué estado está el archivo |
+| 10 | `10_VISUAL_LOCK_V02.md` | El sistema visual cerrado del residente: componentes, color, foto, copy, prohibiciones |
 | — | `IMPLEMENTATION_PLAN.md` | Las once fases, en orden |
 | — | `ESTADO_IMPLEMENTACION.md` | Dónde estamos ahora |
 | — | `../_historia/README.md` | Qué documentos dejaron de regir y por qué |

@@ -16,6 +16,10 @@ export type Navegacion = {
   volver: () => void;
   /** false cuando la pila está vacía: ahí manda `volverA`. */
   hayVuelta: boolean;
+  /** Corrige el ref con el que esta pantalla va a quedar en la pila: el
+   *  contexto que eligió el usuario, o nada si el ref era una orden de un
+   *  solo uso. No re-renderiza. */
+  reemplazarRef: (ref?: string) => void;
 };
 
 export const CtxNavegacion = createContext<Navegacion | null>(null);

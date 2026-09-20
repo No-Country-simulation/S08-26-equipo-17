@@ -1,7 +1,6 @@
 "use client";
 import { Icon, type NombreIcono } from "../ui/Icon";
 import { TopBar } from "../ui/TopBar";
-import { FinLista } from "../ui/FinLista";
 import { AVISOS, RESIDENTE, type Vista } from "@/lib/data";
 import { avisosExpensa, expensaDelMes } from "@/lib/expensas";
 import { pesos, vencimientoEnPalabras } from "@/lib/formato";
@@ -34,51 +33,48 @@ export function Mas({ ir, onSalir }: { ir: (v: Vista, ref?: string) => void; onS
      lo de baja frecuencia, no un directorio de todo lo que existe. */
   const EDIFICIO_ITEMS: Item[] = [
     { icono: "campana", titulo: "Notificaciones",
-      desc: sinLeer > 0 ? `${sinLeer} sin leer` : "Todo leído",
       contador: sinLeer || undefined, va: "r03" },
-    { icono: "lista", titulo: "Votaciones", desc: "1 abierta · cierra esta semana", va: "r24" },
-    { icono: "lista", titulo: "Historial de la unidad",
-      desc: "Todo lo que pasó, quién lo hizo y cuándo", va: "r17" },
+    { icono: "lista", titulo: "Votaciones", desc: "1 abierta", va: "r24" },
+    { icono: "reloj", titulo: "Historial", va: "r17" },
   ];
 
+  /* "Expensas" llevaba a una pantalla que repetía el hero del home. El
+     destino canónico de la plata es Estado de cuenta: ahí está el saldo,
+     los movimientos y los comprobantes. */
   const PLATA: Item[] = [
-    { icono: "documento", titulo: "Expensa del mes",
-      desc: `${pesos(exp.total)} · ${vencimientoEnPalabras(exp.vencimiento).toLowerCase()}`,
-      va: "r20", destacado: exp.estado !== "pagada" },
-    { icono: "check", titulo: "Informar un pago", desc: "Para que lo concilien más rápido", va: "f03" },
-    { icono: "lista", titulo: "Estado de cuenta", desc: "Histórico de la unidad y saldo", va: "r23" },
-    { icono: "credencial", titulo: "Medios de pago", desc: "CBU, alias y pago presencial", va: "r22" },
-    { icono: "rayo", titulo: "Gastos del consorcio", desc: "En qué se fue la plata del edificio", va: "r21" },
+    { icono: "lista", titulo: "Estado de cuenta",
+      desc: `${pesos(exp.total)} · ${vencimientoEnPalabras(exp.vencimiento).toLowerCase()}`, va: "r23" },
+    { icono: "credencial", titulo: "Medios de pago", va: "r22" },
+    { icono: "torta", titulo: "Gastos", va: "r21" },
+    { icono: "check", titulo: "Informar un pago", va: "f03" },
   ];
 
   const GESTIONES: Item[] = [
     { icono: "caja", titulo: "Entregas",
-      desc: aRetirar > 0 ? `${aRetirar} para retirar` : "Nada pendiente",
-      contador: aRetirar || undefined, va: "r08" },
+      desc: aRetirar > 0 ? `${aRetirar} para retirar` : undefined, va: "r08" },
     { icono: "chat", titulo: "Reclamos",
-      desc: abiertos > 0 ? `${abiertos} en curso` : "Crear y seguir reclamos",
-      contador: abiertos || undefined, va: "r09" },
-    { icono: "credencial", titulo: "Mis visitas", desc: "Autorizaciones y pases", va: "r06" },
+      desc: abiertos > 0 ? `${abiertos} en curso` : undefined, va: "r09" },
+    { icono: "personaMas", titulo: "Visitas", va: "r06" },
   ];
 
   const APOYO: Item[] = [
-    { icono: "info", titulo: "Preguntas frecuentes", desc: "Cómo funciona el edificio", va: "r19" },
-    { icono: "lista", titulo: "Reglamento", desc: "Convivencia, espacios, accesos y expensas", va: "r19" },
+    { icono: "info", titulo: "Preguntas frecuentes", va: "r19" },
+    { icono: "documento", titulo: "Reglamento", va: "r19" },
   ];
 
   const fila = (it: Item) => (
     <button key={it.titulo} type="button" onClick={() => it.va && ir(it.va)}>
-      <span className={"ic" + (it.destacado ? " am" : "")}><Icon n={it.icono} s={20} w={1.8} /></span>
+      <span className="ic"><Icon n={it.icono} s={20} /></span>
       <span className="d"><b>{it.titulo}</b>{it.desc && <i>{it.desc}</i>}</span>
       {it.contador != null && <span className="contador">{it.contador}</span>}
-      <span className="flech"><Icon n="chevron" s={17} w={2.1} /></span>
+      <span className="flech"><Icon n="chevron" s={16} w={2.1} /></span>
     </button>
   );
 
   return (
     <div className="vista" id="mas">
       <TopBar volverA="r01" ir={ir} />
-      <div className="tit"><h1>Más</h1><p>Tu cuenta y tu edificio.</p></div>
+      <div className="tit"><h1>Más</h1></div>
 
       <button className="perfil" type="button" onClick={() => ir("r15")}>
         <span className="avatar">{RESIDENTE.iniciales}</span>
@@ -86,7 +82,7 @@ export function Mas({ ir, onSalir }: { ir: (v: Vista, ref?: string) => void; onS
           <b>{RESIDENTE.nombre}</b>
           <i>{RESIDENTE.rol} · Unidad {RESIDENTE.unidad}</i>
         </span>
-        <span className="flech"><Icon n="chevron" s={18} w={2.1} /></span>
+        <span className="flech"><Icon n="chevron" s={16} w={2.1} /></span>
       </button>
 
       <h3 className="grupo">Expensas</h3>
@@ -105,16 +101,15 @@ export function Mas({ ir, onSalir }: { ir: (v: Vista, ref?: string) => void; onS
       <div className="menu">
         <button type="button" onClick={() => ir("r15")}>
           <span className="ic"><Icon n="engranaje" s={20} w={1.8} /></span>
-          <span className="d"><b>Preferencias y seguridad</b><i>Avisos y contraseña</i></span>
-          <span className="flech"><Icon n="chevron" s={17} w={2.1} /></span>
+          <span className="d"><b>Preferencias y seguridad</b></span>
+          <span className="flech"><Icon n="chevron" s={16} w={2.1} /></span>
         </button>
-        <button type="button" onClick={onSalir}>
+        <button className="salir" type="button" onClick={onSalir}>
           <span className="ic"><Icon n="salir" s={20} w={1.8} /></span>
           <span className="d"><b>Cerrar sesión</b></span>
         </button>
       </div>
 
-      <FinLista texto="Fin del menú" />
     </div>
   );
 }

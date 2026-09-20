@@ -11,8 +11,13 @@ import { Icon } from "./Icon";
 type Fase = "listo" | "preparando" | "hecho";
 
 export function Descarga({
-  rotulo, archivo, chico = false, peso,
-}: { rotulo: string; archivo: string; chico?: boolean; peso?: string }) {
+  rotulo, archivo, chico = false, peso, meta,
+}: {
+  rotulo: string; archivo: string; chico?: boolean; peso?: string;
+  /** Una línea debajo del rótulo: con ella la descarga es la fila del
+   *  documento, sin una card alrededor (Documentos, lock V02). */
+  meta?: string;
+}) {
   const [fase, setFase] = useState<Fase>("listo");
   const reloj = useRef<number[]>([]);
 
@@ -30,20 +35,18 @@ export function Descarga({
         aria-busy={fase === "preparando" || undefined}>
         {fase === "preparando"
           ? <span className="rueda-chica" aria-hidden="true" />
-          : <Icon n={fase === "hecho" ? "check" : "documento"} s={17} w={fase === "hecho" ? 2.3 : 1.8} />}
+          : <Icon n={meta ? "documento" : fase === "hecho" ? "check" : "descarga"} s={meta ? 20 : 16} />}
         <span className="tx">
-          {fase === "preparando" ? "Preparando el archivo…" : rotulo}
+          {fase === "preparando" ? "Preparando el archivo…" : meta ? <b>{rotulo}</b> : rotulo}
+          {meta && fase !== "preparando" && <i>{meta}</i>}
         </span>
-        {peso && fase === "listo" && <em>{peso}</em>}
+        {peso && fase === "listo" && !meta && <em>{peso}</em>}
+        {meta && <span className="dl-ic" aria-hidden="true"><Icon n={fase === "hecho" ? "check" : "descarga"} s={16} /></span>}
       </button>
 
       {fase === "hecho" && (
         <p className="detalle-descarga" role="status">
           <b>{archivo}</b>
-          <span>
-            En el prototipo el archivo no se genera. Este es el nombre y el contenido
-            que produciría el sistema real.
-          </span>
         </p>
       )}
     </div>
@@ -71,7 +74,7 @@ export function Copiar({ valor, etiqueta }: { valor: string; etiqueta: string })
   return (
     <button className={"copiar" + (copiado ? " ok" : "")} type="button" onClick={copiar}
       aria-label={copiado ? `${etiqueta} copiado` : `Copiar ${etiqueta}`}>
-      <Icon n={copiado ? "check" : "documento"} s={15} w={copiado ? 2.4 : 1.8} />
+      <Icon n={copiado ? "check" : "documento"} s={16} w={copiado ? 2.4 : 1.8} />
       {copiado ? "Copiado" : "Copiar"}
     </button>
   );

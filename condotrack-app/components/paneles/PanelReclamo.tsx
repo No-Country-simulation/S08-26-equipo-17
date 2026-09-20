@@ -65,35 +65,24 @@ export function PanelReclamo({
   return (
     <>
       <Area etiqueta="Qué pasa" valor={descripcion} onCambio={setDescripcion}
-        placeholder="El ascensor se frena entre el 6 y el 7 y hay que apretar dos veces el botón."
-        filas={5} error={tocado ? errDesc : undefined}
-        ayuda="Si podés, poné desde cuándo pasa y con qué frecuencia." />
+        placeholder="Qué pasa y dónde"
+        filas={5} error={tocado ? errDesc : undefined} />
 
       <Elegir etiqueta="Ubicación" valor={ubicacion} onCambio={setUbicacion}
-        opciones={UBICACIONES.map((u) => ({ id: u, rotulo: u }))}
-        ayuda="Dónde está el problema, no dónde estás vos." />
+        opciones={UBICACIONES.map((u) => ({ id: u, rotulo: u }))} />
 
       <Elegir etiqueta="Categoría" valor={categoria} onCambio={setCategoria}
-        opciones={CATEGORIAS} opcional
-        ayuda="Si no estás seguro, dejalo en «Todavía no sé»: lo clasifica administración." />
+        opciones={CATEGORIAS} opcional />
 
       <Adjuntar etiqueta="Foto" archivo={foto} onCambio={setFoto}
         nombreSugerido="foto-reclamo.jpg" />
 
-      {tocado && errDesc && (
-        <div className="alerta" role="alert" style={{ marginTop: 14 }}>
-          <span style={{ flex: "none", color: "var(--error)" }}><Icon n="alerta" s={17} w={2} /></span>
-          <p>Falta contar qué pasa. Revisá el campo marcado arriba.</p>
-        </div>
-      )}
-
       <PieForm
-        accion="Enviar el reclamo"
+        accion="Enviar reclamo"
         onAccion={confirmar}
         onCancelar={onCancelar}
         cargando={enviando}
         rotuloCancelar={rotuloCancelar}
-        nota="El reclamo queda a nombre de tu unidad y con tu nombre. Administración lo recibe en el momento."
       />
     </>
   );

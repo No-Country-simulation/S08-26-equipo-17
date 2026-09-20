@@ -68,6 +68,7 @@ export function SwipeButton({
       ref={ref}
       className={"swipe" + (soltando ? " suelta" : "")}
       data-avance={p > 0.55 ? "1" : "0"}
+      data-quieto={p === 0 && !soltando ? "1" : undefined}
       style={{ "--p": p, "--x": `${p * recorrido()}px` } as React.CSSProperties}
       role="button"
       tabIndex={0}
@@ -84,7 +85,7 @@ export function SwipeButton({
       <span className="relleno" aria-hidden="true" />
       <span className="rotulo">{rotulo}</span>
       {pista ? <span className="pista" aria-hidden="true">{pista}</span> : null}
-      <span className="pulgar" aria-hidden="true"><Icon n="flechaDer" s={19} w={2.2} color="#111614" /></span>
+      <span className="pulgar" aria-hidden="true"><Icon n="flechaDer" s={20} w={2.2} color="#111614" /></span>
     </div>
   );
 }

@@ -42,7 +42,7 @@ export function BotonGlass({
 }) {
   const clase =
     "bglass" + (tono === "claro" ? " claro" : "") + (tamano === "s" ? " ch" : "");
-  const glifo = <Icon n={icono} s={tamano === "s" ? 18 : 22} w={2.1} />;
+  const glifo = <Icon n={icono} s={20} w={2.1} />;
 
   if (decorativo) {
     return <span className={clase} aria-hidden="true">{glifo}</span>;

@@ -144,7 +144,10 @@ export const hora = (d: Date) =>
 export const rango = (f: Franja) => `${hora(f.inicio)}–${hora(f.fin)}`;
 export const diaCorto = (d: Date) => fmt({ weekday: "short" }).format(d).replace(".", "");
 export const numDia = (d: Date) => fmt({ day: "numeric" }).format(d);
-export const mesCorto = (d: Date) => fmt({ month: "short" }).format(d).replace(".", "");
+export const mesCorto = (d: Date) =>
+  fmt({ month: "short" }).format(d).replace(".", "").replace("sept", "sep");
+/** "25 sep": el día de una reserva, sin el día de la semana. */
+export const diaYMes = (d: Date) => `${numDia(d)} ${mesCorto(d)}`;
 export const mesLargo = (d: Date) => {
   const t = fmt({ month: "long", year: "numeric" }).format(d);
   return t.charAt(0).toUpperCase() + t.slice(1);
@@ -186,6 +189,21 @@ export const historialEdificio = (reservas: Reserva[] = RESERVAS) =>
     .sort((a, b) => b.inicio.localeCompare(a.inicio));
 
 export const espacioPorId = (id: string) => ESPACIOS.find((e) => e.id === id)!;
+
+/** Espacios sin foto propia en el repo. La lavandería usaba la del cowork,
+ *  que es otro lugar: mientras no llegue una va en carbón con su ícono.
+ *  Mejor ningún lugar que el lugar equivocado. */
+export const SIN_FOTO = new Set(["lavanderia"]);
+
+/** Primer día con lugar después de `desde`, dentro de la ventana de
+ *  reserva. Para que una card de espacio lleno diga cuándo sí hay. */
+export function proximoLibre(espacio: Espacio, desde: Date, reservas: Reserva[] = RESERVAS) {
+  for (let n = 1; n <= REGLAS.ventanaDias; n++) {
+    const d = new Date(desde.getFullYear(), desde.getMonth(), desde.getDate() + n);
+    if (cupoDelDia(espacio, d, reservas) > 0) return d;
+  }
+  return null;
+}
 
 /* Re-exportados desde acá porque las pantallas de reservas los piden a este
    módulo y no a data: así el import de una pantalla es uno solo. */

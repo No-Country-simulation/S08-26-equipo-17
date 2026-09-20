@@ -3,7 +3,7 @@ import { TopBar } from "../ui/TopBar";
 import { FinLista } from "../ui/FinLista";
 import { Error as ErrorEstado } from "../ui/Estados";
 import { PanelEntrega } from "../paneles/PanelEntrega";
-import { ROTULO_ENTREGA, type Vista } from "@/lib/data";
+import { type Vista } from "@/lib/data";
 import { useApp } from "@/lib/estado";
 
 /** G11 · Entrega, detalle + historial.
@@ -19,7 +19,6 @@ export function G11({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
         <TopBar volverA="r08" ir={ir} />
         <ErrorEstado
           titulo="No encontramos esa entrega"
-          texto="Volvé a la lista de entregas y elegila de nuevo."
           onReintentar={() => ir("r08")}
         />
       </div>
@@ -31,9 +30,8 @@ export function G11({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
       <TopBar volverA="r08" ir={ir} />
 
       <div className="cabecera-ent">
-        <span className="et">{ROTULO_ENTREGA[e.tipo]} · Unidad {e.unidad}</span>
-        <h1>{e.titulo}</h1>
-        <p>{e.remitente}</p>
+        <span className="et">Entrega</span>
+        <h1>{e.remitente}</h1>
       </div>
 
       <PanelEntrega e={e} />

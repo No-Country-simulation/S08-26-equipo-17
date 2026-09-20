@@ -30,9 +30,22 @@ import { F03 } from "./screens/F03";
 import { Mas } from "./screens/Mas";
 import type { Vista } from "@/lib/data";
 
+/** Ámbito de cada vista (ronda visual 01, §1.2 y §1.4). Tiñe el campo
+ *  atmosférico con el matiz del lugar: piedra para tu edificio, pizarra
+ *  para la plata, atardecer para los espacios. Son cuatro ámbitos de la IA,
+ *  no un color por ruta. Lo que no figura acá va en el neutro. */
+const AMBITO: Partial<Record<Vista, string>> = {
+  r02: "edificio", g15: "edificio", r14: "edificio", r06: "edificio",
+  r08: "edificio", r16: "edificio", g11: "edificio",
+  r20: "expensas", r21: "expensas", r22: "expensas", r23: "expensas", f03: "expensas",
+  r05: "reservas", r18: "reservas", r13: "reservas",
+  r07: "acceso", f01: "acceso",
+};
+
 export function ShellResidente({
-  vista, refe, ir, onSalir,
+  vista, refe, ir, onSalir, direccion = "adelante",
 }: {
+  direccion?: "adelante" | "atras";
   vista: Vista;
   refe?: string;
   ir: (v: Vista, ref?: string) => void;
@@ -44,11 +57,12 @@ export function ShellResidente({
   useEffect(() => { caja.current?.querySelector(".vista")?.scrollTo(0, 0); }, [vista, refe]);
 
   return (
-    <section className="screen" aria-label="CondoTrack residente" ref={caja}>
+    <section className="screen residente" aria-label="CondoTrack residente" ref={caja}
+      data-ambito={AMBITO[vista]} data-dir={direccion}>
       {vista === "r01" && <R01 ir={ir} />}
       {vista === "r02" && <R02 ir={ir} />}
       {vista === "r03" && <R03 ir={ir} />}
-      {vista === "r05" && <R05 ir={ir} />}
+      {vista === "r05" && <R05 ir={ir} refe={refe} />}
       {vista === "r06" && <R06 ir={ir} />}
       {vista === "r07" && <R07 ir={ir} refe={refe} />}
       {vista === "r08" && <R08 ir={ir} />}
@@ -60,7 +74,7 @@ export function ShellResidente({
       {vista === "r17" && <R17 ir={ir} />}
       {vista === "r18" && <R18 ir={ir} />}
       {vista === "r19" && <R19 ir={ir} />}
-      {vista === "r20" && <R20 ir={ir} />}
+      {vista === "r20" && <R20 ir={ir} refe={refe} />}
       {vista === "r21" && <R21 ir={ir} />}
       {vista === "r22" && <R22 ir={ir} />}
       {vista === "r23" && <R23 ir={ir} />}

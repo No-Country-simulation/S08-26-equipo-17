@@ -19,7 +19,6 @@ export function R13({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
       <div className="vista" id="r13">
         <TopBar volverA="r05" ir={ir} />
         <ErrorEstado titulo="No encontramos ese espacio"
-          texto="Volvé a la lista de espacios del edificio."
           onReintentar={() => ir("r05")} />
       </div>
     );
@@ -87,11 +86,11 @@ export function R13({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
       <h2 className="sec">Reglas</h2>
       <ul className="reglas-l">
         {e.reglas.map((r) => (
-          <li key={r}><Icon n="check" s={15} w={2.3} />{r}</li>
+          <li key={r}><Icon n="check" s={16} w={2.3} />{r}</li>
         ))}
       </ul>
 
-      <button className="entrar" type="button" onClick={() => ir("r05")} style={{ marginTop: 20 }}>
+      <button className="entrar" type="button" onClick={() => ir("r05", e.id)} style={{ marginTop: 20 }}>
         Reservar {e.nombre}
       </button>
 

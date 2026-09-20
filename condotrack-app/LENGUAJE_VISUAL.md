@@ -9,6 +9,11 @@ Qué es cada superficie y por qué. Si algo de acá no coincide con
 
 ---
 
+> **Ronda visual 01 (18/09/2026).** Cambiaron el fondo (ahora un campo por ámbito,
+> D-28), el amarillo (fuera de los filtros, D-26), los botones (tres niveles, D-31),
+> el glass (sólo con algo detrás, D-32), la barra (centro dinámico, D-25) y aparece
+> la data-viz (D-30). Donde este documento contradiga eso, gana el DECISION_LOG.
+
 ## Tipografía · D-01
 
 Una sola familia: **Satoshi** (Fontshare / Indian Type Foundry), por CDN mientras

@@ -2,7 +2,7 @@
 
 Se actualiza al cerrar cada fase. **Si te quedaste sin contexto, retomá de acá.**
 
-Última actualización: 17/09/2026 · **las doce fases cerradas** (0 a 11).
+Última actualización: 18/09/2026 · doce fases cerradas + **ronda de corrección visual 01** (ver al final).
 
 ## Dónde estamos
 
@@ -381,3 +381,319 @@ cuando el id no existe— y funcionan.
 
 Ninguno bloquea el arranque. Las dos preguntas abiertas (Q-01 y Q-02 del
 DECISION_LOG) no frenan ninguna fase.
+
+---
+
+# RONDA DE CORRECCIÓN VISUAL 01 · 18/09/2026 · **HECHA**
+
+Documento de origen: `RONDA_CORRECCION_VISUAL_01.md`. Tres decisiones las tomó
+Felipe antes de arrancar: calendario como grilla de mes sin caja, centro de la
+barra dinámico, y "medio de pago actual" fuera de esta ronda porque el modelo no
+lo guarda. Todo lo demás está en el DECISION_LOG, D-25 a D-33.
+
+| Paso | Commit | Qué |
+|---|---|---|
+| A · Sistema | `26ff063` | color funcional en tokens, campo atmosférico por ámbito, botones en tres niveles, tipografía por rol, trazo de íconos único, `ZonaContexto`, motion neutralizado |
+| B+C · Home, barra, expensas | `75075f0` | el home como campo oscuro, barra pegada al borde con centro dinámico, expensa con Pagar, hoja de pago liviana, torta con data-viz |
+| D · Reservas | `974d05d` | calendario sin caja en carrusel, selector de espacio con foto, horarios en hoja |
+| E+F · Resto | `a24523d` | Mi edificio con zona, visitas por momento, historial con hora en columna, reclamos con estado visual, vacíos con identidad |
+
+## Criterios de aceptación de la ronda
+
+- [x] Home con jerarquía en 3 segundos: campo → estado → acción → accesos → lo de hoy
+- [x] Expensas muestra monto + estado + **Pagar** sin buscar, en el home y en R20
+- [x] Ningún bloque económico flotando sin agrupar: los subtotales viven en la composición
+- [x] El header deja de dominar: 60 px adentro del campo, sin banda propia
+- [x] La barra deja de ser la píldora negra genérica
+- [x] R05 sin calendario en caja
+- [x] Elegir fecha no alarga la pantalla: los horarios van en hoja (medido: 1300 → 1289 px)
+- [x] Se percibe el ámbito: piedra, pizarra, atardecer; foto del edificio en Mi edificio
+- [x] Más color y profundidad sin perder sobriedad: todo en tokens de baja saturación
+- [x] Las fotos aportan lugar: edificio, espacios, visita vigente
+- [x] Glass perceptible, y sólo donde hay algo detrás
+- [x] Los accesos rápidos son una familia de círculos
+- [x] La pila con profundidad: la de adelante manda, las de atrás se insinúan
+- [x] Datos y estados jerarquizados: importes más grandes, estados más chicos
+- [x] Nada verificado se rompió: reserva y visita de punta a punta con gestos reales,
+      barrido de las 27 vistas en claro y oscuro, recepción y login en pie
+- [x] Sin motion nuevo como parche: el zoom de fotos, la entrada de vistas y el giro
+      de la pila quedaron apagados hasta Motion 02
+
+## Para mirar
+
+`?p=app&v=r01&limpio=1` · `r20` · `r20&ref=pagar` · `r21` · `r05` · `r02` · `r06` ·
+`r09` · `r17`, cada uno con `&tema=oscuro`.
+
+## Pendiente
+
+- **Motion 02.** Todo lo que se apagó espera esa ronda: la pila no gira sola.
+- **Foto de la lavandería** (Q-05). Va en carbón con su ícono mientras tanto.
+- **"Pagar" dos veces en el home** (Q-06) y **widget vs. pila** (Q-07).
+- **Medio de pago actual / cambiar medio**: fuera por decisión, necesita modelo.
+
+---
+
+# LOCK V02 · 18/09/2026
+
+Pack: `CONDOTRACK_VISUAL_LOCK_V02_PACK`. Referencia funcional: Consorcio Abierto
+(simplicidad, no estética). Decisiones de Felipe antes de arrancar:
+Pagar sale del centro de la barra · calendario simple sin carrusel · la pila se
+arregla antes de reemplazarla · las cards de espacios salen de R05.
+Correcciones al plan: consolidar sin framework nuevo · "Ver composición" abre
+gráfico + rubros · éxito de reserva mínimo · F01 con nombre, día y horario
+directos · foto sólo donde hay un lugar.
+
+## Fase 0 · Bugs · **HECHA**
+
+| Bug | Causa | Arreglo | Verificado |
+|---|---|---|---|
+| **A1** la pila no se usaba | la siguiente asomaba 15 px | asoma 46 px por abajo, con su texto; contador "1 de 4" | toque real en la franja: pasa a "2 de 4" sin navegar |
+| **A2** "se traba" | **dos causas**. La grave: `Hoja` borraba su propio temporizador de cierre y el velo invisible quedaba encima de la pantalla comiéndose los toques. Además, la X de la hoja vivía adentro de la zona de arrastre, que capturaba el puntero | callbacks de cierre estables; captura recién a los 8 px. Y el calendario vuelve a un mes con flechas y gesto simple, sin carrusel | X real cierra, el velo se desmonta, el día 25 recibe el toque; arrastre real cambia de mes |
+| **A3** composición indirecta | 3 pasos hasta la torta | "Ver composición" va a R21 con la torta ya visible | torta + 8 rubros al llegar |
+| **A4** se perdía el espacio | el elegido vivía sólo en la pantalla | se anota en el historial (`reemplazarRef`) | Cowork → detalle → volver: Cowork |
+| **A5** la hoja se reabría | "pagar" era una orden guardada en el historial | se consume al entrar | Pagar → Ya pagué → volver: sin hoja |
+
+Además: Pagar salió del centro de la barra. Hoy el centro dice **Pase**.
+
+## Fase 1 · Familias · **HECHA**
+
+Consolidación sobre lo que ya existía, sin componentes nuevos.
+
+- **Botones:** 15 variantes en pantallas (`principal`, `secundario`, `prim`,
+  `sec`, `widget-cta`, `volver-txt`, `marcar`, `dar-baja`, `cancelar-r`…) pasan a
+  tres niveles: `.entrar` (primario), `.btn-sec`, `.btn-ter`. Dos modificadores:
+  `compacto` (primario del ancho de su texto) y `peligro` (destructivo, en
+  cualquier nivel). Recepción no se tocó: sus `btn-desk` y `fila-op` quedan
+  como estaban
+- **Filas:** una sola escala en menús, paneles, tablas, documentos, personas y
+  opciones: título 15, metadata 12,5 en una línea
+- **Acordeón:** `Panel` acepta `color`, un filo a la izquierda de la paleta
+  data-viz, para los rubros de la fase 3
+- **Velos de foto:** dos tokens (`--velo-abajo`, `--velo-lado`) en lugar de uno
+  por pantalla
+- Barrido de las 27 vistas en claro y oscuro: limpio
+
+**Nota de verificación:** el navegador de pruebas congela las transiciones
+cuando no dibuja, y la regla de `prefers-reduced-motion` le deja a todo
+`transition: all`. Al cambiar de tema al cargar, algunos textos quedan en el
+color del tema anterior **sólo en ese navegador**. En uno real terminan en
+0,01 ms. Para las capturas se fuerzan a terminar.
+
+
+## Fase 2 · Copy y densidad · **HECHA**
+
+Regla: si una línea no cambia lo que la persona decide, se va.
+
+- **Subtítulos** debajo del título: fuera en Más, Notificaciones, Visitas, Pase,
+  Entregas, Reclamos, Perfil, Detalle de reserva, Votaciones e Historial
+- **Avisos:** los que explicaban cómo funciona el producto se sacaron (F01
+  recurrente, G10, R07, R08, R16). Los que avisan algo que pasó quedan en una
+  línea (R09, R15, R21, R24, pago informado)
+- **Formularios:** fuera las ayudas debajo de cada campo y las notas al pie
+  (F01, F02, PanelReclamo, R15). F03 conserva una sola: "Queda pendiente hasta
+  que administración lo confirme."
+- **Éxitos:** sin el bloque "registro" (F01, F02, F03, R05)
+- **Hojas:** una línea de consecuencia, no un párrafo ("El pase deja de servir
+  enseguida.", "No se puede cambiar.")
+- **Vacíos:** título corto sin párrafo ("Sin entregas", "Sin reservas"). El
+  texto de `Vacio` pasa a opcional. En Reclamos el vacío ya no repite "Hacer
+  un reclamo": el botón está arriba
+- **Home:** el widget habla corto ("Expensas", "2 visitas", "Pase activo",
+  "Entrega pendiente"); la card de historial muestra el último movimiento
+- **Área táctil:** las pestañas del widget y "Copiar" se ven igual pero
+  responden en 44 px
+- Barrido de las 27 vistas en claro y oscuro: sin desbordes. Quedan chicos los
+  "Reservar" de las cards de espacios de R05, que salen en la fase 3
+
+## Fase 3 · Expensas y Reservas · **HECHA**
+
+**Expensas** (D-36)
+- **R20** queda en el primer nivel: monto, vencimiento, estado, [Pagar], Ver
+  composición, Ver movimientos. Fuera la composición en paneles, el total y el
+  menú "Pagos y papeles" (repetía Movimientos y "Ya pagué")
+- **R21** abre con la torta. Pestañas Por rubro / Por proveedor arriba. Cada rubro
+  es un acordeón con el color de su porción y sus comprobantes adentro: ya no
+  sube una hoja. La torta pierde su leyenda (la lista es la leyenda). Al final,
+  **tu parte**: comunes (1,897 %), lavandería, cochera, total y el cupón
+- **R23**: el saldo arriba, grande, en la zona de la expensa. Movimientos en una
+  línea; el estado es el color del texto, no una pastilla en su propio renglón
+- Arreglado de paso: la participación se leía "1.897%" (mil ochocientos). Ahora
+  "1,897%"
+
+**Reservas** (D-37)
+- **R05** sin "Explorá los espacios". Las cards completas, con disponibilidad del
+  día y [Reservar], pasan a **Mi edificio · Espacios** (G15); la lavandería sale
+  sin foto también ahí
+- Confirmar con botón, no deslizando. Normas plegadas en un acordeón
+- Éxito: "Reserva confirmada", espacio, día y hora, [Listo] y [Ver reserva].
+  Listo vuelve a donde estabas
+
+**Verificado con toques reales:** Ver composición → torta y 8 rubros; abrir
+Sueldos muestra sus 3 comprobantes. Home → Reservar → día 20 → 14:00–16:00 →
+Confirmar reserva → éxito → Listo → Home. G15 → Reservar en Cowork → R05 con
+Cowork elegido. Barrido de las 27 vistas en claro y oscuro: limpio.
+
+## Fase 4 · Home, Mi edificio, Visitas y Reclamos · **HECHA**
+
+- **Home** (D-38): la expensa arriba, sin pestañas; tres accesos (Autorizar,
+  Reclamar, Reservar); la pila abajo. Nada se cuenta dos veces
+- **Mi unidad:** paneles con títulos cortos (Personas, Permisos permanentes); el
+  resumen de permisos dice quiénes, no cómo funciona el permiso
+- **Mi edificio · Edificio:** los dos contactos con la misma forma (quién, rol y
+  horario, Llamar / Escribir). Salieron los atajos a reclamos y entregas que cada
+  uno tenía. Los espacios, con sus cards completas (fase 3)
+- **Documentos:** una lista agrupada; cada fila es el documento y su descarga
+  (título, tipo · fecha, peso). `Descarga` acepta `meta` para ser esa fila
+- **F01** (D-39): nombre, día y horario; el resto en "Más datos". Sin subtítulo ni
+  ayudas. Todo entra en una pantalla de 812 px
+- **Visitas:** el vacío ya no repite el botón de arriba; fuera el subtítulo que
+  repetía el filtro elegido
+- **Reclamos:** ya estaba (fase 2): un solo "Hacer un reclamo", arriba
+- Barrido de las 27 vistas en claro y oscuro: limpio
+
+## Fase 5 · Pulido y lock · **HECHA**
+
+- **Fotos** (D-40): revisadas una por una. Todas son un lugar (edificio, espacios,
+  hall, fachada). Ninguna pantalla de plata o de datos tiene foto. No hizo falta
+  sacar ninguna
+- **Blur moderado:** 3 px en la foto de la zona de contexto de Mi edificio, con la
+  escala justa para que no se vea el borde
+- **CSS muerto:** 104 selectores de cosas que ya no existen (carrusel de meses,
+  leyenda de la torta, paneles de expensa, card por documento, widget viejo,
+  botones de antes de la fase 1). ~10 KB menos. Detectados cruzando cada clase del
+  CSS contra el código; los que se arman dinámicamente (`est-*`, `entra-*`,
+  `cruza-*`) quedaron
+- **Metadata en una línea** también en el resumen de los acordeones
+- Copy: la notificación "tiene un pase vigente hoy" pasa a "pase activo hoy"
+- **Documento del lock:** `10_VISUAL_LOCK_V02.md` (componentes, flujos, color, foto
+  y vidrio, medidas, copy, motion futuro, prohibiciones, abierto)
+- Barrido final de las 27 vistas en claro y oscuro: sin desborde, sin objetivos
+  chicos, lo último de cada pantalla por encima de la barra
+
+## Lock V02 · cierre
+
+Cinco fases, cinco commits. Recepción y Administración no se tocaron. No se agregó
+ninguna función ni movimiento. Lo que queda abierto está en la sección 9 de
+`10_VISUAL_LOCK_V02.md`.
+
+# RONDA FUERTE · CORRECCIÓN QUIRÚRGICA · 18/09/2026
+
+Pedido: no rediseñar de cero; restaurar la base aprobada y corregir sobre
+ella. Referencias: Mercado Pago (claridad, ritmo, jerarquía), iOS
+(comportamiento), CondoTrack (fotografía arquitectónica, vidrio, amarillo).
+
+**Restaurado:** el home con el widget de pestañas (Expensas · Visitas ·
+Entregas · Reservas) y la pila de "Lo de hoy" (commit `0e2dffa`). Se
+descartó el rediseño en curso (hero nuevo, panel único, primario negro con
+borde amarillo).
+
+| Pantalla / componente | Qué cambió |
+|---|---|
+| **Home** | Fachada real atrás del campo, con luz cálida filtrada. Pestañas, accesos y Composición/Movimientos en vidrio. "Vence 20 sep · ● Pendiente" en una línea. Sin "Contactar". Pila con puntos, deslizable, cards del mismo alto; "Hoy, en casa" vuelve como rótulo |
+| **Pagar (primario)** | Amarillo con relieve y estado al presionar; no una cápsula plana |
+| **G01 Login** | Fachada de fondo, card de vidrio oscuro, "Ingresar" claro. Sin subtítulo ni texto de alta |
+| **R07 Pase** | Card carbón lisa; la atmósfera queda atrás. Código y Copiar juntos, Compartir primario, Dar de baja como texto. Sin "se activa 30 minutos antes" |
+| **R21 Gastos** | Sin bloque negro: título → período → donut con el total → pestañas → desglose de una línea con el color de su porción. El detalle se abre desde la fila |
+| **R23 Estado de cuenta** | Card de saldo con el lenguaje del home (fachada, luz cálida, cifra grande). Movimientos: período, fecha, monto; estado sólo si no está pagada |
+| **R20 Expensas** | "Expensas", fachada atrás, Composición y Movimientos como botones |
+| **R05 Reservas** | Calendario más corto (sin la semana del mes siguiente), día elegido en círculo amarillo. Hoja: horarios en chips → Continuar → "SUM / 25 sep · 14:00 / Confirmar reserva" → éxito de una línea |
+| **Más** | Filas iOS: ícono, título, a lo sumo una línea de estado, chevron sin círculo. Sin descripciones que explican |
+| **Mi edificio** | Fachada sin blur, pestañas como control segmentado de vidrio, sin volanta repetida. Personas: nombre, vínculo, teléfono. Contactos compactos con botones de ícono. Espacios: "Hoy · N horarios". Documentos: "PDF · peso" y descarga |
+| **Formularios** | Sin subtítulos ni avisos de error que repiten el del campo. "Enviar reclamo". F01: "Autorizar visita" sin "Deslizá"; el pulgar amaga el gesto. La tira de días se arrastra con mouse |
+| **Tipografía** | Sin mayúsculas sostenidas en títulos de sección, volantas y rótulos del residente |
+| **Atmósfera** | Luz filtrada cálida (champagne, piedra, oliva); ningún ámbito lleva amarillo ni azul |
+| **Motion** | La pantalla entra del lado de la navegación, el mes del lado de la flecha, la cara del widget se corre con su pestaña, la pila se desplaza. `?motionforce=1` lo muestra aunque el sistema pida reducir movimiento |
+
+**Hallazgo:** el navegador de pruebas tiene "reducir movimiento" activo; con
+esa preferencia la app apaga el movimiento a propósito. Para la demo:
+`?motionforce=1`.
+
+**Verificado a mano:** pila (toque, arrastre, puntos, botones de la card),
+reserva completa (día → 14:00 → Continuar → Confirmar → éxito), tira de días
+de F01 (arrastre con mouse y toque), fila de rubro ↔ porción del donut,
+volver con dirección. Barrido de 27 vistas × 2 temas: sin desbordes, sin
+imágenes rotas, nada tapado por la barra.
+
+**Motion no está cerrado:** queda la pasada específica.
+
+# FASE 1 · SYSTEM LOCK · 19/09/2026 · **HECHA**
+
+Cierre del sistema visual compartido. No se tocó arquitectura, navegación,
+orden de bloques, layouts, flujos, Home, calendario, barra inferior, widget
+central ni motion. Cinco commits.
+
+| Capa | Fuente única |
+|---|---|
+| **Tipografía** | `--t-titulo` 28 · `--t-seccion` 19 · `--t-fila` 16 · `--t-cuerpo` 15 · `--t-meta` 13 · `--t-label` 12 · `--t-cifra` 48 (cifras protagonistas). Satoshi sigue por Fontshare |
+| **Botones** | `.entrar` (primario carbón; hueso sobre foto o carbón) · `.entrar.acento` (amarillo, se pide) · `.entrar.pagar` (carbón translúcido + filo amarillo; amarillo al presionar) · `.entrar.peligro` · `.btn-sec` 44 · `.btn-ter` quieto · ícono 44. Alturas 52/44/40, radio 14, foco amarillo |
+| **Material** | `--glass-light` / `--glass-dark` + `--glass-blur`, sólo sobre foto. Sobre fondo plano, superficie sólida |
+| **Profundidad** | L0 fondo · L1 `--sup` + `--borde` + `--sombra-1` · L2 `--sombra-2` / `--sombra-2-sube` |
+| **Estados** | Punto + etiqueta (`.pastilla`, `.reclamo-f .estado-r`) con los colores `--est-*` existentes |
+| **Íconos compartidos** | 16 (chevrons, en línea, quietos) · 20 (filas, botones, volver) · 24 reservado |
+
+**Recepción** conserva su primario amarillo, sus pastillas y el `h2.sec` en
+mayúsculas como excepción `.desk`, hasta su propia fase.
+
+**QA:** firma de layout de 10 pantallas contra la base (sólo se movió lo
+esperado: `.ayuda` de Recuperar quitada, botón de ícono 48 → 44); barrido de
+27 vistas × 2 temas limpio; revisión visual de Home, Login, Recuperar, Pase,
+Reservas, Más, Estado de cuenta, Mi edificio y Gastos; `next build` limpio.
+
+# FASE 2B · HOME · 19/09/2026 · **HECHA**
+
+Pulido visual sobre el Home lock. No se tocó arquitectura, tabs, monto,
+accesos rápidos, barra inferior, rutas ni copy.
+
+| Punto | Qué quedó |
+|---|---|
+| **Fondo del hero** | La misma fachada, fuera de foco a 16 px. El desenfoque va en la capa de atmósfera (`backdrop-filter`) y no en la imagen, igual que en el login 2A: sin halos, sin escalar, sin corrimiento lateral |
+| **Marca de agua** | Se retiró el isotipo gigante del campo (`.zc-iso` sólo en el home; en zona-ctx sigue) |
+| **Pagar** | Variante `.pagar` con el mismo vidrio oscuro que los secundarios y un filo amarillo al 55 %: integrado al widget. Al presionar, amarillo con texto carbón |
+| **Pendiente** | "Vence 20 sep · Pendiente" es una línea secundaria: punto de 6 px, mismo peso que el vencimiento, sin halo |
+| **Cards de Lo de hoy** | Sin filo: se separan por foto, contraste y sombra `--sombra-2` |
+| **Lo de hoy** | Pila vertical gobernada por el scroll (`position:sticky`, escalón de 7 px por índice). Sin gesto horizontal, sin puntos, sin "1 de 4" |
+| **Onboarding** | "Empezar" queda centrado en todo el ancho del botón; el pulgar amarillo no lo corre |
+
+**Para la fase de motion (3):** el apilado es sólo CSS y responde a rueda,
+trackpad y dedo. Lo que falta es el refinamiento fino: atenuar o escalar
+apenas la card que queda atrás mientras la siguiente la tapa
+(`animation-timeline: view()` donde esté disponible, con el estado actual
+como base). Nada de eso debe volver a introducir gesto lateral.
+
+## Fase 2B.2 · terminación del Home · **HECHA**
+
+- **Vértices del campo.** El halo gris de las esquinas de abajo eran dos
+  cosas sumadas: la capa de atmósfera con `backdrop-filter` (que se comía
+  el fondo claro de la página hacia adentro del radio) y la sombra del
+  campo cayendo sobre ese mismo fondo. El desenfoque volvió a la foto
+  —agrandada un 12 % para que el borde lavado quede fuera del recorte— y
+  la sombra se retiró: el campo es una masa oscura sobre página clara y
+  no necesita sombra para separarse.
+- **Lo de hoy.** Las tres cards con foto comparten un solo velo: fade
+  horizontal de izquierda a derecha, donde vive el texto, más un cierre
+  suave abajo. La foto de visitas baja a 0,82 de opacidad con un poco de
+  gris, para que el título mande.
+
+**Próxima fase (2D · Reservas):** se trabaja con la referencia de
+calendario enviada: pastillas de fechas arriba, calendario limpio y
+aireado, composición simple y CTA sobrio. En esta pasada no se tocó nada
+del calendario.
+
+# CORRECCIÓN VISUAL V3 · RESIDENTE · 20/09/2026
+
+Seis commits sobre el estado actual del repo, con las capturas de
+`01_CURRENT_ERRORS` como fuente de verdad estructural y las referencias
+como patrón puntual. No se tocó Recepción ni Administración.
+
+| # | Qué |
+|---|---|
+| 1 | **Login + Home.** Autofill de Chrome tapado con sombra interna del color del campo. Pagar deja el filo amarillo y usa el primario del sistema, el mismo de Ver pase y Ver entrega |
+| 2 | **Autorizar visita + éxito.** Rail de fechas sin caja por día, horarios en la misma familia, "Más datos" como fila, CTA primario en vez del deslizable, éxito centrado con jerarquía |
+| 3 | **Reservas.** El espacio pasa a rail compacto con foto chica; el calendario es el contenido principal y usa el mismo lenguaje de fecha; horarios y confirmación en la misma familia |
+| 4 | **Más e internas.** Listas a sangre con separadores sangrados, ícono suelto, sin card adentro de card. Reclamos abre en la primera pestaña con contenido |
+| 5 | **Entregas.** Detalle sin repetir tipo/remitente cuatro veces: estado protagonista, quién y cuándo, foto real de recepción si existe, datos y historial. Lista en la familia de filas |
+| 6 | **Expensas y Gastos.** La fila Expensas de Más sale (llevaba al hero duplicado); Estado de cuenta es el destino canónico, con saldo compacto sin foto ni punto y movimientos en lista. Proveedores tiene donut y color; los períodos sin detalle dicen dónde está; los nombres largos entran mejor |
+
+**QA:** 26 vistas × 2 temas a 390×844 sin desbordes, sin imágenes rotas,
+todo en Satoshi y sin objetivos por debajo de 36 px; flujos de autorizar
+visita, reservar, entregas y gastos probados a mano; `next build` limpio.

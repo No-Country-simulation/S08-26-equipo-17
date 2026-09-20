@@ -1,34 +1,36 @@
 "use client";
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { Icon, type NombreIcono } from "./Icon";
 
-/** Primary Context Widget (04 · sistema de componentes).
+/** Primary Context Widget (ronda visual 01, §4).
  *
- *  Un solo bloque arriba del home que responde "cómo estoy" en cuatro
- *  estados: Expensas, Visitas, Entregas, Reservas. Los tabs viven ADENTRO
- *  del widget, no arriba —eso es lo que se extrae de REF_02—, y la cifra
- *  grande no lleva card propia: se apoya sobre el campo tonal del fondo.
- *  Debajo, a lo sumo tres datos chicos.
+ *  No es una card: es el campo. Vive adentro de la zona oscura de arriba
+ *  del home, y la cifra se apoya directo sobre ella, centrada, sin caja.
  *
- *  Motion (05): al cambiar de pestaña, crossfade con un desplazamiento
- *  corto en X, 180 ms, ease-out. El sentido sale de hacia dónde te
- *  moviste. Con prefers-reduced-motion el contenido cambia sin
- *  desplazamiento, pero cambia igual. */
+ *  Cada cara responde UNA pregunta y trae UNA acción primaria:
+ *    Expensas → cuánto debo, cuándo vence, qué hago
+ *    Visitas  → cuántas, cuál es el pase que importa
+ *    Entregas → qué tengo para retirar
+ *    Reservas → cuál es la próxima
+ *  Debajo, a lo sumo dos enlaces. Nada de métricas sueltas: los
+ *  subtotales y porcentajes viven en el detalle (§5.2).
+ *
+ *  Los tabs son un control segmentado en vidrio, que acá sí tiene algo
+ *  detrás (§1.5). Lo activo se marca con relleno y peso, no con amarillo:
+ *  el amarillo es de la acción. */
 
 export type EstadoWidget = {
   id: string;
-  /** Lo que dice el tab. Corto: entran cuatro en 390 px. */
   rotulo: string;
   volanta: string;
-  /** La cifra o el dato grande. Es texto ya formateado. */
   titular: string;
+  /** El titular es un nombre y no una cifra: baja un escalón. */
+  titularTexto?: boolean;
   detalle?: string;
   pastilla?: { texto: string; icono?: NombreIcono; apagada?: boolean };
-  /** Hasta tres. El cuarto no se muestra. */
-  datos?: { k: string; v: string }[];
-  accion?: { rotulo: string; icono?: NombreIcono; onIr: () => void };
-  /** Escotilla para un estado que no entra en la forma de arriba. */
-  extra?: ReactNode;
+  primaria?: { rotulo: string; icono?: NombreIcono; onIr: () => void };
+  /** Hasta dos. El tercero no se muestra. */
+  enlaces?: { rotulo: string; icono?: NombreIcono; onIr: () => void }[];
 };
 
 export function WidgetPrincipal({
@@ -41,18 +43,12 @@ export function WidgetPrincipal({
   inicial?: number;
 }) {
   const [n, setN] = useState(Math.min(inicial, Math.max(0, estados.length - 1)));
-  const [sentido, setSentido] = useState<"izq" | "der" | null>(null);
+  const [cruce, setCruce] = useState("");
   if (estados.length === 0) return null;
   const act = estados[Math.min(n, estados.length - 1)];
 
-  function elegir(i: number) {
-    if (i === n) return;
-    setSentido(i > n ? "izq" : "der");
-    setN(i);
-  }
-
   return (
-    <section className="widget" aria-label={etiqueta}>
+    <section className="widget en-campo" aria-label={etiqueta}>
       <div className="widget-tabs" role="tablist" aria-label={etiqueta}>
         {estados.map((e, i) => (
           <button
@@ -63,53 +59,46 @@ export function WidgetPrincipal({
             aria-selected={i === n}
             aria-controls={"wp-" + e.id}
             tabIndex={i === n ? 0 : -1}
-            onClick={() => elegir(i)}
+            onClick={() => { if (i !== n) setCruce(i > n ? "cruza-izq" : "cruza-der"); setN(i); }}
           >
             {e.rotulo}
           </button>
         ))}
       </div>
 
-      <div
-        key={act.id}
-        className={"widget-panel" + (sentido ? " cruza-" + sentido : "")}
-        role="tabpanel"
-        id={"wp-" + act.id}
-        aria-labelledby={"wt-" + act.id}
-        tabIndex={0}
-      >
-        <span className="vol">
-          <span>{act.volanta}</span>
-          {act.pastilla && (
-            <span className={"pastilla" + (act.pastilla.apagada ? " gris" : "")}>
-              {act.pastilla.icono && <Icon n={act.pastilla.icono} s={13} w={2.2} />}
-              {act.pastilla.texto}
-            </span>
-          )}
-        </span>
+      <div key={act.id} className={"widget-panel " + cruce} role="tabpanel"
+        id={"wp-" + act.id} aria-labelledby={"wt-" + act.id} tabIndex={0}>
+        {act.volanta && <span className="vol">{act.volanta}</span>}
+        <b className={"cifra" + (act.titularTexto ? " texto" : "")}>{act.titular}</b>
 
-        <b className="cifra">{act.titular}</b>
-        {act.detalle && <i className="det">{act.detalle}</i>}
-
-        {act.datos && act.datos.length > 0 && (
-          <div className="widget-datos">
-            {act.datos.slice(0, 3).map((d) => (
-              <span key={d.k}>
-                <span className="k">{d.k}</span>
-                <b>{d.v}</b>
+        {(act.detalle || act.pastilla) && (
+          <span className="det">
+            {act.detalle && <span>{act.detalle}</span>}
+            {act.pastilla && (
+              <span className={"pastilla" + (act.pastilla.apagada ? " gris" : "")}>
+                {act.pastilla.icono && <Icon n={act.pastilla.icono} s={12} />}
+                {act.pastilla.texto}
               </span>
-            ))}
-          </div>
+            )}
+          </span>
         )}
 
-        {act.extra}
-
-        {act.accion && (
-          <button className="widget-accion" type="button" onClick={act.accion.onIr}>
-            <Icon n={act.accion.icono ?? "documento"} s={17} w={1.8} />
-            <i>{act.accion.rotulo}</i>
-            <Icon n="chevron" s={16} w={2.2} />
+        {act.primaria && (
+          <button className="entrar compacto" type="button" onClick={act.primaria.onIr}>
+            {act.primaria.icono && <Icon n={act.primaria.icono} s={20} />}
+            {act.primaria.rotulo}
           </button>
+        )}
+
+        {act.enlaces && act.enlaces.length > 0 && (
+          <span className="widget-enlaces">
+            {act.enlaces.slice(0, 2).map((e) => (
+              <button key={e.rotulo} className="btn-sec claro" type="button" onClick={e.onIr}>
+                {e.icono && <Icon n={e.icono} s={16} />}
+                {e.rotulo}
+              </button>
+            ))}
+          </span>
         )}
       </div>
     </section>

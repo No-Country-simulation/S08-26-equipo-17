@@ -6,11 +6,13 @@ export type NombreIcono =
   | "credencial" | "reloj" | "pin" | "qr" | "check" | "casa" | "puntos"
   | "ojo" | "info" | "alerta" | "documento" | "lista" | "engranaje" | "salir"
   | "sol" | "luna" | "sobre" | "candado"
-  | "rayo" | "herramienta" | "obra" | "escudo" | "banco" | "maletin" | "chispa";
+  | "rayo" | "herramienta" | "obra" | "escudo" | "banco" | "maletin" | "chispa"
+  | "torta" | "telefono" | "descarga" | "camara";
 
 const trazos: Record<NombreIcono, ReactNode> = {
   campana: <><path d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 13 6 9Z" /><path d="M10.2 18.5a2 2 0 0 0 3.6 0" /></>,
   volver: <path d="M19 12H6M12 5l-7 7 7 7" />,
+  camara: <><path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h2.2a1 1 0 0 0 .84-.46l.92-1.42A1 1 0 0 1 9.3 4.6h5.4a1 1 0 0 1 .84.52l.92 1.42a1 1 0 0 0 .84.46h2.2A1.5 1.5 0 0 1 21 8.5v9A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5Z" /><circle cx="12" cy="12.6" r="3.4" /></>,
   flechaDer: <path d="M5 12h13M12 5l7 7-7 7" />,
   flechaDiag: <><path d="M7 17 17 7" /><path d="M8.5 7H17v8.5" /></>,
   chevron: <path d="m9 5 7 7-7 7" />,
@@ -36,6 +38,9 @@ const trazos: Record<NombreIcono, ReactNode> = {
   engranaje: <><circle cx="12" cy="12" r="3.1" /><path d="M19.4 14.6a1.7 1.7 0 0 0 .34 1.87l.06.06a1.9 1.9 0 1 1-2.7 2.7l-.06-.06a1.7 1.7 0 0 0-2.88 1.2v.18a1.9 1.9 0 1 1-3.8 0v-.1a1.7 1.7 0 0 0-2.94-1.12l-.06.06a1.9 1.9 0 1 1-2.7-2.7l.06-.06A1.7 1.7 0 0 0 3.6 13.6h-.18a1.9 1.9 0 1 1 0-3.8h.1a1.7 1.7 0 0 0 1.12-2.94l-.06-.06a1.9 1.9 0 1 1 2.7-2.7l.06.06A1.7 1.7 0 0 0 10.2 4.6v-.18a1.9 1.9 0 1 1 3.8 0v.1a1.7 1.7 0 0 0 2.94 1.12l.06-.06a1.9 1.9 0 1 1 2.7 2.7l-.06.06a1.7 1.7 0 0 0-.24 2.06" /></>,
   sobre: <><rect x="2.8" y="5" width="18.4" height="14" rx="2.6" /><path d="m3.4 6.6 8.6 6 8.6-6" /></>,
   candado: <><rect x="4.4" y="10.2" width="15.2" height="10.4" rx="2.8" /><path d="M8 10.2V7.6a4 4 0 0 1 8 0v2.6" /></>,
+  torta: <><path d="M12 3.4a8.6 8.6 0 1 0 8.6 8.6H12Z" /><path d="M15 3.9a8.6 8.6 0 0 1 5.1 5.1H15Z" /></>,
+  telefono: <path d="M6.6 3.6h2.6l1.4 4.1-2 1.5a11.6 11.6 0 0 0 6.2 6.2l1.5-2 4.1 1.4v2.6a2 2 0 0 1-2.1 2A16.4 16.4 0 0 1 4.6 5.7a2 2 0 0 1 2-2.1Z" />,
+  descarga: <><path d="M12 4v11.2M7.2 10.6 12 15.4l4.8-4.8" /><path d="M5 19.4h14" /></>,
   /* rubros de gasto */
   rayo: <path d="M13.4 2.8 5.6 13.4h5.2l-.6 7.8 7.8-10.6h-5.2Z" />,
   herramienta: <><path d="M14.8 6.2a3.8 3.8 0 0 1 5.1 4.9l-8.6 8.6a2.2 2.2 0 0 1-3.1-3.1l8.6-8.6" /><path d="M8.6 4.2 4.2 8.6l2.6 2.6 4.4-4.4Z" /></>,
@@ -49,12 +54,29 @@ const trazos: Record<NombreIcono, ReactNode> = {
   salir: <><path d="M14.4 4.6H6.8a2 2 0 0 0-2 2v10.8a2 2 0 0 0 2 2h7.6" /><path d="M17.6 15.4 21 12l-3.4-3.4M20.4 12H10" /></>,
 };
 
+/** El trazo lo fija el sistema según el tamaño, no cada pantalla.
+ *  Había llamadas con 1.7, 1.8, 1.9, 2.1, 2.2 y 2.4 para íconos del mismo
+ *  tamaño: la misma familia se veía de cuatro pesos distintos y ninguno
+ *  conversaba con Satoshi. Ahora un ícono chico lleva un trazo más firme
+ *  —si no, desaparece— y uno grande, uno más fino. Los puntos de "Más"
+ *  son la única excepción: con el trazo normal son tres motas. */
+const trazo = (n: NombreIcono, s: number) =>
+  n === "puntos" ? 2.8 : s <= 15 ? 2.2 : s <= 18 ? 2 : s <= 22 ? 1.8 : 1.65;
+
 export function Icon({
-  n, s = 20, w = 1.9, color,
-}: { n: NombreIcono; s?: number; w?: number; color?: string }) {
+  n, s = 20, color,
+}: {
+  n: NombreIcono;
+  s?: number;
+  /** Ya no se usa: el trazo sale de `trazo()`. Queda para no romper las
+   *  llamadas existentes. */
+  w?: number;
+  color?: string;
+}) {
   return (
     <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={color ?? "currentColor"}
-      strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      strokeWidth={trazo(n, s)} strokeLinecap="round" strokeLinejoin="round"
+      aria-hidden="true" focusable="false">
       {trazos[n]}
     </svg>
   );

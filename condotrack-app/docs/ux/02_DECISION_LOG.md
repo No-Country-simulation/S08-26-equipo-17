@@ -187,6 +187,121 @@ pantalla de recepción.
 
 ---
 
+## Ronda visual 01 · 18/09/2026
+
+### D-25 · El centro de la barra es dinámico · REQUISITO (ronda visual 01, §3)
+Lo eligió Felipe entre cinco opciones. El centro no es un destino: es la acción
+que más conviene ahora, por un orden de prioridad fijo y escrito en `PillNav.tsx`:
+
+1. la expensa vence en 5 días o menos, o ya venció, y no está paga → **Pagar**
+2. hay un pase vigente → **Pase**
+3. hay algo para retirar en recepción → **Retirar**
+4. hay una reserva hoy → **Reserva**
+5. nada de lo anterior → **Acceso**
+
+El orden es una **hipótesis de producto**: no hay datos de uso. El dinero con fecha
+va primero porque es lo único con consecuencia si se pasa. El centro es una acción
+y no se marca activo.
+**Deroga:** el centro fijo en Acceso de D-04. Los cinco lugares de la barra siguen.
+**Consecuencia:** `r07` y `f01` pasan a colgar de Mi edificio en el mapa `PADRE`.
+
+### D-26 · Los filtros no marcan con amarillo · DISEÑO
+`Chips` marca lo elegido con el sólido del texto. Con el primario ya amarillo, un
+filtro amarillo al lado no dejaba claro cuál era el botón (§1.2, §15).
+**Recorta:** D-05, que permitía amarillo en "elemento seleccionado". Queda para la
+acción primaria, la fecha elegida y la señal del día (el pase vigente).
+
+### D-27 · El home es un campo oscuro, en los dos temas · DISEÑO
+La parte de arriba del home es una sola superficie carbón con luz cálida y el
+isotipo V2 como marca de agua: contiene el header, el estado y los accesos (§1.1,
+§4). Es oscura también en tema claro porque el carbón es color de marca y así el
+home se lee por bloques antes de leer texto. Referencia: la que mandó Felipe con
+la ronda.
+
+### D-28 · Un matiz de ambiente por ámbito de la IA · DISEÑO
+El campo atmosférico se tiñe según dónde estás: piedra cálida (Mi edificio),
+pizarra (Expensas), atardecer (Reservas), carbón (Acceso), neutro el resto. Son
+cuatro ámbitos fijos en tokens, no un color por ruta (§1.2, §1.4, §17).
+**Deroga:** el campo tonal único de D-03, que era un solo `linear-gradient`.
+
+### D-29 · `ZonaContexto`: la zona de arriba te dice dónde estás · DISEÑO
+Foto del lugar a sangre, o el campo del ámbito con el isotipo casi invisible, con
+el volver flotando en vidrio. Reemplaza a `TopBar` + título en Mi edificio (las
+tres pestañas) y Expensas. Es la sexta pieza del sistema.
+**Recorta:** "cinco componentes, y ninguno más" de `04_COMPONENT_SYSTEM`.
+
+### D-30 · Paleta de data-viz propia, que no es de marca · DISEÑO
+Ocho tonos (`--dv-1…8`) de saturación media, separados en matiz. Sólo en
+gráficos y leyendas. En la torta, elegir un rubro lo saca del anillo y apaga los
+demás; ya no lo pinta de amarillo (§5.6).
+**Deroga:** la escala de grises de los rubros.
+
+### D-31 · Botones en tres niveles · DISEÑO
+Primario amarillo sólido (`.entrar`), secundario sólido o vidrio sobre foto
+(`.btn-sec`), terciario texto subrayado (`.btn-ter`). Una sola acción primaria por
+pantalla (§15).
+**Deroga:** `.entrar` como contorno.
+
+### D-32 · Glass sólo cuando hay algo detrás · DISEÑO
+Sobre foto, sobre el campo oscuro del home, en la barra y en las hojas (§1.5).
+**Deroga:** el tono `sobrio` de `BotonGlass` sobre el crema (D-18) y parte de D-06:
+Administración y Recepción dejan de llevar el botón firma y pasan a ser un acceso
+más, "Contactar" (§2).
+
+### D-33 · Calendario: carrusel de meses, marca chica · REQUISITO (ronda visual 01, §9)
+Lo eligió Felipe: la grilla de mes queda (D-08), sin la caja. Los meses se deslizan
+con scroll nativo y los vecinos asoman desvanecidos. El día elegido lleva una marca
+del tamaño del número, no el círculo que ocupaba la celda. Elegir un día abre una
+**hoja** con los horarios y la confirmación: la pantalla ya no crece.
+**Revisa:** D-08 ("círculo sólido", "los horarios aparecen después" abajo).
+
+### D-34 · Pagar sale del centro de la barra · REQUISITO (lock V02)
+Lo decidió Felipe: la barra no repite una acción que la pantalla ya muestra. El
+centro dinámico va por Pase → Retirar → Reserva → Acceso. Pagar vive en el home y
+en la expensa como acción de contexto.
+**Revisa:** D-25. **Cierra:** Q-06.
+
+### D-35 · Calendario: un mes, flechas y gesto simple · REQUISITO (lock V02)
+Sin carrusel ni scroll nativo: se trababa (A2). Grilla limpia, flechas y un
+arrastre horizontal que cambia de mes pasados 60 px.
+**Revisa:** D-33 (el carrusel). La marca chica y la hoja de horarios siguen.
+
+### D-36 · "Ver composición" abre gráfico + rubros · REQUISITO (lock V02)
+La expensa (R20) queda en su primer nivel: monto, vencimiento, estado, Pagar, Ver
+composición, Ver movimientos. La composición es R21 con la torta a la vista y cada
+rubro como acordeón con el color de su porción; la torta ya no lleva leyenda
+propia. Estado de cuenta: el saldo arriba y movimientos en una línea.
+**Decisión de diseño:** tu parte (comunes, propios, total y cupón) va al final de
+R21. Si Felipe la quiere en la expensa, es una tabla de tres filas.
+
+### D-37 · Reservar en cinco pasos y éxito mínimo · REQUISITO (lock V02)
+espacio → día → hoja de horarios → confirmar → éxito → volver. Las cards de
+espacios salen de R05 (repetían el selector) y viven en Mi edificio · Espacios.
+Confirmar es un botón: la reserva se cancela desde Mis reservas, no es
+irreversible (D-10). Las normas van plegadas. El éxito es "Reserva confirmada",
+espacio, día y hora, [Listo] y [Ver reserva].
+
+### D-38 · Home: la expensa, tres accesos y lo de hoy · REQUISITO (lock V02)
+El widget muestra una sola cara, la expensa: es la situación que no apila (D-09) y
+el orden sigue fijo (D-14). Las caras de visitas, entregas y reservas repetían la
+pila y salieron. Con una sola cara no hay pestañas. Tres accesos: Autorizar,
+Reclamar, Reservar; "Contactar" salió porque los contactos están en Mi edificio.
+**Cierra:** Q-07. **Revisa:** el widget de cuatro caras de la ronda visual 01 (§4).
+
+### D-39 · Formularios: lo esencial a la vista, lo opcional plegado · REQUISITO (lock V02)
+F01 muestra nombre, día y horario. Documento, tipo, "se repite" y la nota van en
+"Más datos", un acordeón que resume lo elegido y se abre solo si hay un error
+adentro. El deslizar sigue al final: emitir el pase es lo irreversible (D-10).
+
+### D-40 · Foto sólo donde hay un lugar; la plata en superficie tonal · REQUISITO (lock V02)
+Lo pidió Felipe: pulir no es poner foto en todas partes. Foto para el edificio, los
+espacios, el hall de visitas y la fachada. Expensa, composición, estado de cuenta,
+medios e informar pago van en el campo tonal de su ámbito. La foto de la zona de
+contexto lleva un desenfoque moderado (3 px). El sistema completo queda en
+`10_VISUAL_LOCK_V02.md`.
+
+---
+
 ## Derogadas
 
 | Decisión anterior | Dónde vivía | Qué la reemplaza |
@@ -203,10 +318,31 @@ pantalla de recepción.
 | Swipe para autorizar visita | `R06.tsx` | D-10 |
 | Búsqueda global con índice | `source/01` §5 | D-13 |
 | Home que se reordena por contexto | spec de arquitectura §26 | D-14 |
+| Centro fijo en Acceso | D-04 | D-25 |
+| Amarillo en el filtro elegido | D-05, `Chips` | D-26 |
+| Campo tonal de un solo `linear-gradient` | D-03 | D-28 |
+| Rubros en escala de grises | `Torta.tsx` | D-30 |
+| `.entrar` como contorno | `globals.css` | D-31 |
+| `BotonGlass` tono `sobrio` sobre crema; botón firma en Administración y Recepción | D-18, D-06 | D-32 |
+| Círculo sólido en el día elegido; horarios abajo del calendario | D-08 | D-33 |
+| Pagar en el centro de la barra | D-25 | D-34 |
+| Carrusel de meses con scroll nativo | D-33 | D-35 |
+| Composición en paneles debajo de la expensa; leyenda de la torta | `R20.tsx`, `Torta.tsx` | D-36 |
+| Cards de espacios en Reservas; deslizar para confirmar la reserva | `R05.tsx` | D-37 |
+| Widget del home con cuatro caras; acceso "Contactar" | `R01.tsx`, `WidgetPrincipal.tsx` | D-38 |
 
 ---
 
 ## Preguntas abiertas
+
+**Q-05 · Foto de la lavandería.** No hay una en el repo: `lib/data.ts` le asigna la
+del cowork, que es otro lugar. Mientras no llegue, la lavandería va en carbón con
+su ícono. **No bloquea.**
+
+**Q-06 · "Pagar" dos veces en el home.** **Cerrada por D-34:** Pagar salió del
+centro de la barra.
+
+**Q-07 · El widget y la pila cuentan lo mismo.** **Cerrada por D-38:** el widget quedó con la expensa.
 
 **Q-01 · "El mockup con la cámara".** Felipe marcó que el bloque negro del home es
 enorme y agregó "tendríamos que hacer el mockup con la cámara correctamente".

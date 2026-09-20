@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Icon } from "../ui/Icon";
 import { TopBar } from "../ui/TopBar";
-import { Ficha, Dato } from "../ui/Panel";
 import { Linea, type Hito } from "../ui/Linea";
 import { Hoja } from "../ui/Hoja";
 import { Error as ErrorEstado, Aviso } from "../ui/Estados";
@@ -26,7 +25,6 @@ export function R16({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
         <TopBar volverA="r06" ir={ir} />
         <ErrorEstado
           titulo="No encontramos esa autorización"
-          texto="Puede que se haya dado de baja. Volvé a la lista de visitas y elegila de nuevo."
           onReintentar={() => ir("r06")}
         />
       </div>
@@ -55,53 +53,45 @@ export function R16({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
       <TopBar volverA="r06" ir={ir} />
 
       <div className="cabecera-ent">
-        <span className="et">{ROTULO_TIPO_VISITA[v.tipo]} · Unidad {v.unidad}</span>
+        <span className="et">{ROTULO_TIPO_VISITA[v.tipo]}</span>
         <h1>{v.nombre}</h1>
-        <p>{v.dia ? `${v.dia} · ${v.horario}` : `${diaEnPalabras(new Date(v.fecha))} · ${v.horario}`}</p>
       </div>
 
-      <div className="estado-exp">
-        <span className={"pastilla" + (v.estado === "vigente" ? "" : " gris")}>
-          <Icon n={v.estado === "vigente" ? "check" : v.estado === "cancelada" ? "alerta" : "reloj"} s={13} w={2.2} />
+      {/* La llave: quién entra, cuándo puede entrar, en qué estado está y
+          con qué pase. Lo administrativo va después, no en una ficha. */}
+      <section className={"acceso" + (v.estado === "vigente" ? " vigente" : "")} aria-label="Acceso">
+        <span className={"estado-acceso" + (v.estado === "vigente" ? "" : " gris")}>
           {v.estado === "vigente" ? "Vigente"
             : v.estado === "programada" ? "Programada"
-            : v.estado === "cancelada" ? "Cancelada" : "Finalizada"}
+            : v.estado === "cancelada" ? "Dada de baja" : "Finalizada"}
         </span>
-        <span className="v">Pase {v.codigo}</span>
-      </div>
-
-      <Ficha>
-        <Dato k="Documento" v={v.documento ?? "No lo cargaste"} />
-        <Dato k="Se repite" v={v.recurrente ? "Todas las semanas" : "Una sola vez"} />
-        <Dato k="Autorizó" v={v.creadaPor} />
-        <Dato k="Creada" v={fechaCorta(v.creadaEl)} />
-        {v.nota && <Dato k="Nota para recepción" v={v.nota} ancho />}
-      </Ficha>
+        <b>{v.dia ? v.dia : diaEnPalabras(new Date(v.fecha))}</b>
+        <span className="franja">{v.horario}</span>
+        <div className="acceso-pie">
+          <span className="pase"><Icon n="qr" s={16} w={1.9} />Pase {v.codigo}</span>
+          {v.recurrente && <span className="repite">Todas las semanas</span>}
+        </div>
+      </section>
 
       {v.estado === "vigente" && (
-        <button className="entrar" type="button" onClick={() => ir("r07", v.id)} style={{ marginTop: 16 }}>
-          <Icon n="qr" s={18} w={1.8} />Ver el pase
+        <button className="entrar" type="button" onClick={() => ir("r07", v.id)} style={{ marginTop: 16, width: "100%" }}>
+          <Icon n="qr" s={20} w={1.8} />Ver el pase
         </button>
       )}
 
+      <div className="datos-quietos">
+        {v.documento && <p><span>Documento</span><b>{v.documento}</b></p>}
+        <p><span>Autorizó</span><b>{v.creadaPor}</b></p>
+        <p><span>Creada</span><b>{fechaCorta(v.creadaEl)}</b></p>
+        {v.nota && <p className="ancho"><span>Nota para recepción</span><b>{v.nota}</b></p>}
+      </div>
+
       <h2 className="sec">Historial del acceso</h2>
-      {hitos.length === 1 ? (
-        <Aviso icono="info">
-          Todavía no pasó nada más: la autorización existe pero nadie validó el pase
-          ni registró un ingreso.
-        </Aviso>
-      ) : null}
       <Linea hitos={hitos} />
 
-      <Aviso icono="candado">
-        Validar el pase y registrar el ingreso son dos acciones distintas de recepción.
-        Las dos quedan acá con su hora y su responsable.
-      </Aviso>
-
       {activa && (
-        <button className="dar-baja" type="button" onClick={() => setCancelar(true)}
-          style={{ marginTop: 16 }}>
-          <Icon n="alerta" s={16} w={2} />Dar de baja la autorización
+        <button className="btn-ter peligro baja" type="button" onClick={() => setCancelar(true)}>
+          Dar de baja la autorización
         </button>
       )}
 
@@ -110,7 +100,7 @@ export function R16({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
       {cancelar && (
         <Hoja
           titulo={`Dar de baja el pase de ${v.nombre}`}
-          texto="El pase deja de servir enseguida. Si llega igual, recepción va a ver que la autorización está dada de baja y te va a llamar."
+          texto="El pase deja de servir enseguida."
           confirmar="Dar de baja"
           peligro
           onConfirmar={() => { hacer({ t: "visita/cancelar", id: v.id }); setCancelar(false); ir("r06"); }}

@@ -1,6 +1,5 @@
 "use client";
 import { TopBar } from "../ui/TopBar";
-import { FinLista } from "../ui/FinLista";
 import { PanelMedios } from "../paneles/PanelMedios";
 import type { Vista } from "@/lib/data";
 
@@ -12,10 +11,7 @@ export function R22({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   return (
     <div className="vista" id="r22">
       <TopBar volverA="r20" ir={ir} />
-      <div className="tit">
-        <h1>Medios de pago</h1>
-        <p>Cómo pagar la expensa del consorcio.</p>
-      </div>
+      <div className="tit"><h1>Medios de pago</h1></div>
 
       <PanelMedios />
 
@@ -23,7 +19,6 @@ export function R22({ ir }: { ir: (v: Vista, ref?: string) => void }) {
         Informar un pago
       </button>
 
-      <FinLista texto="No hay más medios de pago" />
     </div>
   );
 }

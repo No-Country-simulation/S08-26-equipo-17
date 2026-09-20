@@ -24,7 +24,7 @@ export function TopBar({
     <div className="topbar">
       <button className="redondo" type="button" aria-label="Volver"
         onClick={() => (nav?.hayVuelta ? nav.volver() : ir(volverA))}>
-        <Icon n="volver" s={19} w={2.1} />
+        <Icon n="volver" s={20} w={2.1} />
       </button>
       <span className="ctx">{contexto}</span>
       {accion}

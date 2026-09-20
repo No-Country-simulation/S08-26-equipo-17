@@ -26,6 +26,8 @@ export const RECEPCION = {
   iniciales: "DS",
   rol: "Recepción",
   turno: "Turno mañana · 07:00–15:00",
+  telefono: "+54 9 11 4788 2210",
+  interno: "Interno 100",
 } as const;
 
 export const ADMINISTRACION = {
@@ -33,6 +35,8 @@ export const ADMINISTRACION = {
   iniciales: "MF",
   rol: "Administración",
   estudio: "Estudio Aráoz",
+  telefono: "+54 9 11 5233 9040",
+  mail: "admin@araoz1280.com.ar",
 } as const;
 
 export const CONTEXTO = `${EDIFICIO.nombre} · Unidad ${RESIDENTE.unidad}`;
@@ -276,7 +280,7 @@ export type Aviso = {
  *  la fecha de vencimiento real, así el "está por vencer" no miente. */
 export const AVISOS: Aviso[] = [
   { id: "n1", icono: "caja",       titulo: "Paquete recibido",        cuando: "Hace 18 min", desc: "Correo de Lucía para retirar en recepción", estado: "sinleer", va: "r08" },
-  { id: "n2", icono: "check",      titulo: "Visita autorizada",       cuando: "Hace 2 h",    desc: "Martín López tiene un pase vigente hoy",     estado: "leida",   va: "r06" },
+  { id: "n2", icono: "check",      titulo: "Visita autorizada",       cuando: "Hace 2 h",    desc: "Martín López · pase activo hoy",             estado: "leida",   va: "r06" },
   { id: "n3", icono: "calendario", titulo: "Reserva confirmada",      cuando: "Ayer",        desc: "SUM · hoy, 20:30–22:30",                     estado: "leida",   va: "r18" },
   { id: "n4", icono: "alerta",     titulo: "Reclamo actualizado",     cuando: "Ayer",        desc: "Ascensor Torre A · asignado a Ascensores Milano", estado: "leida", va: "r09" },
   { id: "n5", icono: "lista",      titulo: "Comunicado del edificio", cuando: "10 sep",      desc: "Corte de agua programado para el sábado",    estado: "archivada" },

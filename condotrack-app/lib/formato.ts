@@ -27,7 +27,7 @@ export function periodoLargo(periodo: string) {
 export function periodoCorto(periodo: string) {
   const [a, m] = periodo.split("-").map(Number);
   const d = new Date(a, m - 1, 1);
-  const t = df({ month: "short", year: "numeric" }).format(d).replace(".", "");
+  const t = df({ month: "short", year: "numeric" }).format(d).replace(".", "").replace("sept", "sep");
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
 
@@ -45,7 +45,12 @@ export const periodoActual = () => {
 
 /** ISO → "14 sep 2026" */
 export const fechaCorta = (iso: string) =>
-  df({ day: "numeric", month: "short", year: "numeric" }).format(new Date(iso)).replace(".", "");
+  df({ day: "numeric", month: "short", year: "numeric" }).format(new Date(iso)).replace(".", "").replace("sept", "sep");
+
+/** ISO → "14 sept" — para el vencimiento en primer nivel, donde el año
+ *  sobra: si vence este mes, nadie duda de qué año es. */
+export const diaMes = (iso: string) =>
+  df({ day: "numeric", month: "short" }).format(new Date(iso)).replace(".", "").replace("sept", "sep");
 
 /** ISO → "14 de septiembre" */
 export const fechaLarga = (iso: string) =>
@@ -54,7 +59,7 @@ export const fechaLarga = (iso: string) =>
 /** ISO → "14 sep · 14:20" */
 export const fechaHora = (iso: string) => {
   const d = new Date(iso);
-  return `${df({ day: "numeric", month: "short" }).format(d).replace(".", "")} · ${
+  return `${df({ day: "numeric", month: "short" }).format(d).replace(".", "").replace("sept", "sep")} · ${
     df({ hour: "2-digit", minute: "2-digit", hour12: false }).format(d)}`;
 };
 

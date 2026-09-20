@@ -46,13 +46,14 @@ function Tarjeta({
           const elegida = miVoto === o.id;
           const muestra = v.estado !== "proxima";
           return (
-            <button key={o.id} type="button" className={elegida ? "on" : ""}
+            <button key={o.id} type="button"
+              className={(elegida ? "on " : "") + (o.id === "si" ? "op-si" : o.id === "no" ? "op-no" : "")}
               disabled={!abierta || Boolean(miVoto)}
               aria-pressed={elegida}
               onClick={() => onVotar(o.id)}>
               {muestra && <span className="barra" style={{ width: `${pct}%` }} aria-hidden="true" />}
               <span className="tx">
-                {elegida && <Icon n="check" s={14} w={2.6} />}
+                {elegida && <Icon n="check" s={16} w={2.6} />}
                 {o.texto}
               </span>
               {muestra && <span className="pc">{votos} · {porciento(pct)}</span>}
@@ -79,16 +80,14 @@ export function R24({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   return (
     <div className="vista" id="r24">
       <TopBar volverA="mas" ir={ir} />
-      <div className="tit"><h1>Votaciones</h1><p>Las decisiones que se toman entre todos.</p></div>
+      <div className="tit"><h1>Votaciones</h1></div>
 
       <Aviso icono="info">
-        Vota una unidad, no una persona. El voto lo emite el titular y no se puede
-        cambiar una vez enviado.
+        Vota la unidad, y el voto no se puede cambiar.
       </Aviso>
 
       {VOTACIONES.length === 0 ? (
-        <Vacio icono="lista" titulo="No hay votaciones abiertas"
-          texto="Cuando el consorcio abra una votación, te avisamos y podés votar desde acá. Las cerradas quedan con su resultado." />
+        <Vacio icono="lista" titulo="Sin votaciones abiertas" />
       ) : (
         <>
           {VOTACIONES.map((v) => (
@@ -102,7 +101,7 @@ export function R24({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       {pendiente && (
         <Hoja
           titulo="Confirmar el voto"
-          texto={`Vas a votar "${pendiente.v.opciones.find((o) => o.id === pendiente.opcionId)?.texto}" en "${pendiente.v.titulo}". El voto se emite a nombre de tu unidad y no se puede cambiar.`}
+          texto={`Vas a votar "${pendiente.v.opciones.find((o) => o.id === pendiente.opcionId)?.texto}" en "${pendiente.v.titulo}". No se puede cambiar.`}
           confirmar="Emitir el voto"
           onConfirmar={() => {
             hacer({ t: "voto/emitir", votacionId: pendiente.v.id, opcionId: pendiente.opcionId });

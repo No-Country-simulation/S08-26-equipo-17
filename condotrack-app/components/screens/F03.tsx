@@ -75,7 +75,6 @@ export function F03({ ir }: { ir: (v: Vista, ref?: string) => void }) {
           titulo="Pago informado"
           principal={`${pesos(n)} · ${periodoLargo(periodo)}`}
           secundario={ROTULO_MEDIO[medio]}
-          registro="Queda como informado, pendiente de confirmación por administración. Cuando lo concilien, la expensa pasa a pagada y te avisamos."
           accion="Ver el estado de cuenta"
           onAccion={() => ir("r23")}
           alterna="Volver a la expensa"
@@ -88,10 +87,7 @@ export function F03({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   return (
     <div className="vista" id="f03">
       <TopBar volverA="r20" ir={ir} />
-      <div className="tit">
-        <h1>Informar un pago</h1>
-        <p>Para que administración lo concilie más rápido.</p>
-      </div>
+      <div className="tit"><h1>Informar un pago</h1></div>
 
       <Elegir etiqueta="Período" valor={periodo} onCambio={setPeriodo}
         opciones={EXPENSAS.map((e) => ({ id: e.periodo, rotulo: periodoLargo(e.periodo) }))} />
@@ -99,7 +95,7 @@ export function F03({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       <Texto etiqueta="Importe" valor={importe} onCambio={setImporte}
         tipo="text" placeholder="184250" icono="documento"
         error={tocado ? errImporte : undefined}
-        ayuda={n > 0 ? pesos(n) : "Sólo números, sin puntos ni signo."} />
+        ayuda={n > 0 ? pesos(n) : undefined} />
 
       <Texto etiqueta="Fecha del pago" valor={fecha} onCambio={setFecha} tipo="date"
         error={tocado ? errFecha : undefined} />
@@ -107,21 +103,16 @@ export function F03({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       <Elegir etiqueta="Medio" valor={medio} onCambio={setMedio} opciones={MEDIOS} />
 
       <Adjuntar etiqueta="Comprobante" archivo={comprobante} onCambio={setComprobante}
+        titulo="Adjuntar el comprobante" icono="documento"
+        ayuda="La constancia de la transferencia o el ticket del pago"
         nombreSugerido="comprobante-transferencia.pdf" />
-
-      {tocado && hayError && (
-        <div className="alerta" role="alert" style={{ marginTop: 14 }}>
-          <span style={{ flex: "none", color: "var(--error)" }}><Icon n="alerta" s={17} w={2} /></span>
-          <p>Revisá lo que está marcado arriba para poder informar el pago.</p>
-        </div>
-      )}
 
       <PieForm
         accion="Informar el pago"
         onAccion={confirmar}
         onCancelar={() => ir("r20")}
         cargando={enviando}
-        nota="Informar un pago no lo acredita. Administración lo confirma contra el extracto del banco y recién ahí la expensa pasa a pagada."
+        nota="Queda pendiente hasta que administración lo confirme."
       />
     </div>
   );

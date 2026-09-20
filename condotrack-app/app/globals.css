@@ -10,7 +10,7 @@
   --carbon:#111614;
 
   /* superficies y texto — tema claro */
-  --fondo:#F4F5F1;
+  --fondo:#F1F2ED;
   --sup:#FFFFFF;
   --txt:#111614;
   --txt2:#515A56;
@@ -27,9 +27,6 @@
   --vidrio-borde:rgba(17,22,20,.06);
   --vidrio-filo:linear-gradient(170deg,rgba(255,255,255,.95) 0%,rgba(255,255,255,.28) 38%,rgba(17,22,20,.07) 100%);
   --vidrio-brillo:rgba(255,255,255,.9);
-  --vidrio-sombra:0 1px 2px rgba(17,22,20,.04),0 14px 34px -22px rgba(17,22,20,.26);
-  --humo:rgba(14,18,16,.72);
-  --humo-borde:rgba(255,255,255,.13);
   --desenfoque:26px;
 
   /* navegación oscura */
@@ -63,6 +60,47 @@
 
   --r-chip:12px; --r-control:16px; --r-card:22px; --r-feature:28px; --r-pill:999px;
   --h-control:56px; --tactil:44px;
+
+  /* ══ SISTEMA · tokens canónicos ═══════════════════════════════════
+     Una sola fuente de verdad. Las clases compartidas consumen estos
+     tokens; no se redefinen tamaños sueltos pantalla por pantalla.
+
+     Tipografía: siete roles. Las cifras especiales del home, los números
+     del calendario y la barra quedan fuera de la escala a propósito. */
+  --t-titulo:28px;  --t-titulo-lh:1.1;   --t-titulo-tr:-.028em;
+  --t-seccion:19px; --t-seccion-lh:1.25; --t-seccion-tr:-.018em;
+  --t-fila:16px;    --t-fila-lh:1.3;     --t-fila-tr:-.01em;
+  --t-cuerpo:15px;  --t-cuerpo-lh:1.45;
+  --t-meta:13px;    --t-meta-lh:1.35;
+  --t-label:12px;   --t-label-lh:1.25;
+  --t-cifra:48px;   --t-cifra-tr:-.04em;
+
+  /* Botones: tres alturas, un radio, un gap. El primario por defecto es
+     de alto contraste (carbón en claro, hueso en oscuro); el amarillo es
+     un acento que se pide, no el default. */
+  --b-alto:52px; --b-alto-sec:44px; --b-alto-chico:40px; --b-icono-caja:44px;
+  --b-radio:14px;
+  --b-pad:24px; --b-pad-sec:18px; --b-pad-chico:14px;
+  --b-gap:8px; --b-borde:1px;
+  --b-fs:15px; --b-fs-sec:14px;
+  --b-prim-fondo:var(--txt); --b-prim-txt:var(--fondo);
+  --b-foco:2px solid var(--amarillo);
+
+  /* Material: dos vidrios y nada más. Sólo sobre foto o fondo con
+     imagen; nunca sobre el fondo plano. */
+  --glass-light:rgba(255,255,255,.62); --glass-light-borde:rgba(255,255,255,.72);
+  --glass-light-brillo:inset 0 1px 0 rgba(255,255,255,.85);
+  --glass-dark:rgba(17,22,20,.42);     --glass-dark-borde:rgba(255,255,255,.18);
+  --glass-dark-brillo:inset 0 1px 0 rgba(255,255,255,.14);
+  --glass-blur:blur(20px) saturate(1.35);
+
+  /* Profundidad: tres planos. L0 fondo (--fondo, foto, atmósfera) ·
+     L1 superficie (--sup + --borde + sombra-1) · L2 elevado (sombra-2:
+     hojas, cards protagonistas, CTA contextual). Primero contraste de
+     superficie y solapamiento; la sombra va al final. */
+  --sombra-1:0 1px 2px rgba(17,22,20,.05);
+  --sombra-2:0 18px 40px -20px rgba(17,22,20,.45);
+  --sombra-2-sube:0 -16px 44px -18px rgba(17,22,20,.4);
 
   /* ── tipografía ────────────────────────────────────────────────────
      Satoshi (Fontshare / Indian Type Foundry) es la tipografía de
@@ -104,9 +142,9 @@
     --vidrio-borde:rgba(255,255,255,.07);
     --vidrio-filo:linear-gradient(170deg,rgba(255,255,255,.26) 0%,rgba(255,255,255,.07) 38%,rgba(255,255,255,.02) 100%);
     --vidrio-brillo:rgba(255,255,255,.22);
-    --vidrio-sombra:0 1px 2px rgba(0,0,0,.4),0 14px 34px -22px rgba(0,0,0,.7);
-    --humo:rgba(8,11,9,.76);
-    --humo-borde:rgba(255,255,255,.1);
+    --sombra-1:0 1px 2px rgba(0,0,0,.4);
+    --sombra-2:0 20px 44px -20px rgba(0,0,0,.85);
+    --sombra-2-sube:0 -18px 44px -18px rgba(0,0,0,.75);
 
     --nav:#1B211D;
     --nav-txt:#8A928B;
@@ -148,9 +186,9 @@
     --vidrio-borde:rgba(255,255,255,.07);
     --vidrio-filo:linear-gradient(170deg,rgba(255,255,255,.26) 0%,rgba(255,255,255,.07) 38%,rgba(255,255,255,.02) 100%);
     --vidrio-brillo:rgba(255,255,255,.22);
-    --vidrio-sombra:0 1px 2px rgba(0,0,0,.4),0 14px 34px -22px rgba(0,0,0,.7);
-    --humo:rgba(8,11,9,.76);
-    --humo-borde:rgba(255,255,255,.1);
+    --sombra-1:0 1px 2px rgba(0,0,0,.4);
+    --sombra-2:0 20px 44px -20px rgba(0,0,0,.85);
+    --sombra-2-sube:0 -18px 44px -18px rgba(0,0,0,.75);
 
     --nav:#1B211D;
     --nav-txt:#8A928B;
@@ -200,8 +238,8 @@
    del calendario: lo que tiene que pesar. El resto va en --ff-ui. */
 .tit h1, .hero h2, h2.sec, .cabecera-ent h1, .listo h1, .login h1,
 .onb-txt h1, .pend h1, .desk-tit h1, .ent-cab .id, .hero-ed h2,
-.visitas .n, .expensa .monto b, .saldo b, .kpi b, .torta .centro b,
-.cal-dia b, .tira button b, .tira-esp button b, .grilla .cod,
+.visitas .n, .expensa .monto b, .kpi b, .torta .centro b,
+.cal-dia b, .tira button b, .grilla .cod,
 .reclamo-f h3, .votacion h3, .visita h3, .reserva h3, .pase h2,
 .hoja h2, .medio h2, .panel-v h2, .resultado h3, .agenda-f .h,
 .franja b, .tabla-cab b, .tabla.total .tabla-f .n{
@@ -211,7 +249,7 @@
   letter-spacing:var(--display-track);
 }
 /* los números se leen mejor con la caja de ancho fijo */
-.visitas .n, .expensa .monto b, .saldo b, .kpi b, .cal-dia b,
+.visitas .n, .expensa .monto b, .kpi b, .cal-dia b,
 .tira button b, .agenda-f .h, .franja b, .torta .centro b,
 .tabla.total .tabla-f .n{font-variant-numeric:tabular-nums}
 
@@ -237,13 +275,12 @@ img,svg{display:block;max-width:100%}
      · el cambio de estado de un botón al presionarlo es la respuesta al
        toque, no un adorno. */
 @media (prefers-reduced-motion:reduce){
-  *{animation-duration:.01ms!important;animation-iteration-count:1!important;
+  :root:not([data-movimiento="forzado"]) *{animation-duration:.01ms!important;animation-iteration-count:1!important;
     transition-duration:.01ms!important}
-  .swipe .relleno,.swipe .pulgar{transition-duration:.16s!important}
-  .swipe.suelta .pulgar,.swipe.suelta .relleno{transition-duration:.3s!important}
-  .giro,.rueda{animation-duration:1.1s!important;animation-iteration-count:infinite!important}
-  .entrar,.bglass,.circulo,.redondo,.revelar,.widget-tabs button,
-  .pill button .circ,.pill .squircle{transition-duration:.12s!important}
+  :root:not([data-movimiento="forzado"]) .swipe .relleno,:root:not([data-movimiento="forzado"]) .swipe .pulgar{transition-duration:.16s!important}
+  :root:not([data-movimiento="forzado"]) .swipe.suelta .pulgar,:root:not([data-movimiento="forzado"]) .swipe.suelta .relleno{transition-duration:.3s!important}
+  :root:not([data-movimiento="forzado"]) .giro,:root:not([data-movimiento="forzado"]) .rueda{animation-duration:1.1s!important;animation-iteration-count:infinite!important}
+  :root:not([data-movimiento="forzado"]) .entrar,:root:not([data-movimiento="forzado"]) .bglass,:root:not([data-movimiento="forzado"]) .circulo,:root:not([data-movimiento="forzado"]) .redondo,:root:not([data-movimiento="forzado"]) .widget-tabs button,:root:not([data-movimiento="forzado"]) .pill button .circ,:root:not([data-movimiento="forzado"]) .pill .squircle{transition-duration:.12s!important}
 }
 
 /* ── escenario ─────────────────────────────────────────────────────── */
@@ -359,14 +396,14 @@ img,svg{display:block;max-width:100%}
 /* ── G01 login · G02 recuperar ── */
 .login{padding:0 24px;overflow-y:auto;align-items:stretch}
 .login .volver-redondo{position:absolute;left:24px;top:24px;z-index:3}
-.login h1{margin-top:36px;font-size:27px;line-height:1.1;font-weight:700;letter-spacing:-.028em;text-align:center}
+.login h1{margin-top:36px;font-size:var(--t-titulo);line-height:var(--t-titulo-lh);font-weight:700;letter-spacing:var(--t-titulo-tr);text-align:center}
 .login .sub{margin:10px auto 0;font-size:14.5px;line-height:1.5;color:var(--txt2);text-align:center;max-width:30ch}
 form{margin-top:30px;display:flex;flex-direction:column;gap:14px}
 .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
   clip-path:inset(50%);white-space:nowrap;border:0}
 .campo{position:relative;display:flex;align-items:center;height:var(--h-control);border-radius:var(--r-pill);
   background:var(--sup);border:1px solid transparent;padding:0 18px 0 50px;
-  box-shadow:0 1px 2px rgba(17,22,20,.03),0 8px 22px -18px rgba(17,22,20,.25);
+  box-shadow:var(--sombra-1);
   transition:box-shadow .18s,border-color .18s}
 .campo .glifo-campo{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--txt2);
   pointer-events:none;display:flex}
@@ -384,18 +421,20 @@ form{margin-top:30px;display:flex;flex-direction:column;gap:14px}
 
 /* Acción primaria: borde y nada más. El amarillo aparece solo cuando la
    apretás — es confirmación de que la tocaste, no decoración permanente. */
-.entrar{position:relative;height:58px;border-radius:var(--r-pill);
-  color:var(--txt);background:transparent;border:1.5px solid var(--txt);
-  font-size:15.5px;font-weight:700;letter-spacing:-.01em;margin-top:10px;
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  transition:background .12s ease,color .12s ease,border-color .12s ease}
-.entrar:hover{background:color-mix(in srgb,var(--txt) 6%,transparent)}
-.entrar:active{background:var(--amarillo);border-color:var(--amarillo);color:var(--carbon)}
-.entrar:focus-visible{outline:2px solid var(--amarillo);outline-offset:3px}
-.entrar[aria-busy="true"]{background:var(--amarillo);border-color:var(--amarillo);
-  color:var(--carbon);pointer-events:none}
-.entrar .giro{width:16px;height:16px;border-radius:999px;border:2px solid rgba(17,22,20,.28);
-  border-top-color:var(--carbon);animation:gira 1.1s linear infinite}
+.entrar{position:relative;height:var(--b-alto);padding:0 var(--b-pad);border:0;
+  border-radius:var(--b-radio);margin-top:10px;
+  display:flex;align-items:center;justify-content:center;gap:var(--b-gap);
+  background:var(--b-prim-fondo);color:var(--b-prim-txt);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);
+  font-size:var(--b-fs);font-weight:700;letter-spacing:-.01em;
+  transition:transform .12s ease,background .12s ease,color .12s ease}
+.entrar:hover{background:color-mix(in srgb,var(--b-prim-fondo) 90%,var(--b-prim-txt))}
+.entrar:active{transform:scale(.98);background:color-mix(in srgb,var(--b-prim-fondo) 80%,var(--b-prim-txt))}
+.entrar:focus-visible{outline:var(--b-foco);outline-offset:3px}
+.entrar[aria-busy="true"]{pointer-events:none;opacity:.85}
+.entrar .giro{width:16px;height:16px;border-radius:999px;
+  border:2px solid color-mix(in srgb,var(--b-prim-txt) 30%,transparent);
+  border-top-color:var(--b-prim-txt);animation:gira 1.1s linear infinite}
 @keyframes gira{to{transform:rotate(360deg)}}
 
 .olvide{font-size:13px;font-weight:700;color:var(--txt2);border-bottom:1px solid var(--borde-ctrl);padding-bottom:2px}
@@ -417,32 +456,29 @@ form{margin-top:30px;display:flex;flex-direction:column;gap:14px}
 .demo b{font-size:13px;font-weight:500}
 .demo small{display:block;font-size:11px;color:var(--txt2);margin-top:2px}
 .demo em{font-style:normal;font-size:11px;font-weight:500;color:var(--txt2);white-space:nowrap}
-.volver-txt{margin:22px auto 0;display:flex;align-items:center;gap:7px;font-size:14px;font-weight:700;color:var(--txt2)}
 
 /* ── shell residente ───────────────────────────────────────────────── */
 .vista{position:absolute;inset:0;display:flex;flex-direction:column;overflow-y:auto;
   -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
-  padding:0 20px calc(124px + env(safe-area-inset-bottom,0px));animation:entra .3s ease}
+  padding:0 20px calc(124px + env(safe-area-inset-bottom,0px))}
 /* Sin esto el scroll no existe: en una columna flex de alto fijo los hijos
    se encogen hasta entrar y el contenido de abajo queda inalcanzable. */
 .vista>*{flex:none}
 @keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* materiales */
-.vidrio{background:var(--vidrio);border:1px solid var(--vidrio-borde);border-radius:var(--r-card);
-  backdrop-filter:blur(var(--desenfoque)) saturate(1.15);
-  -webkit-backdrop-filter:blur(var(--desenfoque)) saturate(1.15);
-  box-shadow:var(--vidrio-sombra)}
-.humo{background:var(--humo);border:1px solid var(--humo-borde);border-radius:var(--r-card);color:#fff;
-  backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2)}
 
 .redondo em{width:9px;height:9px;border-radius:var(--r-pill);
   background:var(--amarillo);border:1.5px solid var(--fondo)}
 .topbar{padding:20px 0 0;display:flex;align-items:center;gap:12px}
-.topbar .ctx{flex:1;font-size:13.5px;color:var(--txt2);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .ctx{flex:1;font-size:var(--t-meta);color:var(--txt2);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* el contexto de la barra se lee, sin banda ni foto: la identidad la
+   ponen la pantalla y sus piezas, no un cintillo arriba de todo */
+.residente .vista>.topbar .ctx{font-size:var(--t-meta);font-weight:500;color:var(--txt2)}
 .tit{margin-top:24px}
-.tit h1{font-size:22px;line-height:1.1;font-weight:700;letter-spacing:-.028em}
-.tit p{margin-top:6px;font-size:14px;color:var(--txt2)}
+.tit h1{font-size:var(--t-titulo);line-height:var(--t-titulo-lh);font-weight:700;letter-spacing:var(--t-titulo-tr)}
+.tit p{margin-top:6px;font-size:var(--t-cuerpo);color:var(--txt2)}
 
 /* R01 */
 .saludo{padding-top:22px;display:flex;align-items:flex-start;gap:12px}
@@ -465,17 +501,8 @@ form{margin-top:30px;display:flex;flex-direction:column;gap:14px}
   text-shadow:0 1px 12px rgba(0,0,0,.45)}
 .hero .sobre p{margin-top:5px;font-size:13.5px;color:rgba(255,255,255,.84)}
 
-.tres{margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.tres button{position:relative;overflow:hidden;background:var(--vidrio);border:1px solid var(--vidrio-borde);
-  backdrop-filter:blur(var(--desenfoque));-webkit-backdrop-filter:blur(var(--desenfoque));
-  border-radius:20px;padding:14px 8px 13px;display:flex;flex-direction:column;align-items:center;gap:9px;
-  min-height:92px;text-align:center;box-shadow:var(--vidrio-sombra);transition:transform .14s}
-.tres button:active{transform:scale(.975)}
-.tres .glifo{position:relative;z-index:1;color:var(--txt);display:flex;align-items:center;justify-content:center}
-.tres span{position:relative;z-index:1;font-size:12.5px;font-weight:500;line-height:1.25}
-
 .visitas{margin-top:16px;border-radius:26px;overflow:hidden;background:var(--carbon);
-  box-shadow:0 14px 36px -20px rgba(0,0,0,.72)}
+  box-shadow:var(--sombra-2)}
 .visitas .osc{position:relative;min-height:106px;background:var(--carbon);padding:18px 20px 16px}
 .visitas .osc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85}
 .visitas .osc::after{content:"";position:absolute;inset:0;
@@ -487,10 +514,10 @@ form{margin-top:30px;display:flex;flex-direction:column;gap:14px}
 .visitas .ir{position:absolute;right:18px;top:24px;z-index:3}
 /* La barra amarilla pegada abajo se retiró: ver .visitas .pase-fila. */
 
-h2.sec{margin-top:26px;font-size:17px;font-weight:700;letter-spacing:-.025em}
-.panel{margin-top:13px;background:var(--vidrio);border:1px solid var(--vidrio-borde);border-radius:24px;
-  overflow:hidden;backdrop-filter:blur(var(--desenfoque));-webkit-backdrop-filter:blur(var(--desenfoque));
-  box-shadow:var(--vidrio-sombra)}
+h2.sec{margin-top:26px;font-size:var(--t-seccion);font-weight:700;letter-spacing:var(--t-seccion-tr);line-height:var(--t-seccion-lh)}
+.panel{margin-top:13px;background:var(--sup);border:1px solid var(--vidrio-borde);border-radius:24px;
+  overflow:hidden;
+  box-shadow:var(--sombra-1)}
 .panel .row{display:flex;align-items:center;gap:14px;padding:14px;width:100%;transition:background .15s}
 .panel .row:hover{background:color-mix(in srgb,var(--txt) 4%,transparent)}
 .panel .row+.row{border-top:1px solid var(--borde)}
@@ -502,7 +529,6 @@ h2.sec{margin-top:26px;font-size:17px;font-weight:700;letter-spacing:-.025em}
 .panel .row .m{display:block;font-size:13px;color:var(--txt2);margin-top:2px}
 .panel .row .t{display:block;font-size:15px;font-weight:500}
 
-
 /* chips con transición */
 .chips{margin-top:16px;display:flex;gap:0;border-radius:var(--r-control);padding:5px}
 .chips .marca{position:absolute;top:5px;bottom:5px;left:5px;border-radius:12px;background:var(--amarillo);
@@ -513,24 +539,28 @@ h2.sec{margin-top:26px;font-size:17px;font-weight:700;letter-spacing:-.025em}
 .chips button[aria-pressed="true"]{color:var(--carbon);font-weight:700}
 
 .subtit{margin-top:24px;display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-.subtit h2{font-size:18px;font-weight:700;letter-spacing:-.02em}
-.subtit span{font-size:13.5px;color:var(--txt2)}
+.subtit h2{font-size:var(--t-seccion);font-weight:700;letter-spacing:var(--t-seccion-tr)}
+.subtit span{font-size:var(--t-meta);color:var(--txt2)}
 
 /* tarjeta de visita — smoked glass sobre gradiente de marca */
 .visita{margin-top:14px;padding:18px}
-.visita.fin{color:var(--txt);background:var(--vidrio);
-  backdrop-filter:blur(var(--desenfoque));-webkit-backdrop-filter:blur(var(--desenfoque));
-  box-shadow:var(--vidrio-sombra)}
+.visita.fin{color:var(--txt);background:var(--sup);
+  box-shadow:var(--sombra-1)}
 .visita.fin::before{background:var(--vidrio-filo)}
 .visita>*{position:relative;z-index:2}
 .visita .top{display:flex;align-items:center;gap:10px}
 .visita .top .lb{flex:1;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:#B9C0B9}
 .visita.fin .top .lb{color:var(--txt2)}
-.pastilla{display:inline-flex;align-items:center;gap:6px;border-radius:var(--r-pill);padding:6px 12px;
-  font-size:12.5px;font-weight:500;background:var(--amarillo);color:var(--carbon);
-  box-shadow:none}
-.pastilla.gris{background:color-mix(in srgb,var(--txt) 8%,transparent);border:1px solid var(--borde-ctrl);
-  color:var(--txt2);font-weight:500;box-shadow:none}
+.pastilla{display:inline-flex;align-items:center;gap:6px;padding:0;border:0;border-radius:0;
+  background:none;box-shadow:none;font-size:var(--t-label);font-weight:500;letter-spacing:0;
+  color:var(--txt);white-space:nowrap}
+.pastilla.gris{background:none;border:0;color:var(--txt2);box-shadow:none}
+.pastilla::before{content:"";width:7px;height:7px;border-radius:999px;flex:none;background:var(--amarillo)}
+.pastilla svg{display:none}
+.pastilla.gris::before{background:var(--est-cerrado)}
+.pastilla.vencida::before{background:var(--est-vencido)}
+.pastilla.ok::before{background:var(--est-ok)}
+.pastilla.curso::before{background:var(--est-curso)}
 .visita h3{margin-top:10px;font-size:20px;font-weight:700;letter-spacing:-.02em}
 .visita .hora{margin-top:8px;display:flex;align-items:center;gap:8px;font-size:15px;color:#D5DAD4}
 .visita.fin .hora{color:var(--txt2)}
@@ -540,16 +570,36 @@ h2.sec{margin-top:26px;font-size:17px;font-weight:700;letter-spacing:-.025em}
 .visita .sep b{flex:1;font-size:14.5px;font-weight:500}
 .visita.fin .sep b{color:var(--txt2)}
 
-
 /* reservas */
-.reserva{margin-top:14px;border-radius:26px;overflow:hidden}
+/* la reserva es una pieza con el lugar adentro, no una cajita blanca:
+   la foto del espacio atrás, velada, y los datos encima */
+.reserva{position:relative;isolation:isolate;margin-top:14px;border-radius:26px;overflow:hidden;
+  color:#fff;background:#141A17}
+.reserva>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;
+  filter:saturate(.6) brightness(.8) blur(1.5px);transform:scale(1.04)}
+.reserva::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:
+    linear-gradient(100deg,rgba(8,11,9,.94) 0%,rgba(8,11,9,.78) 38%,rgba(8,11,9,.5) 72%,rgba(8,11,9,.34) 100%),
+    linear-gradient(180deg,transparent 40%,rgba(8,11,9,.55) 100%)}
+.reserva.fin>img{filter:grayscale(.75) brightness(.62) blur(1.5px)}
 .reserva .im{position:relative;height:198px}
 .reserva .im img{width:100%;height:100%;object-fit:cover}
 .reserva .im .pastilla{position:absolute;top:14px;right:14px}
-.reserva .bo{padding:16px 18px 18px;display:flex;align-items:flex-end;gap:12px}
+.reserva .bo{padding:18px 18px 16px;display:flex;align-items:flex-end;gap:12px}
 .reserva .bo div{flex:1;min-width:0}
 .reserva h3{font-size:19px;font-weight:700;letter-spacing:-.025em}
-.reserva .dato{margin-top:8px;display:flex;align-items:center;gap:8px;font-size:14.5px;color:var(--txt2)}
+.reserva .dato{margin-top:8px;display:flex;align-items:center;gap:8px;font-size:var(--t-meta);color:rgba(255,255,255,.8)}
+/* el corte del ticket: dos muescas y una línea punteada */
+.reserva.ticket .corte{height:1px;margin:2px 0 0;background:rgba(255,255,255,.16)}
+.reserva.ticket .tk-pie{display:flex;align-items:center;gap:12px;padding:14px 18px 16px}
+.tk-estado{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;
+  background:var(--amarillo);color:var(--carbon);font-size:var(--t-label);font-weight:700}
+.tk-estado.gris{background:rgba(255,255,255,.14);color:rgba(255,255,255,.9)}
+.reserva.ticket .tk-pie .btn-ter{margin-left:auto;padding:0;min-height:36px;color:#FF9B9B}
+.reserva .dato svg{flex:none;opacity:.8}
+.reserva .pastilla{color:#fff}
+
+.reserva.fin .pastilla::before{background:rgba(255,255,255,.5)}
 .dos{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
 /* Un espacio es un LUGAR: va en material Foto. La imagen ocupa la card
    entera con su radio y el texto va encima. Nada de foto chica adentro de
@@ -561,31 +611,28 @@ h2.sec{margin-top:26px;font-size:17px;font-weight:700;letter-spacing:-.025em}
 
 /* estado vacío */
 .vacio{margin-top:14px;padding:30px 22px 26px;text-align:center;border-radius:var(--r-card)}
-.vacio .glifo{width:52px;height:52px;margin:0 auto;border-radius:18px;background:var(--amarillo);
-  color:var(--carbon);display:flex;align-items:center;justify-content:center}
+.vacio .glifo{width:52px;height:52px;margin:0 auto;border-radius:999px;background:var(--txt);
+  color:var(--fondo);display:flex;align-items:center;justify-content:center}
 .vacio h3{margin-top:14px;font-size:18px;font-weight:700;letter-spacing:-.02em}
 .vacio p{margin:7px auto 0;font-size:13.5px;line-height:1.5;color:var(--txt2);max-width:28ch}
-.vacio .cta{margin-top:18px;height:50px;padding:0 22px;border-radius:var(--r-pill);background:var(--carbon);
-  color:#fff;font-size:14.5px;font-weight:500;display:inline-flex;align-items:center;gap:10px;
-  box-shadow:0 6px 18px -8px rgba(17,22,20,.7)}
 
 /* Más */
 .perfil{margin-top:16px;width:100%;border-radius:24px;padding:16px;
   display:flex;align-items:center;gap:14px}
-.avatar{width:54px;height:54px;border-radius:var(--r-pill);background:var(--amarillo);color:var(--carbon);
+.avatar{width:54px;height:54px;border-radius:var(--r-pill);background:color-mix(in srgb,var(--txt) 8%,transparent);color:var(--txt);
   display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex:none;
-  box-shadow:0 5px 16px -6px rgba(245,229,0,.85)}
+  box-shadow:none}
 .perfil .d{flex:1;min-width:0}
-.perfil .d b{display:block;font-size:18px;font-weight:700;letter-spacing:-.02em}
-.perfil .d i{display:block;font-style:normal;margin-top:2px;font-size:13.5px;color:var(--txt2)}
+.perfil .d b{display:block;font-size:var(--t-seccion);font-weight:700;letter-spacing:-.02em}
+.perfil .d i{display:block;font-style:normal;margin-top:2px;font-size:var(--t-meta);color:var(--txt2)}
 h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt2)}
 .menu button{display:flex;align-items:center;gap:14px}
 .menu .ic{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;
   flex:none;background:color-mix(in srgb,var(--txt) 7%,transparent);color:var(--txt)}
-.menu .ic.am{background:var(--amarillo);color:var(--carbon)}
+
 .menu .d{flex:1;min-width:0}
-.menu .d b{display:block;font-size:15.5px;font-weight:500;letter-spacing:-.01em}
-.menu .d i{display:block;font-style:normal;margin-top:2px;font-size:12.5px;color:var(--txt2)}
+.menu .d b{display:block;font-size:var(--t-fila);font-weight:500;letter-spacing:-.01em}
+.menu .d i{display:block;font-style:normal;margin-top:2px;font-size:var(--t-meta);color:var(--txt2)}
 /* Los contadores informan, no accionan: van neutros. El amarillo queda
    para la nav activa, lo seleccionado y una sola acción por pantalla. */
 .contador{min-width:24px;height:24px;padding:0 8px;border-radius:var(--r-pill);
@@ -596,41 +643,38 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 /* R02 */
 .hero-ed{margin-top:16px;height:218px;border-radius:26px}
 .hero-ed .tx{position:absolute;left:20px;right:20px;bottom:18px;z-index:3;color:#fff}
-.hero-ed .lb{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--amarillo);font-weight:500}
+.hero-ed .lb{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82);font-weight:500}
 .hero-ed h2{margin-top:4px;font-size:23px;font-weight:700;letter-spacing:-.02em}
 .hero-ed p{margin-top:2px;font-size:13.5px;color:#D7DCD6}
-.ficha{margin-top:14px;background:var(--vidrio);border:1px solid var(--vidrio-borde);border-radius:24px;
-  padding:18px;backdrop-filter:blur(var(--desenfoque));-webkit-backdrop-filter:blur(var(--desenfoque));
-  box-shadow:var(--vidrio-sombra)}
-.ficha h3{font-size:17px;font-weight:700;letter-spacing:-.02em}
-.ficha dl{margin-top:14px}
-.ficha dt{font-size:12.5px;color:var(--txt2)}
-.ficha dd{margin-top:3px;font-size:15px;font-weight:500}
-.ficha .linea{margin:14px 0;border-top:1px solid var(--borde)}
-.ficha .fin{display:flex;align-items:flex-end;gap:12px}
-.ficha .fin div{flex:1;min-width:0}
-.ficha .fin .k{font-size:12.5px;color:var(--txt2)}
-.ficha .fin .v{margin-top:3px;font-size:15px;font-weight:500}
-.btn-am{height:var(--tactil);padding:0 20px;border-radius:var(--r-pill);background:var(--amarillo);
-  color:var(--carbon);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;
-  flex:none;box-shadow:0 5px 16px -6px rgba(245,229,0,.85)}
 
 /* R03 */
 .noti button{display:flex}
 .noti .ic{width:40px;height:40px;border-radius:var(--r-pill);display:flex;align-items:center;justify-content:center;
   flex:none;background:color-mix(in srgb,var(--txt) 7%,transparent);color:var(--txt)}
-.noti .ic.am{background:var(--amarillo);color:var(--carbon);box-shadow:0 4px 14px -5px rgba(245,229,0,.8)}
+
 .noti .d{flex:1;min-width:0}
 .noti .h{display:flex;align-items:baseline;gap:10px}
-.noti .h b{flex:1;font-size:15.5px;font-weight:500;letter-spacing:-.01em}
-.noti time{font-size:12px;color:var(--txt2);white-space:nowrap}
-.noti .desc{display:block;margin-top:3px;font-size:13px;color:var(--txt2);line-height:1.4}
-.noti .sinleer{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:11.5px;font-weight:500}
+.noti .h b{flex:1;font-size:var(--t-fila);font-weight:500;letter-spacing:-.01em}
+.noti time{font-size:var(--t-label);color:var(--txt2);white-space:nowrap}
+.noti .desc{display:block;margin-top:3px;font-size:var(--t-meta);color:var(--txt2);line-height:1.4}
+.noti .sinleer{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:var(--t-label);font-weight:500}
 .noti .sinleer i{width:7px;height:7px;border-radius:var(--r-pill);background:var(--amarillo)}
-.marcar{margin-top:16px;width:100%;height:52px;border-radius:var(--r-pill);border:1px solid var(--borde-ctrl);
-  background:var(--vidrio);color:var(--txt);font-size:14.5px;font-weight:500;display:flex;align-items:center;
-  justify-content:center;backdrop-filter:blur(var(--desenfoque))}
-.dia{margin-top:22px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt2)}
+/* ══ FEED DE NOTIFICACIONES ═════════════════════════════════════════
+   Agrupado por día, sin caja alrededor de la lista. Cada fila: ícono del
+   dominio, título, una línea de qué pasó y la hora. Lo no leído se dice
+   con un filo amarillo a la izquierda, no con un ícono pintado. */
+.dia{margin-top:26px;margin-bottom:2px;font-size:15px;font-weight:700;letter-spacing:-.015em;
+  text-transform:none;color:var(--txt)}
+.residente .noti{margin:0 -20px;padding:0 20px;border:0;border-radius:0;background:none;box-shadow:none}
+.residente .noti button{position:relative;padding:16px 0;gap:14px;align-items:flex-start}
+.residente .noti button+button::before{content:"";position:absolute;top:0;left:38px;right:0;height:1px;
+  background:var(--borde)}
+.residente .noti button+button{border-top:0}
+.residente .noti .ic{width:24px;height:24px;border-radius:0;background:none;color:var(--txt);margin-top:1px}
+.residente .noti button.nueva::after{content:"";position:absolute;left:-12px;top:20px;
+  width:6px;height:6px;border-radius:999px;background:var(--amarillo)}
+.residente .noti .h b{font-weight:500}
+.residente .noti time{font-size:var(--t-label);color:var(--txt2)}
 
 /* R07 pase QR */
 .pase{margin-top:18px;border-radius:var(--r-feature);padding:26px 22px 22px}
@@ -647,23 +691,22 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .acciones{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .acciones button{height:52px;border-radius:var(--r-pill);font-size:14.5px;font-weight:700;display:flex;
   align-items:center;justify-content:center;gap:8px}
-.acciones .prim{background:var(--amarillo);color:var(--carbon);box-shadow:0 6px 18px -7px rgba(245,229,0,.9)}
 .acciones .sec{background:var(--vidrio);border:1px solid var(--borde-ctrl);color:var(--txt)}
 .nota{margin-top:16px;display:flex;gap:10px;padding:14px 16px;border-radius:var(--r-card)}
 .nota>*{position:relative;z-index:2}
 .nota p{font-size:13px;line-height:1.5;color:var(--txt2)}
 
 /* R08 entregas */
-.entrega{margin-top:12px;width:100%;background:var(--vidrio);border:1px solid var(--vidrio-borde);
-  border-radius:var(--r-card);padding:16px;display:flex;gap:14px;align-items:flex-start;
-  backdrop-filter:blur(var(--desenfoque));-webkit-backdrop-filter:blur(var(--desenfoque));
-  box-shadow:var(--vidrio-sombra)}
-.entrega .ic{width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;
-  flex:none;background:color-mix(in srgb,var(--txt) 7%,transparent);color:var(--txt)}
-.entrega .ic.am{background:var(--amarillo);color:var(--carbon)}
+/* la lista de entregas es una lista, no una card por paquete */
+.entrega{margin:0;width:100%;background:none;border:0;border-radius:0;padding:16px 0;
+  display:flex;gap:14px;align-items:flex-start;box-shadow:none}
+.entrega+.entrega{border-top:1px solid var(--borde)}
+.entrega .ic{width:24px;height:24px;border-radius:0;display:flex;align-items:center;justify-content:center;
+  flex:none;background:none;color:var(--txt);margin-top:2px}
+
 .entrega .d{flex:1;min-width:0}
-.entrega b{display:block;font-size:16px;font-weight:700;letter-spacing:-.02em}
-.entrega .m{display:block;margin-top:3px;font-size:13px;color:var(--txt2);line-height:1.45}
+.entrega b{display:block;font-size:var(--t-fila);font-weight:500;letter-spacing:-.01em}
+.entrega .m{display:block;margin-top:3px;font-size:var(--t-meta);color:var(--txt2);line-height:1.45}
 
 /* ── pill nav · cinco destinos con acción central (D-04) ─────────────
    Flota: no llega a los bordes, tiene radio propio y es más baja que la
@@ -735,34 +778,29 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .desplegable .chev{flex:none;color:var(--txt2);display:flex;transform:rotate(90deg);transition:transform .22s}
 .desplegable .chev.abierto{transform:rotate(-90deg)}
 
-.opciones-esp{list-style:none;margin-top:6px;border:1px solid var(--borde);
-  border-radius:var(--r-control);overflow:hidden;background:var(--sup)}
-.opciones-esp li + li{border-top:1px solid var(--borde)}
-.opciones-esp button{width:100%;display:flex;align-items:center;gap:12px;padding:13px 16px;
-  text-align:left;transition:background .15s}
-.opciones-esp button:hover{background:color-mix(in srgb,var(--txt) 4%,transparent)}
-.opciones-esp button[aria-current="true"]{background:color-mix(in srgb,var(--amarillo) 16%,transparent)}
-.opciones-esp .d{flex:1;min-width:0}
-.opciones-esp b{display:block;font-size:14.5px;font-weight:500}
-.opciones-esp i{display:block;font-style:normal;font-size:12px;color:var(--txt2);margin-top:1px}
-.opciones-esp em{font-style:normal;font-size:12px;color:var(--txt2);white-space:nowrap}
-
 /* tira de días: scroll horizontal, sin barra */
-.tira{margin-top:10px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
-  padding-bottom:2px;scroll-snap-type:x proximity}
+/* Rail de fechas · una sola gramática para toda la app (visitas y
+   reservas). Sin una caja por día: el día de semana chico arriba, el
+   número mandando, y el elegido en bloque macizo. El velo de la derecha
+   dice que el rail sigue. */
+.tira{margin-top:12px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;
+  padding-bottom:2px;scroll-snap-type:x proximity;
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 92%,transparent 100%);
+          mask-image:linear-gradient(90deg,#000 0,#000 92%,transparent 100%)}
 .tira::-webkit-scrollbar{display:none}
-.tira button{flex:none;width:54px;scroll-snap-align:start;display:flex;flex-direction:column;
-  align-items:center;gap:3px;padding:10px 0 9px;border-radius:var(--r-chip);
-  border:1px solid var(--borde);background:var(--sup);transition:border-color .15s,background .15s}
-.tira button i{font-style:normal;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--txt2)}
-.tira button b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.tira button .cupo{width:4px;height:4px;border-radius:999px;background:var(--txt);opacity:.55}
+.tira button{flex:none;width:52px;scroll-snap-align:start;display:flex;flex-direction:column;
+  align-items:center;gap:4px;padding:9px 0 10px;border-radius:16px;
+  border:0;background:none;transition:background .15s,color .15s}
+.tira button i{font-style:normal;font-size:11px;font-weight:500;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--txt2)}
+.tira button b{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.tira button .cupo{width:4px;height:4px;border-radius:999px;background:var(--txt);opacity:.35}
 .tira button .cupo.sin{background:var(--borde-ctrl);opacity:1}
-.tira button[aria-checked="true"]{background:var(--carbon);border-color:var(--carbon)}
-.tira button[aria-checked="true"] i{color:rgba(255,255,255,.62)}
-.tira button[aria-checked="true"] b{color:#fff}
+.tira button:hover:not(:disabled):not([aria-checked="true"]){background:color-mix(in srgb,var(--txt) 5%,transparent)}
+.tira button[aria-checked="true"]{background:var(--txt);color:var(--fondo)}
+.tira button[aria-checked="true"] i{color:color-mix(in srgb,var(--fondo) 70%,transparent)}
 .tira button[aria-checked="true"] .cupo{background:var(--amarillo);opacity:1}
-.tira button:disabled{opacity:.38}
+.tira button:disabled{opacity:.34}
 
 /* franjas */
 .franjas{margin-top:10px;border:1px solid var(--borde);border-radius:var(--r-control);
@@ -797,19 +835,24 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .confirmar .entrar{margin-top:0}
 
 /* confirmación */
-.listo{padding:40px 0 0;display:flex;flex-direction:column;align-items:center;text-align:center}
-.listo .tilde{width:56px;height:56px;border-radius:999px;background:var(--amarillo);color:var(--carbon);
+.listo{padding:24px 0 40px;min-height:calc(100vh - 230px);min-height:calc(100dvh - 230px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.listo .tilde{width:64px;height:64px;border-radius:999px;background:var(--amarillo);color:var(--carbon);
   display:flex;align-items:center;justify-content:center;margin-bottom:22px}
-.listo h1{font-size:23px;font-weight:700;letter-spacing:-.02em}
-.listo p{margin-top:8px;font-size:16px;font-weight:500}
-.listo .cuando{margin-top:2px;font-size:14.5px;font-weight:400;color:var(--txt2)}
+.listo h1{margin-top:22px;font-size:var(--t-titulo);font-weight:700;letter-spacing:var(--t-titulo-tr)}
+.listo p{margin-top:10px;font-size:var(--t-seccion);line-height:var(--t-seccion-lh);
+  font-weight:700;letter-spacing:var(--t-seccion-tr)}
+.listo .cuando{margin-top:6px;font-size:var(--t-meta);line-height:var(--t-meta-lh);
+  font-weight:500;color:var(--txt2);max-width:28ch;text-wrap:balance}
+.listo .entrar{margin-top:34px}
+.listo-ticket{width:100%;margin-top:22px;text-align:left}
+.listo-ticket .bo{padding:20px 18px 14px}
+.listo-ticket .tk-pie{justify-content:flex-start}
 .listo-nota{margin-top:24px;display:flex;gap:10px;align-items:flex-start;text-align:left;
   padding:13px 15px;border-radius:var(--r-control);background:color-mix(in srgb,var(--txt) 4%,transparent);
   color:var(--txt2)}
 .listo-nota p{margin:0;font-size:12.5px;font-weight:400;line-height:1.5}
 .listo .entrar{width:100%;margin-top:26px}
-.listo .volver-txt{margin-top:14px}
-
 
 /* ══ R01 · piezas del home ═══════════════════════════════════════════
    Todas comparten el material de las cards que ya estaban: vidrio, radio
@@ -847,18 +890,6 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .fila .t{display:block;font-size:15px;font-weight:500;letter-spacing:-.01em}
 
 /* accesos directos a administración y a recepción */
-.directos{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.directos button{background:var(--vidrio);border:1px solid var(--vidrio-borde);border-radius:18px;
-  padding:12px 13px;display:flex;align-items:center;gap:10px;
-  backdrop-filter:blur(var(--desenfoque));-webkit-backdrop-filter:blur(var(--desenfoque));
-  box-shadow:var(--vidrio-sombra);transition:transform .14s}
-.directos button:active{transform:scale(.985)}
-.directos .ic{width:34px;height:34px;border-radius:12px;flex:none;display:flex;align-items:center;
-  justify-content:center;background:color-mix(in srgb,var(--txt) 7%,transparent);color:var(--txt)}
-.directos .d{min-width:0}
-.directos .d b{display:block;font-size:13px;font-weight:500;letter-spacing:-.01em}
-.directos .d i{display:block;font-style:normal;margin-top:1px;font-size:11.5px;color:var(--txt2);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* ══ cierre de lista ════════════════════════════════════════════════
    Toda lista larga termina diciendo que terminó. Antes se cortaba sola y
@@ -866,7 +897,9 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .fin-lista{margin:20px 0 4px;display:flex;align-items:center;gap:12px;color:var(--txt2)}
 .fin-lista::before,.fin-lista::after{content:"";flex:1;height:1px;background:var(--borde)}
 .fin-lista span{font-size:12px;letter-spacing:.04em;white-space:nowrap}
-
+/* la marca firma abajo, apagada: cierra la pantalla sin pedir atención */
+.marca-pie{margin:26px 0 8px;display:flex;justify-content:center;opacity:.14;pointer-events:none}
+.marca-pie img{height:16px;width:auto}
 
 /* ══════════════════════════════════════════════════════════════════════
    PIEZAS COMPARTIDAS
@@ -875,68 +908,104 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
    termina diciendo cosas distintas para el mismo problema.
    ══════════════════════════════════════════════════════════════════════ */
 
-/* ── escala neutra de los rubros de gasto ─────────────────────────────
-   Derivada del carbón, de oscuro a claro. El amarillo no está en la
-   escala a propósito: se reserva para el rubro elegido. */
+/* ── data-viz ────────────────────────────────────────────────────────
+   Ocho tonos para categorías, de saturación media y separados en matiz
+   para que dos rubros vecinos no se confundan. NO es una paleta de marca:
+   no se usa fuera de gráficos y leyendas. El amarillo no está a propósito,
+   así no compite con la acción primaria. La escala neutra anterior hacía
+   que ocho rubros fueran ocho grises. */
 :root{
-  --rubro-1:#111614; --rubro-2:#2B332E; --rubro-3:#414A45; --rubro-4:#57615B;
-  --rubro-5:#6F7973; --rubro-6:#8B948D; --rubro-7:#A9B0AA; --rubro-8:#C7CDC7;
+  --dv-1:#3F6F8F; --dv-2:#C07A3A; --dv-3:#5E8C5A; --dv-4:#A64B4B;
+  --dv-5:#7C6BA8; --dv-6:#3E8C86; --dv-7:#B59A55; --dv-8:#7A817D;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-tema="claro"]){
-    --rubro-1:#F1F3EF; --rubro-2:#D5D9D4; --rubro-3:#B9BEB9; --rubro-4:#9DA39E;
-    --rubro-5:#828884; --rubro-6:#696F6B; --rubro-7:#525853; --rubro-8:#3C423E;
+    --dv-1:#7FA8C6; --dv-2:#E0A86D; --dv-3:#93BE8E; --dv-4:#D98484;
+    --dv-5:#AE9FD6; --dv-6:#74C0B9; --dv-7:#D8C088; --dv-8:#A7AEA9;
   }
 }
 :root[data-tema="oscuro"]{
-  --rubro-1:#F1F3EF; --rubro-2:#D5D9D4; --rubro-3:#B9BEB9; --rubro-4:#9DA39E;
-  --rubro-5:#828884; --rubro-6:#696F6B; --rubro-7:#525853; --rubro-8:#3C423E;
+  --dv-1:#7FA8C6; --dv-2:#E0A86D; --dv-3:#93BE8E; --dv-4:#D98484;
+  --dv-5:#AE9FD6; --dv-6:#74C0B9; --dv-7:#D8C088; --dv-8:#A7AEA9;
+}
+/* los rubros de gasto son la primera consumidora de la paleta */
+:root{
+  --rubro-1:var(--dv-1); --rubro-2:var(--dv-2); --rubro-3:var(--dv-3); --rubro-4:var(--dv-4);
+  --rubro-5:var(--dv-5); --rubro-6:var(--dv-6); --rubro-7:var(--dv-7); --rubro-8:var(--dv-8);
 }
 
-/* ── formularios ─────────────────────────────────────────────────── */
-.grupo-campos{margin-top:22px}
-.grupo-tit{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--txt2);margin-bottom:4px}
+/* ══ SISTEMA DE FORMULARIO ══════════════════════════════════════════
+   Un solo material para todo lo que se completa: relleno suave sobre el
+   fondo, sin borde y sin caja blanca. El foco se dice con el filo
+   amarillo, que es el color de la selección en toda la app. El rótulo va
+   arriba, chico y quieto; el dato, grande. */
+.grupo-campos{margin-top:26px}
+.grupo-tit{display:block;font-size:15px;font-weight:700;letter-spacing:-.015em;
+  text-transform:none;color:var(--txt);margin-bottom:2px}
 
-.campo-f{margin-top:18px}
+.campo-f{margin-top:20px}
 .campo-f label,.campo-f .et{display:flex;align-items:baseline;gap:8px;
-  font-size:13px;font-weight:500;letter-spacing:-.005em;color:var(--txt)}
-.campo-f label em,.campo-f .et em{font-style:normal;font-size:11.5px;font-weight:500;color:var(--txt2)}
-.campo-f .caja{margin-top:8px;position:relative;display:flex;align-items:center;
-  min-height:52px;border-radius:var(--r-control);background:var(--sup);
-  border:1px solid var(--borde);padding:0 14px;transition:border-color .15s,box-shadow .15s}
-.campo-f .caja.alto{min-height:auto;padding:12px 14px;align-items:flex-start}
-.campo-f .caja:focus-within{border-color:var(--txt);box-shadow:0 0 0 1px var(--txt)}
-.campo-f .caja .gl{flex:none;margin-right:11px;color:var(--txt2);display:flex}
+  font-size:var(--t-meta);font-weight:500;letter-spacing:0;color:var(--txt2)}
+.campo-f label em,.campo-f .et em{font-style:normal;font-size:var(--t-label);font-weight:500;
+  color:color-mix(in srgb,var(--txt2) 80%,transparent)}
+.campo-f .caja{margin-top:9px;position:relative;display:flex;align-items:center;
+  min-height:56px;border-radius:var(--b-radio);background:color-mix(in srgb,var(--txt) 4.5%,transparent);
+  border:0;padding:0 16px;transition:background .15s,box-shadow .15s}
+.campo-f .caja.alto{min-height:124px;padding:16px;align-items:flex-start}
+.campo-f .caja:hover{background:color-mix(in srgb,var(--txt) 7%,transparent)}
+.campo-f .caja:focus-within{background:color-mix(in srgb,var(--txt) 7%,transparent);
+  box-shadow:inset 0 0 0 1.5px var(--amarillo)}
+.campo-f .caja .gl{flex:none;margin-right:12px;color:var(--txt2);display:flex}
+.campo-f .caja:focus-within .gl{color:var(--txt)}
 .campo-f input,.campo-f textarea,.campo-f select{width:100%;border:0;background:none;padding:0;
-  font:inherit;font-size:15px;color:var(--txt);resize:none}
+  font:inherit;font-size:var(--t-fila);font-weight:500;color:var(--txt);resize:none;line-height:1.4}
 .campo-f input:focus,.campo-f textarea:focus,.campo-f select:focus{outline:none}
-.campo-f input::placeholder,.campo-f textarea::placeholder{color:var(--txt2);opacity:.7}
+.campo-f input::placeholder,.campo-f textarea::placeholder{color:var(--txt2);opacity:.62;font-weight:400}
 .campo-f select{appearance:none;-webkit-appearance:none;padding-right:26px;cursor:pointer}
-.campo-f .chev-sel{position:absolute;right:14px;color:var(--txt2);pointer-events:none;
+.campo-f .chev-sel{position:absolute;right:16px;color:var(--txt2);pointer-events:none;
   display:flex;transform:rotate(90deg)}
-.campo-f .ay{margin-top:7px;font-size:12.5px;line-height:1.45;color:var(--txt2)}
-.campo-f .err{margin-top:7px;display:flex;align-items:flex-start;gap:6px;
-  font-size:12.5px;line-height:1.45;color:var(--error);font-weight:500}
+.campo-f .ay{margin-top:8px;font-size:var(--t-meta);line-height:1.45;color:var(--txt2)}
+.campo-f .err{margin-top:8px;display:flex;align-items:flex-start;gap:6px;
+  font-size:var(--t-meta);line-height:1.45;color:var(--error);font-weight:500}
 .campo-f .err svg{flex:none;margin-top:2px}
-.campo-f.mal .caja{border-color:var(--error)}
-.campo-f.mal .caja:focus-within{box-shadow:0 0 0 1px var(--error)}
+.campo-f.mal .caja{box-shadow:inset 0 0 0 1.5px var(--error)}
+.campo-f.mal .caja:focus-within{box-shadow:inset 0 0 0 1.5px var(--error)}
 
-.segmentos{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
-.segmentos button{flex:1;min-width:88px;height:46px;border-radius:var(--r-control);
-  border:1px solid var(--borde);background:var(--sup);font-size:13.5px;font-weight:500;
+/* el campo que elige entre opciones: no es un select del navegador, es
+   una fila que abre la hoja con las opciones */
+.campo-f .elige{width:100%;text-align:left;justify-content:space-between;gap:12px;cursor:pointer}
+.campo-f .elige .val{flex:1;min-width:0;font-size:var(--t-fila);font-weight:500;color:var(--txt);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.campo-f .elige .val.vacio{color:var(--txt2);font-weight:400}
+.campo-f .elige .chev-sel{position:static;transform:rotate(90deg)}
+.opciones-hoja{list-style:none;margin-top:4px}
+.opciones-hoja li+li{border-top:1px solid var(--borde)}
+.opciones-hoja button,.opciones-hoja a,.opciones-hoja .solo-dato{width:100%;display:flex;align-items:center;gap:14px;
+  padding:16px 0;text-align:left;color:var(--txt);text-decoration:none}
+.opciones-hoja .ic{flex:none;color:var(--txt2);display:flex}
+.opciones-hoja .val{flex:none;font-size:var(--t-meta);color:var(--txt2);font-variant-numeric:tabular-nums}
+.opciones-hoja .solo-dato b{font-weight:500;color:var(--txt2)}
+.opciones-hoja b{flex:1;font-size:var(--t-fila);font-weight:500}
+.opciones-hoja .tic{flex:none;color:var(--txt)}
+.opciones-hoja button[aria-current="true"] b{font-weight:700}
+
+/* Horarios · misma familia que el rail: sin borde, el elegido macizo */
+.segmentos{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.segmentos button{flex:1;min-width:84px;height:var(--b-alto-sec);border-radius:var(--b-radio);
+  border:0;background:color-mix(in srgb,var(--txt) 5%,transparent);
+  font-size:14px;font-weight:500;color:var(--txt2);
   display:flex;align-items:center;justify-content:center;text-align:center;padding:0 10px;
-  transition:background .15s,border-color .15s,color .15s}
-.segmentos button[aria-checked="true"]{background:var(--carbon);border-color:var(--carbon);
-  color:#fff;font-weight:700}
-:root[data-tema="oscuro"] .segmentos button[aria-checked="true"],
-.segmentos button[aria-checked="true"]{color:#fff}
+  transition:background .15s,color .15s}
+.segmentos button:hover:not([aria-checked="true"]){background:color-mix(in srgb,var(--txt) 9%,transparent)}
+.segmentos button[aria-checked="true"]{background:var(--txt);color:var(--fondo);font-weight:700}
+/* la franja que queda elegida se lee, no es una nota al pie */
+.campo-f .segmentos ~ .ay{margin-top:10px;font-size:var(--t-meta);font-weight:500;color:var(--txt)}
 
-.interruptor{width:100%;display:flex;align-items:center;gap:14px;padding:14px 16px;
-  border-radius:var(--r-control);border:1px solid var(--borde);background:var(--sup)}
+.interruptor{width:100%;display:flex;align-items:center;gap:14px;padding:16px;
+  border-radius:var(--b-radio);border:0;background:color-mix(in srgb,var(--txt) 4.5%,transparent)}
 .interruptor .d{flex:1;min-width:0}
-.interruptor .d b{display:block;font-size:14.5px;font-weight:500}
-.interruptor .d i{display:block;font-style:normal;margin-top:3px;font-size:12.5px;color:var(--txt2);line-height:1.4}
+.interruptor .d b{display:block;font-size:var(--t-fila);font-weight:500}
+.interruptor .d i{display:block;font-style:normal;margin-top:3px;font-size:var(--t-meta);color:var(--txt2);line-height:1.4}
 .interruptor .palanca{flex:none;width:48px;height:28px;border-radius:var(--r-pill);
   background:var(--borde-ctrl);position:relative;transition:background .2s}
 .interruptor .palanca span{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
@@ -944,16 +1013,25 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .interruptor[aria-checked="true"] .palanca{background:var(--amarillo)}
 .interruptor[aria-checked="true"] .palanca span{transform:translateX(20px)}
 
-.adjuntar{margin-top:8px;width:100%;height:52px;border-radius:var(--r-control);
-  border:1px dashed var(--borde-ctrl);display:flex;align-items:center;justify-content:center;gap:9px;
-  font-size:14px;font-weight:500;color:var(--txt2)}
-.adjunto{margin-top:8px;display:flex;align-items:center;gap:12px;padding:12px 14px;
-  border-radius:var(--r-control);border:1px solid var(--borde);background:var(--sup)}
-.adjunto .ic{width:38px;height:38px;border-radius:12px;flex:none;display:flex;align-items:center;
-  justify-content:center;background:color-mix(in srgb,var(--txt) 7%,transparent)}
+/* adjuntar no es un rectángulo punteado vacío: es una pieza con su
+   ícono, su título y lo que acepta */
+.adjuntar{margin-top:9px;width:100%;min-height:76px;border-radius:var(--b-radio);
+  border:0;background:color-mix(in srgb,var(--txt) 4.5%,transparent);
+  display:flex;align-items:center;gap:14px;padding:0 16px;text-align:left;
+  transition:background .15s}
+.adjuntar:hover{background:color-mix(in srgb,var(--txt) 8%,transparent)}
+.adjuntar .ic{width:46px;height:46px;border-radius:14px;flex:none;display:flex;align-items:center;
+  justify-content:center;background:var(--txt);color:var(--fondo)}
+.adjuntar .tx{flex:1;min-width:0}
+.adjuntar .tx b{display:block;font-size:var(--t-fila);font-weight:500;color:var(--txt)}
+.adjuntar .tx i{display:block;font-style:normal;margin-top:3px;font-size:var(--t-meta);color:var(--txt2)}
+.adjunto{margin-top:9px;display:flex;align-items:center;gap:14px;padding:14px 16px;
+  border-radius:var(--b-radio);border:0;background:color-mix(in srgb,var(--txt) 4.5%,transparent)}
+.adjunto .ic{width:46px;height:46px;border-radius:14px;flex:none;display:flex;align-items:center;
+  justify-content:center;background:color-mix(in srgb,var(--txt) 10%,transparent);color:var(--txt)}
 .adjunto .d{flex:1;min-width:0}
-.adjunto .d b{display:block;font-size:13.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.adjunto .d i{display:block;font-style:normal;font-size:11.5px;color:var(--txt2);margin-top:2px}
+.adjunto .d b{display:block;font-size:var(--t-fila);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adjunto .d i{display:block;font-style:normal;font-size:var(--t-meta);color:var(--txt2);margin-top:3px}
 .adjunto>button{flex:none;width:32px;height:32px;border-radius:var(--r-pill);display:flex;
   align-items:center;justify-content:center;color:var(--txt2);transform:rotate(45deg);
   background:color-mix(in srgb,var(--txt) 7%,transparent)}
@@ -961,8 +1039,6 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .pie-form{margin-top:26px}
 .nota-form{font-size:12.5px;line-height:1.5;color:var(--txt2);margin-bottom:14px}
 .pie-form .entrar{margin-top:0;width:100%}
-.pie-form .entrar:disabled{opacity:.45;pointer-events:none}
-.pie-form .volver-txt{margin:14px auto 0}
 
 /* ── estados sistémicos ──────────────────────────────────────────── */
 .estado-sis{margin-top:20px;padding:30px 22px;text-align:center;border-radius:var(--r-card);
@@ -990,8 +1066,8 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .descarga>button .tx{flex:1;text-align:left}
 .descarga>button em{font-style:normal;font-size:12px;color:var(--txt2)}
 .descarga.chica{display:inline-block}
-.descarga.chica>button{width:auto;min-height:40px;font-size:12.5px;padding:0 13px;
-  border-radius:var(--r-pill);gap:8px}
+.descarga.chica>button{width:auto;height:var(--b-alto-chico);min-height:0;padding:0 6px;border:0;background:none;
+  border-radius:var(--b-radio);font-size:var(--b-fs-sec);font-weight:700;gap:6px}
 .descarga.chica>button .tx{flex:none;white-space:nowrap}
 .descarga.lista>button{border-color:var(--txt)}
 .detalle-descarga{margin-top:8px;padding:11px 14px;border-radius:var(--r-chip);
@@ -999,25 +1075,25 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .detalle-descarga b{display:block;font-size:12.5px;font-weight:500;word-break:break-all}
 .detalle-descarga span{display:block;margin-top:4px;font-size:11.5px;line-height:1.45;color:var(--txt2)}
 
-.copiar{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 13px;
-  border-radius:var(--r-pill);border:1px solid var(--borde-ctrl);font-size:12.5px;font-weight:500;
-  color:var(--txt);flex:none;transition:background .15s,border-color .15s}
-.copiar:hover{background:color-mix(in srgb,var(--txt) 6%,transparent)}
-.copiar.ok{background:var(--amarillo);border-color:var(--amarillo);color:var(--carbon)}
+.copiar{display:inline-flex;align-items:center;gap:6px;height:var(--b-alto-chico);padding:0 6px;
+  border:0;background:none;border-radius:var(--b-radio);
+  font-size:var(--b-fs-sec);font-weight:700;color:var(--txt);flex:none;transition:opacity .15s}
+.copiar:hover{opacity:.72}
+.copiar.ok{color:var(--txt)}
 
 /* ── paneles plegables ───────────────────────────────────────────── */
 .paneles{margin-top:16px;display:flex;flex-direction:column;gap:10px}
-.panel-p{border-radius:var(--r-card);overflow:hidden}
-.panel-p .cab{width:100%;display:flex;align-items:center;gap:13px;padding:15px 16px;text-align:left}
-.panel-p .cab .ic{width:40px;height:40px;border-radius:14px;flex:none;display:flex;align-items:center;
-  justify-content:center;background:color-mix(in srgb,var(--txt) 7%,transparent);color:var(--txt)}
+.panel-p{border-radius:0;overflow:hidden}
+.panel-p .cab{width:100%;display:flex;align-items:center;gap:14px;padding:15px 0;min-height:60px;text-align:left}
+.panel-p .cab .ic{width:24px;height:24px;border-radius:0;flex:none;display:flex;align-items:center;
+  justify-content:center;background:none;color:var(--txt)}
 .panel-p .cab .d{flex:1;min-width:0}
-.panel-p .cab .d b{display:block;font-size:15.5px;font-weight:500;letter-spacing:-.015em}
-.panel-p .cab .d i{display:block;font-style:normal;margin-top:3px;font-size:12.5px;color:var(--txt2);
+.panel-p .cab .d b{display:block;font-size:var(--t-fila);font-weight:500;letter-spacing:-.015em}
+.panel-p .cab .d i{display:block;font-style:normal;margin-top:3px;font-size:var(--t-meta);color:var(--txt2);
   line-height:1.4}
 .panel-p .cab .chev{flex:none;color:var(--txt2);display:flex;transform:rotate(90deg);transition:transform .22s}
 .panel-p.abierto .cab .chev{transform:rotate(-90deg)}
-.panel-p .cuerpo{padding:2px 16px 16px;border-top:1px solid var(--borde);margin-top:-1px}
+.panel-p .cuerpo{padding:0 0 18px;border-top:0;margin-top:0}
 .panel-p .cuerpo>*:first-child{margin-top:14px}
 .vacio-chico{font-size:13px;line-height:1.5;color:var(--txt2)}
 
@@ -1027,25 +1103,27 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .acciones-panel .secundario{border:1px solid var(--borde-ctrl);color:var(--txt)}
 .acciones-panel .principal{background:var(--carbon);color:#fff}
 
-.persona-f{display:flex;align-items:flex-start;gap:12px;padding:11px 0}
+.persona-f{display:flex;align-items:center;gap:13px;padding:15px 0}
 .persona-f+.persona-f{border-top:1px solid var(--borde)}
-.persona-f .av,.permiso .av{width:40px;height:40px;border-radius:var(--r-pill);flex:none;
+.persona-f .av,.permiso .av{width:44px;height:44px;border-radius:var(--r-pill);flex:none;
   display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;
   background:color-mix(in srgb,var(--txt) 8%,transparent);color:var(--txt)}
 .persona-f .d{flex:1;min-width:0}
-.persona-f .d b{display:block;font-size:15px;font-weight:500;letter-spacing:-.01em}
-.persona-f .d i{display:block;font-style:normal;margin-top:3px;font-size:12.5px;color:var(--txt2);line-height:1.4}
+.persona-f .d b{display:block;font-size:var(--t-fila);font-weight:500;letter-spacing:-.01em}
+.persona-f .d i{display:block;font-style:normal;margin-top:3px;font-size:var(--t-meta);color:var(--txt2);line-height:1.4}
 
-.permiso{padding:14px;border-radius:var(--r-control);border:1px solid var(--borde);background:var(--sup)}
-.permiso+.permiso{margin-top:10px}
-.permiso .arr{display:flex;align-items:center;gap:12px}
+/* permiso permanente: quién, qué acceso tiene, desde cuándo y el estado.
+   Lo administrativo va en una línea quieta, no en una ficha. */
+.permiso{padding:18px 0;border-radius:0;border:0;background:none}
+.permiso+.permiso{margin-top:0;border-top:1px solid var(--borde)}
+.permiso .arr{display:flex;align-items:center;gap:13px}
+.estado-acceso.chico{flex:none;font-size:var(--t-label);font-weight:500;color:var(--txt);gap:6px}
+.estado-acceso.chico::before{width:6px;height:6px}
+.meta-acceso{margin-top:12px;font-size:var(--t-meta);line-height:1.45;color:var(--txt2)}
+.permiso .btn-ter.peligro{margin-top:10px;padding:0;min-height:36px;color:var(--est-vencido)}
 .permiso .arr .d{flex:1;min-width:0}
-.permiso .arr .d b{display:block;font-size:15.5px;font-weight:500;letter-spacing:-.015em}
-.permiso .arr .d i{display:block;font-style:normal;margin-top:3px;font-size:12.5px;color:var(--txt2);line-height:1.4}
-.dar-baja{margin-top:12px;width:100%;height:44px;border-radius:var(--r-pill);
-  border:1px solid var(--error-borde);color:var(--error);font-size:13.5px;font-weight:500;
-  display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s}
-.dar-baja:hover{background:color-mix(in srgb,var(--error) 8%,transparent)}
+.permiso .arr .d b{display:block;font-size:var(--t-fila);font-weight:500;letter-spacing:-.015em}
+.permiso .arr .d i{display:block;font-style:normal;margin-top:3px;font-size:var(--t-meta);color:var(--txt2);line-height:1.4}
 .revocados{margin-top:14px;padding-top:12px;border-top:1px solid var(--borde)}
 .revocados .k{display:block;font-size:11px;font-weight:700;letter-spacing:.09em;
   text-transform:uppercase;color:var(--txt2)}
@@ -1054,9 +1132,9 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .mini-f{width:100%;display:flex;align-items:center;gap:12px;padding:11px 0;text-align:left}
 .mini-f+.mini-f{border-top:1px solid var(--borde)}
 .mini-f .d{flex:1;min-width:0}
-.mini-f .d b{display:block;font-size:14.5px;font-weight:500;letter-spacing:-.01em}
-.mini-f .d i{display:block;font-style:normal;margin-top:3px;font-size:12.5px;color:var(--txt2)}
-.mini-f .pastilla{flex:none;font-size:11.5px;padding:5px 10px}
+.mini-f .d b{display:block;font-size:var(--t-fila);font-weight:500;letter-spacing:-.01em}
+.mini-f .d i{display:block;font-style:normal;margin-top:3px;font-size:var(--t-meta);color:var(--txt2)}
+.mini-f .pastilla{flex:none}
 
 .ficha-datos{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;
   padding:13px 14px;border-radius:var(--r-control);background:color-mix(in srgb,var(--txt) 4%,transparent)}
@@ -1065,9 +1143,58 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .dato-f .v{display:block;margin-top:3px;font-size:13.5px;font-weight:500;line-height:1.35}
 
 /* cabecera de entidad: unidad, persona, edificio */
+/* ══ ACCESO · la llave de una autorización ══════════════════════════
+   Lenguaje de control de acceso, no ficha administrativa: el estado
+   arriba, cuándo puede entrar en grande, y el pase al pie. Lo
+   administrativo baja a datos quietos. */
+.acceso{position:relative;margin-top:18px;padding:18px 20px 20px;border-radius:var(--r-card);
+  background:#141A17;color:#fff;overflow:hidden;box-shadow:var(--sombra-2)}
+.acceso.vigente{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--amarillo) 55%,transparent),var(--sombra-2)}
+.estado-acceso{display:inline-flex;align-items:center;gap:8px;font-size:var(--t-meta);font-weight:700;
+  color:#fff}
+.estado-acceso::before{content:"";width:7px;height:7px;border-radius:999px;background:var(--amarillo)}
+.estado-acceso.gris::before{background:rgba(255,255,255,.5)}
+.acceso b{display:block;margin-top:12px;font-size:var(--t-titulo);line-height:1.1;font-weight:700;
+  letter-spacing:var(--t-titulo-tr)}
+.acceso .franja{display:block;margin-top:4px;font-size:var(--t-fila);color:rgba(255,255,255,.78);
+  font-variant-numeric:tabular-nums}
+.acceso-pie{margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.acceso-pie .pase{display:inline-flex;align-items:center;gap:8px;font-size:var(--t-meta);font-weight:500;
+  color:rgba(255,255,255,.9);font-variant-numeric:tabular-nums}
+.acceso-pie .repite{font-size:var(--t-meta);color:rgba(255,255,255,.6)}
+
+/* una sección con su propio fondo, para separar bloques sin cards */
+.bloque-cuenta{margin:28px -20px 0;padding:4px 20px 8px;
+  background:color-mix(in srgb,var(--txt) 3.5%,transparent);
+  border-top:1px solid var(--borde);border-bottom:1px solid var(--borde)}
+.bloque-cuenta .grupo{margin-top:20px}
+.bloque-cuenta .datos-quietos{margin-top:10px}
+.bloque-cuenta .datos-quietos p:last-child{border-bottom:0}
+
+/* datos secundarios: renglones quietos, no una grilla gris */
+.datos-quietos{margin-top:22px}
+.datos-quietos p{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  padding:13px 0;border-bottom:1px solid var(--borde)}
+.datos-quietos p.ancho{display:block}
+.datos-quietos span{flex:none;font-size:var(--t-meta);color:var(--txt2)}
+.datos-quietos b{font-size:var(--t-fila);font-weight:500;text-align:right}
+.datos-quietos p.ancho b{display:block;margin-top:6px;text-align:left;line-height:1.45}
+.btn-ter.baja{margin-top:20px;color:var(--est-vencido)}
+
+/* ── detalle de entrega ──────────────────────────────────────────── */
+.ent-estado{margin-top:18px;display:flex;flex-direction:column;gap:6px}
+.ent-estado b{display:inline-flex;align-items:center;gap:9px;font-size:var(--t-seccion);
+  line-height:var(--t-seccion-lh);font-weight:700;letter-spacing:var(--t-seccion-tr)}
+.ent-estado b::before{content:"";width:8px;height:8px;border-radius:999px;flex:none;background:var(--amarillo)}
+.ent-estado b.gris::before{background:var(--est-cerrado)}
+.ent-estado p{font-size:var(--t-meta);line-height:var(--t-meta-lh);color:var(--txt2)}
+.ent-foto{margin-top:16px}
+.ent-foto img{width:100%;height:190px;object-fit:cover;border-radius:var(--r-card);display:block}
+.ent-foto figcaption{margin-top:7px;font-size:var(--t-label);color:var(--txt2)}
 .cabecera-ent{margin-top:22px}
 .cabecera-ent .et{font-size:11.5px;font-weight:500;letter-spacing:.11em;text-transform:uppercase;color:var(--txt2)}
-.cabecera-ent h1{margin-top:6px;font-size:27px;line-height:1;font-weight:700;letter-spacing:-.03em}
+.cabecera-ent h1{margin-top:6px;font-size:var(--t-titulo);line-height:1;font-weight:700;letter-spacing:var(--t-titulo-tr)}
 .cabecera-ent p{margin-top:7px;font-size:14px;color:var(--txt2)}
 
 /* ── timeline ────────────────────────────────────────────────────── */
@@ -1081,13 +1208,13 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
   background:color-mix(in srgb,var(--txt) 7%,transparent);color:var(--txt)}
 .linea-t .hito.on .marca{background:var(--amarillo);color:var(--carbon)}
 .linea-t .arr{display:flex;align-items:baseline;gap:10px}
-.linea-t .arr b{flex:1;font-size:14.5px;font-weight:500;letter-spacing:-.01em;line-height:1.3}
+.linea-t .arr b{flex:1;font-size:var(--t-fila);font-weight:500;letter-spacing:-.01em;line-height:1.3}
 .linea-t time{flex:none;font-size:11.5px;color:var(--txt2);white-space:nowrap}
 .linea-t .c p{margin-top:4px;font-size:13px;line-height:1.45;color:var(--txt2)}
 .linea-t .quien{display:block;margin-top:6px;font-size:11.5px;color:var(--txt2);opacity:.85}
 
 /* avance de workflow */
-.avance{margin-top:16px}
+.avance{margin-top:14px}
 .avance ol{list-style:none;display:flex;gap:6px}
 .avance li{flex:1;display:flex;flex-direction:column;gap:7px}
 .avance .pt{height:4px;border-radius:999px;background:var(--borde)}
@@ -1100,7 +1227,7 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 /* ── hoja: panel que sube desde abajo ────────────────────────────────
    Reemplaza pantallas enteras donde alcanzaba un panel. Entra, sale, se
    arrastra para cerrar y bloquea el scroll del fondo. */
-.velo{position:absolute;inset:0;z-index:40;display:flex;align-items:flex-end;
+.velo{position:absolute;inset:0;z-index:60;display:flex;align-items:flex-end;
   background:rgba(8,11,9,.46);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
   animation:aparece .18s ease}
 .velo.sale{animation:desaparece .16s ease forwards}
@@ -1108,7 +1235,7 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 @keyframes desaparece{to{opacity:0}}
 .hoja{width:100%;max-height:88%;display:flex;flex-direction:column;
   background:var(--fondo);border-radius:26px 26px 0 0;
-  box-shadow:0 -16px 44px -18px rgba(0,0,0,.65);
+  box-shadow:var(--sombra-2-sube);
   animation:sube .24s cubic-bezier(.2,.9,.25,1);
   transition:transform .22s cubic-bezier(.2,.8,.25,1)}
 .hoja.alta{height:88%}
@@ -1138,12 +1265,9 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .hoja-txt{font-size:13.5px;line-height:1.55;color:var(--txt2)}
 .hoja-acciones{flex:none;padding:18px 22px 26px}
 .hoja-acciones .entrar{margin-top:0;width:100%}
-.hoja-acciones .volver-txt{margin:12px auto 0}
-.peligro{width:100%;height:56px;border-radius:var(--r-pill);background:var(--error);color:#fff;
-  font-size:15px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:9px}
 /* Sin movimiento: la hoja aparece y desaparece, pero no se desliza. */
 @media (prefers-reduced-motion:reduce){
-  .hoja,.hoja.sale{animation:aparece .01s ease}
+  :root:not([data-movimiento="forzado"]) .hoja,:root:not([data-movimiento="forzado"]) .hoja.sale{animation:aparece .01s ease}
 }
 
 /* ── torta de gastos ─────────────────────────────────────────────── */
@@ -1159,36 +1283,15 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .torta .centro b{margin-top:5px;font-size:19px;font-weight:700;letter-spacing:-.02em;
   font-variant-numeric:tabular-nums;line-height:1}
 .torta .centro .p{margin-top:5px;font-size:11px;color:var(--txt2)}
-.torta .leyenda{list-style:none;width:100%;display:flex;flex-direction:column}
-.torta .leyenda li+li{border-top:1px solid var(--borde)}
-.torta .leyenda button{width:100%;display:flex;align-items:center;gap:11px;padding:11px 4px;text-align:left}
-.torta .leyenda .tinta{width:12px;height:12px;border-radius:4px;flex:none}
-.torta .leyenda .nb{flex:1;font-size:13.5px;font-weight:500;letter-spacing:-.01em}
-.torta .leyenda .pc{flex:none;font-size:13px;color:var(--txt2);font-variant-numeric:tabular-nums}
-.torta .leyenda button[aria-pressed="true"] .nb{font-weight:700}
-.torta .leyenda button[aria-pressed="true"] .pc{color:var(--txt);font-weight:700}
 @media (min-width:560px){
   .torta{flex-direction:row;align-items:center;gap:26px}
-  .torta .leyenda{flex:1}
 }
-
 
 /* ══════════════════════════════════════════════════════════════════════
    PANTALLAS DEL RESIDENTE
    ══════════════════════════════════════════════════════════════════════ */
 
 /* tira horizontal deslizable: espacios, períodos */
-.tira-esp{margin-top:9px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
-  padding-bottom:2px;scroll-snap-type:x proximity}
-.tira-esp::-webkit-scrollbar{display:none}
-.tira-esp button{flex:none;min-width:104px;scroll-snap-align:start;display:flex;flex-direction:column;
-  gap:3px;padding:11px 14px;border-radius:var(--r-control);border:1px solid var(--borde);
-  background:var(--sup);text-align:left;transition:background .15s,border-color .15s}
-.tira-esp button b{font-size:14.5px;font-weight:700;letter-spacing:-.01em}
-.tira-esp button i{font-style:normal;font-size:11.5px;color:var(--txt2)}
-.tira-esp button[aria-checked="true"]{background:var(--carbon);border-color:var(--carbon)}
-.tira-esp button[aria-checked="true"] b{color:#fff}
-.tira-esp button[aria-checked="true"] i{color:rgba(255,255,255,.66)}
 
 /* ── calendario de mes ───────────────────────────────────────────────
    Va primero porque la pregunta real es "¿qué día puedo?". Círculos
@@ -1218,22 +1321,9 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .cal-dia.sel{background:var(--carbon)}
 .cal-dia.sel b{color:#fff;font-weight:700}
 .cal-dia.sel .pto{background:var(--amarillo);opacity:1}
-.cal-pie{margin-top:10px;padding:10px 4px 0;border-top:1px solid var(--borde);
-  display:flex;gap:14px;flex-wrap:wrap}
-.cal-pie .ref{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--txt2)}
-.cal-pie .ref .pto{width:5px;height:5px;border-radius:999px;background:var(--txt);opacity:.5;display:block}
-.cal-pie .ref .pto.poco{background:transparent;border:1.5px solid var(--txt);opacity:.75}
-.cal-pie .ref .pto.sin{background:transparent;border:1px solid var(--borde-ctrl);opacity:1}
-
-.bajada{margin-top:7px;font-size:13px;line-height:1.5;color:var(--txt2)}
 .cuerpo-txt{font-size:14.5px;line-height:1.6;color:var(--txt)}
 .apunte{margin-top:9px;font-size:13px;line-height:1.45;color:#C8CEC8}
 .visita.fin .apunte{color:var(--txt2)}
-.apunte-pie{margin-top:22px;font-size:12px;line-height:1.55;color:var(--txt2);opacity:.85}
-
-.cancelar-r{width:100%;padding:13px 18px;border-top:1px solid var(--borde);
-  font-size:13.5px;font-weight:500;color:var(--error);text-align:center;transition:background .15s}
-.cancelar-r:hover{background:color-mix(in srgb,var(--error) 7%,transparent)}
 
 /* estado de una entidad: pastilla + dato al lado */
 .estado-exp{margin-top:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -1248,30 +1338,20 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 .tabla-cab span{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt2)}
 .tabla-cab b{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .tabla-f{width:100%;display:flex;align-items:flex-start;gap:12px;padding:13px 16px;text-align:left}
-.tabla-f+.tabla-f,.sub-tabla .tabla-f:first-child{border-top:1px solid var(--borde)}
+.tabla-f+.tabla-f{border-top:1px solid var(--borde)}
 .tabla-f .d{flex:1;min-width:0}
-.tabla-f .d b{display:block;font-size:14.5px;font-weight:500;letter-spacing:-.01em;line-height:1.3}
-.tabla-f .d i{display:block;font-style:normal;margin-top:3px;font-size:12.5px;color:var(--txt2);line-height:1.4}
-.tabla-f .n{flex:none;font-size:14.5px;font-weight:500;font-variant-numeric:tabular-nums;
+.tabla-f .d b{display:block;font-size:var(--t-fila);font-weight:500;letter-spacing:-.01em;line-height:1.3}
+.tabla-f .d i{display:block;font-style:normal;margin-top:3px;font-size:var(--t-meta);color:var(--txt2);line-height:1.4}
+.tabla-f .n{flex:none;font-size:var(--t-fila);font-weight:500;font-variant-numeric:tabular-nums;
   letter-spacing:-.015em;padding-top:1px}
 .tabla-f .flech{width:30px;height:30px;margin-top:-2px}
 .tabla-f.pulsable:hover{background:color-mix(in srgb,var(--txt) 4%,transparent)}
 .tabla-f.alto{padding:15px 16px}
 .tabla-f.total-f{background:color-mix(in srgb,var(--txt) 4%,transparent)}
 .tabla.total .tabla-f{padding:15px 16px}
-.tabla.total .tabla-f .d b{font-size:15px}
-.tabla.total .tabla-f .n{font-size:19px;font-weight:700}
-.sub-tabla{background:color-mix(in srgb,var(--txt) 3%,transparent);border-top:1px solid var(--borde)}
-.sub-tabla .tabla-f .d b{font-size:13.5px}
-.tabla-ir{width:100%;display:flex;align-items:center;gap:10px;padding:13px 16px;
-  border-top:1px solid var(--borde);font-size:13px;font-weight:500;color:var(--txt2);
-  transition:background .15s}
-.tabla-ir:hover{background:color-mix(in srgb,var(--txt) 4%,transparent)}
-.tabla-ir .flech{margin-left:auto;width:28px;height:28px}
+.tabla.total .tabla-f .d b{font-size:var(--t-fila)}
+.tabla.total .tabla-f .n{font-size:var(--t-seccion);font-weight:700}
 .tabla-f .descarga{margin-top:9px}
-
-.volver-chip{margin-top:12px;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 15px;
-  border-radius:var(--r-pill);border:1px solid var(--borde-ctrl);font-size:13px;font-weight:500}
 
 /* ── medios de pago ──────────────────────────────────────────────── */
 .medio{margin-top:14px;padding:16px;border-radius:var(--r-card);border:1px solid var(--borde);
@@ -1290,26 +1370,25 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
   font-size:12.5px;line-height:1.5;color:var(--txt2)}
 
 /* ── saldo ───────────────────────────────────────────────────────── */
-.saldo{margin-top:18px;padding:20px;border-radius:var(--r-card);border:1px solid var(--borde);
-  background:var(--sup)}
-.saldo .k{font-size:11.5px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--txt2)}
-.saldo b{display:block;margin-top:7px;font-size:32px;font-weight:900;letter-spacing:-.03em;
-  font-variant-numeric:tabular-nums}
-.saldo .p{display:block;margin-top:7px;font-size:13px;color:var(--txt2);line-height:1.45}
-.saldo.debe{border-left:3px solid var(--amarillo)}
 
-/* ── reclamos ────────────────────────────────────────────────────── */
-.reclamo-f{margin-top:12px;width:100%;text-align:left;padding:16px;border-radius:var(--r-card);
-  transition:transform .14s}
-.reclamo-f:active{transform:scale(.99)}
+/* ── reclamos ────────────────────────────────────────────────────────
+   Cada reclamo es un asunto abierto, no una fila de tabla: el estado
+   arriba con su punto, el asunto en grande, dónde pasa, la última
+   novedad y quién la escribió. Relleno suave, sin borde ni sombra. */
+.reclamo-f{margin-top:12px;width:100%;text-align:left;padding:18px;border-radius:var(--r-card);
+  background:color-mix(in srgb,var(--txt) 4%,transparent);transition:background .14s}
+.reclamo-f:hover{background:color-mix(in srgb,var(--txt) 7%,transparent)}
+.reclamo-f:active{transform:none}
 .reclamo-f .arr{display:flex;align-items:center;gap:10px}
-.reclamo-f .cod{flex:1;font-size:11.5px;font-weight:700;letter-spacing:.08em;color:var(--txt2)}
-.reclamo-f h3{margin-top:10px;font-size:18px;font-weight:700;letter-spacing:-.025em}
-.reclamo-f .ub{margin-top:6px;display:flex;align-items:center;gap:7px;font-size:13px;color:var(--txt2)}
-.reclamo-f .ult{margin-top:10px;font-size:13.5px;line-height:1.45}
-.reclamo-f .pie{margin-top:12px;padding-top:11px;border-top:1px solid var(--borde);
-  display:flex;align-items:center;gap:10px;font-size:12px;color:var(--txt2)}
-.reclamo-f .pie .flech{margin-left:auto;width:30px;height:30px}
+.reclamo-f .cod{order:2;margin-left:auto;font-size:var(--t-label);font-weight:500;letter-spacing:0;
+  color:var(--txt2);font-variant-numeric:tabular-nums}
+.reclamo-f h3{margin-top:12px;font-size:var(--t-seccion);line-height:var(--t-seccion-lh);
+  font-weight:700;letter-spacing:var(--t-seccion-tr)}
+.reclamo-f .ub{margin-top:7px;display:flex;align-items:center;gap:7px;font-size:var(--t-meta);color:var(--txt2)}
+.reclamo-f .ult{margin-top:12px;font-size:var(--t-cuerpo);line-height:var(--t-cuerpo-lh)}
+.reclamo-f .pie{margin-top:14px;padding-top:12px;border-top:1px solid var(--borde);
+  display:flex;align-items:center;gap:10px;font-size:var(--t-meta);color:var(--txt2)}
+.reclamo-f .pie .flech{margin-left:auto;width:auto;height:auto;border:0;background:none}
 
 .bloque{margin-top:20px;padding:16px;border-radius:var(--r-control);
   background:color-mix(in srgb,var(--txt) 4%,transparent)}
@@ -1317,10 +1396,37 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
   color:var(--txt2);margin-bottom:9px}
 .adjunto-nota{margin-top:11px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--txt2)}
 
-/* ── votaciones ──────────────────────────────────────────────────── */
-.votacion{margin-top:14px;padding:18px;border-radius:var(--r-card);border:1px solid var(--borde);
-  background:var(--sup)}
-.votacion.fin{background:color-mix(in srgb,var(--txt) 3%,transparent)}
+/* ── votaciones ──────────────────────────────────────────────────────
+   La que está abierta pide acción: pieza de carbón con el asunto grande
+   y las opciones tocables. La cerrada se calma y queda como registro. */
+.votacion{margin-top:14px;padding:20px;border-radius:var(--r-card);border:0;
+  background:#141A17;color:#fff;box-shadow:var(--sombra-2)}
+.votacion h3{color:#fff}
+.votacion .cuando{color:rgba(255,255,255,.62)}
+.votacion .cuerpo-txt{color:rgba(255,255,255,.78)}
+.votacion .quorum{color:rgba(255,255,255,.62)}
+.votacion .pastilla{color:#fff}
+.votacion .pastilla.gris::before{background:rgba(255,255,255,.5)}
+.votacion .opciones-voto button{background:rgba(255,255,255,.08);color:#fff;border:0}
+.votacion .opciones-voto button .barra{background:rgba(255,255,255,.16)}
+.votacion .opciones-voto button.on{background:rgba(255,255,255,.14)}
+/* el color dice qué significa cada opción, no decora: verde a favor,
+   rojo en contra, neutro la abstención */
+.votacion .opciones-voto button.op-si .barra{background:color-mix(in srgb,var(--est-ok) 62%,transparent)}
+.votacion .opciones-voto button.op-no .barra{background:color-mix(in srgb,var(--est-vencido) 55%,transparent)}
+.votacion .opciones-voto button::before{content:"";flex:none;width:8px;height:8px;border-radius:999px;
+  margin-right:10px;background:rgba(255,255,255,.35);position:relative;z-index:1}
+.votacion .opciones-voto button.op-si::before{background:var(--est-ok)}
+.votacion .opciones-voto button.op-no::before{background:var(--est-vencido)}
+.votacion .opciones-voto button.on .barra{background:color-mix(in srgb,var(--amarillo) 55%,transparent)}
+.votacion .opciones-voto .pc{color:rgba(255,255,255,.7)}
+.votacion.fin{background:color-mix(in srgb,var(--txt) 4%,transparent);color:var(--txt);box-shadow:none}
+.votacion.fin h3{color:var(--txt)}
+.votacion.fin .cuando,.votacion.fin .cuerpo-txt,.votacion.fin .quorum{color:var(--txt2)}
+.votacion.fin .pastilla{color:var(--txt)}
+.votacion.fin .opciones-voto button{background:color-mix(in srgb,var(--txt) 5%,transparent);color:var(--txt)}
+.votacion.fin .opciones-voto button .barra{background:color-mix(in srgb,var(--txt) 10%,transparent)}
+.votacion.fin .opciones-voto .pc{color:var(--txt2)}
 .votacion .arr{display:flex;align-items:center;gap:10px}
 .votacion .cuando{margin-left:auto;font-size:12px;color:var(--txt2)}
 .votacion h3{margin-top:12px;font-size:18px;line-height:1.25;font-weight:700;letter-spacing:-.025em}
@@ -1350,11 +1456,11 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
   align-items:center;justify-content:center;font-size:14px;font-weight:700;
   background:color-mix(in srgb,var(--txt) 8%,transparent);color:var(--txt)}
 .contacto .arr .d{flex:1;min-width:0}
-.contacto .arr .d b{display:block;font-size:16px;font-weight:700;letter-spacing:-.02em}
-.contacto .arr .d i{display:block;font-style:normal;margin-top:3px;font-size:12.5px;color:var(--txt2)}
+.contacto .arr .d b{display:block;font-size:var(--t-fila);font-weight:700;letter-spacing:-.02em}
+.contacto .arr .d i{display:block;font-style:normal;margin-top:3px;font-size:var(--t-meta);color:var(--txt2)}
 .contacto .datos{margin-top:14px;padding-top:12px;border-top:1px solid var(--borde);
   display:flex;flex-direction:column;gap:9px}
-.contacto .datos p{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--txt2)}
+.contacto .datos p{display:flex;align-items:center;gap:9px;font-size:var(--t-meta);color:var(--txt2)}
 
 /* ── disponibilidad de un espacio ────────────────────────────────── */
 .dispo{margin-top:14px;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}
@@ -1371,14 +1477,6 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 .reglas-l svg{flex:none;margin-top:3px;color:var(--txt2)}
 
 /* ── documentos ──────────────────────────────────────────────────── */
-.doc{margin-top:12px;padding:15px 16px;border-radius:var(--r-card);border:1px solid var(--borde);
-  background:var(--sup)}
-.doc .arr{display:flex;align-items:center;gap:12px}
-.doc .ic{width:40px;height:40px;border-radius:13px;flex:none;display:flex;align-items:center;
-  justify-content:center;background:color-mix(in srgb,var(--txt) 7%,transparent);color:var(--txt)}
-.doc .d{flex:1;min-width:0}
-.doc .d b{display:block;font-size:15px;font-weight:500;letter-spacing:-.015em;line-height:1.3}
-.doc .d i{display:block;font-style:normal;margin-top:3px;font-size:12px;color:var(--txt2)}
 
 /* ── preguntas frecuentes y reglamento ───────────────────────────── */
 .faq{margin-top:16px;border-radius:var(--r-control);border:1px solid var(--borde);
@@ -1400,9 +1498,8 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 .lista-sw{margin-top:10px;display:flex;flex-direction:column;gap:9px}
 
 /* la fila de entrega necesita su chevron sin romper el alto */
-.entrega{align-items:center}
+.entrega{align-items:flex-start}
 .entrega .flech{width:32px;height:32px}
-
 
 /* ══════════════════════════════════════════════════════════════════════
    PERFILES OPERATIVOS — recepción y administración
@@ -1422,6 +1519,13 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 
 /* ── armazón común de los dos escritorios ────────────────────────── */
 .desk{position:absolute;inset:0;display:flex;background:var(--fondo);z-index:1}
+/* Recepción mantiene su primario amarillo hasta su propia fase del sistema */
+.desk .entrar{background:var(--amarillo);color:var(--carbon);height:54px;border-radius:var(--r-pill);box-shadow:none}
+.desk .entrar:hover,.desk .entrar:active{background:var(--amarillo-hundido)}
+.desk .pastilla{padding:4px 10px;border-radius:var(--r-pill);background:var(--amarillo);color:var(--carbon);font-size:11.5px}
+.desk .pastilla::before{display:none}
+.desk .pastilla svg{display:inline}
+.desk .pastilla.gris{background:color-mix(in srgb,var(--txt) 8%,transparent);border:1px solid var(--borde-ctrl);color:var(--txt2)}
 .desk-rail{width:108px;flex:none;background:var(--carbon);display:flex;flex-direction:column;
   align-items:center;padding:18px 8px;gap:6px;overflow-y:auto;scrollbar-width:none}
 .desk-rail::-webkit-scrollbar{display:none}
@@ -1588,8 +1692,8 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 .agenda-f .et{flex:none;width:86px;font-size:11px;font-weight:700;letter-spacing:.06em;
   text-transform:uppercase;color:var(--txt2);padding-top:3px}
 .agenda-f .d{flex:1;min-width:0}
-.agenda-f .d b{display:block;font-size:14.5px;font-weight:500;letter-spacing:-.01em}
-.agenda-f .d i{display:block;font-style:normal;margin-top:3px;font-size:12.5px;color:var(--txt2)}
+.agenda-f .d b{display:block;font-size:var(--t-fila);font-weight:500;letter-spacing:-.01em}
+.agenda-f .d i{display:block;font-style:normal;margin-top:3px;font-size:var(--t-meta);color:var(--txt2)}
 .agenda-f.hecha{opacity:.55}
 .agenda-f.hecha .d b{text-decoration:line-through}
 .agenda-f.ahora{background:color-mix(in srgb,var(--amarillo) 12%,transparent)}
@@ -1607,11 +1711,6 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 .kpi.marca{border-left:3px solid var(--amarillo)}
 
 /* barra de proporción, para cobranza */
-.proporcion{margin-top:12px;height:8px;border-radius:999px;overflow:hidden;display:flex;
-  background:color-mix(in srgb,var(--txt) 9%,transparent)}
-.proporcion span{display:block;height:100%}
-.proporcion .pagado{background:var(--carbon)}
-.proporcion .informado{background:var(--amarillo)}
 
 /* ── detalle de entidad en escritorio ────────────────────────────── */
 .ent-cab{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap}
@@ -1633,7 +1732,6 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 
 .mensaje-vacio{padding:26px 0;text-align:center;font-size:13.5px;color:var(--txt2)}
 
-
 /* ══════════════════════════════════════════════════════════════════════
    LOS CUATRO MATERIALES
    Una superficie no se elige por costumbre: se elige por lo que la cosa
@@ -1646,38 +1744,20 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
      foto    → lugares: espacios, edificio, amenities. Nunca datos.
    ══════════════════════════════════════════════════════════════════════ */
 
-/* ── VIDRIO ──────────────────────────────────────────────────────────
-   El filo es un gradiente de 1px dibujado con máscara, no un borde
-   plano: claro arriba, nada abajo. Más un brillo especular finito en el
-   canto superior. Eso es lo que hace que se lea como un material y no
-   como un rectángulo con borde. */
-.expensa, .fila, .reserva, .chips, .panel-p, .perfil, .reclamo-f,
+/* ── SUPERFICIE (L1) ─────────────────────────────────────────────────
+   Antes era vidrio sobre el fondo plano, que no tiene nada que
+   refractar. Superficie sólida con filo de 1px y sombra mínima. */
+.expensa, .fila, .chips, .perfil,
 .vacio, .nota, .demo{
   position:relative;
-  background:var(--vidrio);
-  border:0;
-  backdrop-filter:blur(var(--desenfoque)) saturate(1.18);
-  -webkit-backdrop-filter:blur(var(--desenfoque)) saturate(1.18);
-  box-shadow:var(--vidrio-sombra);
+  background:var(--sup);
+  border:1px solid var(--borde);
+  backdrop-filter:none;-webkit-backdrop-filter:none;
+  box-shadow:var(--sombra-1);
 }
-.expensa::before, .fila::before, .reserva::before, .chips::before,
-.panel-p::before, .perfil::before, .reclamo-f::before, .nota::before,
-.demo::before, .circulo::before, .redondo::before{
-  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
-  background:var(--vidrio-filo);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-          mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;mask-composite:exclude;
-  pointer-events:none;z-index:0;
-}
-.expensa::after, .fila::after, .reserva::after, .panel-p::after,
-.perfil::after, .reclamo-f::after{
-  content:"";position:absolute;left:14%;right:14%;top:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--vidrio-brillo),transparent);
-  pointer-events:none;z-index:1;
-}
+
 /* el contenido tiene que quedar arriba del filo */
-.expensa>*, .fila>*, .reserva>*, .panel-p>*, .perfil>*, .reclamo-f>*{
+.expensa>*, .fila>*, .perfil>*, .reclamo-f>*{
   position:relative;z-index:2;
 }
 /* el vacío usa el mismo vidrio pero con borde punteado: es un hueco,
@@ -1702,8 +1782,8 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 .menu button:hover, .noti button:hover{background:color-mix(in srgb,var(--txt) 4%,transparent)}
 .menu button:active, .noti button:active{transform:none}
 .noti button{align-items:flex-start;gap:13px}
-.entrega, .doc, .medio, .contacto, .votacion, .estado-sis, .tarjeta,
-.panel-v, .agenda, .grilla, .tabla, .franjas, .opciones-esp, .cal, .faq{
+.entrega, .medio, .contacto, .votacion, .estado-sis, .tarjeta,
+.panel-v, .agenda, .grilla, .tabla, .franjas, .cal, .faq{
   box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;
 }
 
@@ -1714,7 +1794,7 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
   background:
     radial-gradient(130% 100% at 88% -14%,rgba(245,229,0,.16) 0%,transparent 56%),
     linear-gradient(158deg,#222A25 0%,#141A17 48%,#0A0E0C 100%);
-  box-shadow:0 14px 36px -20px rgba(0,0,0,.8);
+  box-shadow:var(--sombra-2);
 }
 .mat-carbon::before{
   content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
@@ -1732,7 +1812,7 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 .mat-foto{
   position:relative;border-radius:var(--r-card);overflow:hidden;
   background:var(--carbon);isolation:isolate;display:block;width:100%;
-  text-align:left;color:#fff;box-shadow:0 12px 32px -20px rgba(0,0,0,.6);
+  text-align:left;color:#fff;box-shadow:var(--sombra-2);
   transition:transform .16s cubic-bezier(.2,.8,.25,1)}
 .mat-foto:active{transform:scale(.99)}
 .mat-foto>img{
@@ -1740,7 +1820,7 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
   object-position:center 45%;
   filter:grayscale(.3) contrast(1.04) brightness(.96);
   transition:transform .5s cubic-bezier(.2,.8,.25,1)}
-.mat-foto:hover>img{transform:scale(1.03)}
+.mat-foto:hover>img{transform:none}
 .mat-foto::after{
   content:"";position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(180deg,rgba(8,11,9,.34) 0%,rgba(8,11,9,.04) 30%,
@@ -1765,29 +1845,23 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
    filtrar, el perfil del header. Mismo tamaño siempre. Es lo más barato
    que hay para que pantallas distintas se lean como la misma app. */
 .circulo, .redondo{
-  position:relative;width:48px;height:48px;border-radius:var(--r-pill);
-  background:var(--vidrio);border:0;color:var(--txt);flex:none;
+  position:relative;width:var(--b-icono-caja);height:var(--b-icono-caja);border-radius:var(--r-pill);
+  background:var(--sup);border:1px solid var(--borde);color:var(--txt);flex:none;
   display:flex;align-items:center;justify-content:center;
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  box-shadow:var(--vidrio-sombra);
+  box-shadow:var(--sombra-1);
   transition:background .15s,transform .14s}
 .circulo:hover, .redondo:hover{background:color-mix(in srgb,var(--txt) 7%,transparent);transform:none}
 .circulo:active, .redondo:active{transform:scale(.94)}
 .circulo>*, .redondo>*{position:relative;z-index:2}
 /* sobre foto o sobre carbón */
-.circulo.claro, .circ-b{
-  position:relative;width:48px;height:48px;border-radius:var(--r-pill);flex:none;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.34);
-  color:#fff;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  transition:background .15s,transform .14s}
-.circulo.claro:hover, .circ-b:hover{background:rgba(255,255,255,.22);transform:none}
-.circulo.claro:active, .circ-b:active{transform:scale(.94)}
+.circulo.claro{position:relative;width:var(--b-icono-caja);height:var(--b-icono-caja);border-radius:var(--r-pill);flex:none;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .14s;
+  background:var(--glass-dark);border:1px solid var(--glass-dark-borde);color:#fff;
+  box-shadow:var(--glass-dark-brillo);
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur)}
+.circulo.claro:hover{background:rgba(17,22,20,.56)}
+.circulo.claro:active{transform:scale(.94)}
 /* el único relleno: la acción principal de la pantalla */
-.circulo.lleno{background:var(--amarillo);border:0;color:var(--carbon);
-  box-shadow:0 8px 22px -10px rgba(245,229,0,.9)}
-.circulo.lleno::before{display:none}
-.visita.fin .circ-b{background:var(--vidrio);border:1px solid var(--borde-ctrl);color:var(--txt)}
+
 .redondo em{position:absolute;top:10px;right:11px;z-index:3}
 
 /* la flecha de fin de fila es de la misma familia, más chica y sin peso */
@@ -1803,12 +1877,6 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 /* Los tres accesos rápidos son controles, no contenido: material plano.
    Reservar el vidrio para lo que trae información es lo que hace que el
    vidrio signifique algo. */
-.tres button{background:var(--sup);border:1px solid var(--borde);
-  box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;
-  transition:border-color .15s,transform .14s}
-.tres button:hover{border-color:var(--borde-ctrl)}
-.directos button{background:var(--sup);border:1px solid var(--borde);
-  box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
 
 /* ══ R01 · formato sándwich ══════════════════════════════════════════
    Franja superior con peso —carbón, a sangre, con el lockup—, cuerpo
@@ -1819,20 +1887,9 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
    unidad estás, y se calla (D-15). El saludo grande ocupaba 64 px para
    no decir nada que el usuario no supiera. */
 .vista.sandwich{padding-top:0}
-.cabezal{margin:0 -20px 0;padding:14px 20px 13px;background:var(--carbon);color:#fff;
-  border-radius:0 0 26px 26px;display:flex;align-items:center;gap:14px;position:relative;
-  box-shadow:0 12px 30px -22px rgba(0,0,0,.8)}
-.cabezal::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
-  border-radius:inherit;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent)}
 /* El lockup V2 va tal cual: nada de aplanarlo con un filtro. La franja es
    carbon en los dos temas, asi que siempre es la version para fondo
    oscuro. */
-.cabezal .marca-cab{flex:none;display:flex;align-items:center}
-.cabezal .marca-cab img{height:20px;width:auto}
-.cabezal>h1{flex:1;min-width:0;font-size:13.5px;font-weight:500;letter-spacing:-.005em;
-  color:rgba(255,255,255,.72);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cabezal .circulo{width:44px;height:44px;font-size:13px;font-weight:700}
 
 /* la primera sección arranca con aire después de la franja */
 .vista.sandwich .widget{margin-top:14px}
@@ -1843,8 +1900,6 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
   justify-content:center;flex:none;color:var(--txt);
   background:color-mix(in srgb,var(--txt) 7%,transparent)}
 .expensa .rubros .resto{font-size:12px;color:var(--txt2);margin-left:2px}
-.expensa .franja-rubros{margin-top:12px;height:6px;border-radius:999px;overflow:hidden;display:flex}
-.expensa .franja-rubros span{display:block;height:100%}
 
 /* ── el pase vigente vive adentro de la card, con su propio contorno ──
    La barra amarilla pegada abajo no se entendía: no quedaba claro si era
@@ -1877,27 +1932,19 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 .hoja .tabla-f[aria-current="true"]{background:color-mix(in srgb,var(--amarillo) 14%,transparent)}
 
 /* selector que abre una hoja */
-.selector{margin-top:18px;width:100%;display:flex;align-items:center;gap:14px;
-  padding:14px 16px;border-radius:var(--r-control);border:1px solid var(--borde);
-  background:var(--sup);text-align:left;transition:border-color .15s}
-.selector:hover{border-color:var(--borde-ctrl)}
-.selector .d{flex:1;min-width:0}
-.selector .k{display:block;font-size:11px;font-weight:700;letter-spacing:.09em;
-  text-transform:uppercase;color:var(--txt2)}
-.selector b{display:block;margin-top:3px;font-size:16px;font-weight:500;letter-spacing:-.015em}
-.selector .n{font-size:14.5px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--txt2)}
+/* el filtro no es una card: es una línea que dice qué estás mirando */
+.selector{margin-top:16px;width:100%;display:flex;align-items:center;gap:12px;
+  padding:14px 0;border-radius:0;border:0;border-bottom:1px solid var(--borde);
+  background:none;text-align:left}
+.selector:hover b{opacity:.7}
+.selector .d{flex:1;min-width:0;display:flex;align-items:baseline;gap:8px}
+.selector .k{display:none}
+.selector b{display:block;margin-top:0;font-size:var(--t-fila);font-weight:700;letter-spacing:-.015em}
+.selector .n{font-size:var(--t-meta);font-weight:500;font-variant-numeric:tabular-nums;color:var(--txt2)}
 
 /* ══ R05 · el calendario es la pantalla ══════════════════════════════ */
 
 /* filtro de espacio: compacto, porque la pantalla es el calendario */
-.filtro-esp{margin-top:18px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;
-  padding-bottom:2px}
-.filtro-esp::-webkit-scrollbar{display:none}
-.filtro-esp button{flex:none;height:38px;padding:0 15px;border-radius:var(--r-pill);
-  border:1px solid var(--borde);background:var(--sup);font-size:13.5px;font-weight:500;
-  white-space:nowrap;transition:background .15s,border-color .15s,color .15s}
-.filtro-esp button[aria-checked="true"]{background:var(--carbon);border-color:var(--carbon);
-  color:#fff;font-weight:700}
 
 /* el calendario grande */
 .cal.grande{margin-top:14px;padding:18px 10px 14px;border-radius:var(--r-feature)}
@@ -1911,7 +1958,6 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 .cal.grande .cal-dia{border-radius:16px;gap:4px}
 .cal.grande .cal-dia b{font-size:16.5px}
 .cal.grande .cal-dia .pto{width:5px;height:5px}
-.cal.grande .cal-pie{margin-top:14px}
 /* el mes entra desde el lado del que viene */
 @keyframes desde-der{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
 @keyframes desde-izq{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
@@ -1920,18 +1966,13 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 
 /* La caja de "todavia no elegiste dia" lleva borde marcado y solido: es el
    estado de la pantalla, no una nota al pie. */
-.pista-cal{margin-top:16px;padding:16px 18px;border-radius:var(--r-control);
-  border:1.5px solid var(--borde-ctrl);background:var(--vidrio);
-  display:flex;align-items:center;gap:12px;
-  font-size:13.5px;line-height:1.45;color:var(--txt2);text-align:left}
-.pista-cal svg{flex:none;color:var(--txt)}
 
 /* los horarios entran cuando elegiste el día */
 @keyframes desde-abajo{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .entra-abajo{animation:desde-abajo .26s cubic-bezier(.2,.8,.25,1)}
 
 @media (prefers-reduced-motion:reduce){
-  .cal-grilla.entra-izq,.cal-grilla.entra-der,.entra-abajo{animation:none}
+  :root:not([data-movimiento="forzado"]) .cal-grilla.entra-izq,:root:not([data-movimiento="forzado"]) .cal-grilla.entra-der,:root:not([data-movimiento="forzado"]) .entra-abajo{animation:none}
 }
 
 /* ══ FASE 1 · componentes compartidos ════════════════════════════════
@@ -1942,28 +1983,24 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
    El botón de "Visitas hoy", promovido. Dos tonos porque el vidrio no se
    comporta igual sobre una foto oscura que sobre el fondo claro: con el
    blanco al 12% sobre crema no se ve nada. */
-.bglass{position:relative;width:48px;height:48px;border-radius:var(--r-pill);flex:none;
+.bglass{position:relative;width:var(--b-icono-caja);height:var(--b-icono-caja);border-radius:var(--r-pill);flex:none;
   display:flex;align-items:center;justify-content:center;
-  background:var(--vidrio);border:0;color:var(--txt);
-  backdrop-filter:blur(14px) saturate(1.15);-webkit-backdrop-filter:blur(14px) saturate(1.15);
-  box-shadow:var(--vidrio-sombra);
+  background:var(--sup);border:1px solid var(--borde);color:var(--txt);
+  box-shadow:var(--sombra-1);
   transition:background .15s,transform .14s}
 /* el filo es un gradiente de 1px con máscara, no un borde plano */
-.bglass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
-  background:var(--vidrio-filo);pointer-events:none;
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-          mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;mask-composite:exclude}
+
 .bglass>*{position:relative;z-index:2}
 .bglass:hover{background:color-mix(in srgb,var(--txt) 7%,transparent)}
 .bglass:active{transform:scale(.94)}
 .bglass:disabled{opacity:.4;cursor:not-allowed}
-.bglass.ch{width:40px;height:40px}
+
 /* sobre foto o sobre carbón: el que ya estaba aprobado en Visitas hoy */
-.bglass.claro{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.34);
-  color:#fff;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:none}
-.bglass.claro::before{display:none}
-.bglass.claro:hover{background:rgba(255,255,255,.22)}
+.bglass.claro{background:var(--glass-dark);border:1px solid var(--glass-dark-borde);color:#fff;
+  box-shadow:var(--glass-dark-brillo);
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur)}
+
+.bglass.claro:hover{background:rgba(17,22,20,.56)}
 
 /* ── SubNav · navegación secundaria ──────────────────────────────────
    Sin amarillo: el activo se marca con peso, color sólido y una barra
@@ -2011,22 +2048,6 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
   font-family:var(--ff-display);font-size:38px;font-weight:900;line-height:1;
   letter-spacing:-.04em;font-variant-numeric:tabular-nums}
 .widget-panel .det{display:block;margin-top:9px;font-style:normal;font-size:13.5px;color:var(--txt2)}
-.widget-datos{margin-top:16px;display:flex;gap:8px}
-.widget-datos>span{flex:1;min-width:0;padding:10px 12px;border-radius:var(--r-control);
-  background:var(--vidrio);border:1px solid var(--vidrio-borde);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.widget-datos .k{display:block;font-size:11px;color:var(--txt2);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.widget-datos b{display:block;margin-top:3px;font-size:14.5px;font-weight:700;letter-spacing:-.01em}
-.widget-accion{margin-top:14px;width:100%;min-height:var(--tactil);
-  display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--r-control);
-  background:var(--vidrio);border:1px solid var(--vidrio-borde);color:var(--txt);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  transition:background .15s}
-.widget-accion:hover{background:color-mix(in srgb,var(--txt) 6%,transparent)}
-.widget-accion i{flex:1;min-width:0;font-style:normal;font-size:13.5px;font-weight:500;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.widget-accion>svg:last-child{color:var(--txt2)}
 
 /* cambio de pestaña: crossfade con un corrimiento corto, 180 ms (05) */
 @keyframes cruza-der{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
@@ -2034,24 +2055,33 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 .widget-panel.cruza-izq{animation:cruza-der .18s ease-out}
 .widget-panel.cruza-der{animation:cruza-izq .18s ease-out}
 
-/* ── PilaVivas · objetos equivalentes (D-09) ─────────────────────────
-   La de abajo asoma; no hay que presionar para seleccionar. Las capas de
-   atrás se angostan apenas, que es lo que da la sensación de pila sin
-   inclinar nada. */
-.pila{position:relative;margin-top:14px;padding-bottom:26px}
-.pila.una{padding-bottom:0}
-.pila-c{position:absolute;left:0;right:0;top:0;transform-origin:50% 0;
-  transition:transform .26s cubic-bezier(.2,.8,.2,1),opacity .26s ease-out}
-.pila-c[data-pos="0"]{position:relative}
+/* ── Lo de hoy · pila vertical gobernada por el scroll (2B.1) ────────
+   Era una pila que se pasaba de costado. Ahora el gesto es bajar: cada
+   card queda pegada arriba y la siguiente la va tapando, dejando
+   asomar un filo de la anterior. Es `position:sticky`, así que anda
+   igual con rueda, trackpad y dedo, y no hay nada que deslizar. */
+.pila{position:relative;margin-top:14px;display:flex;flex-direction:column;gap:14px}
+.pila-c{position:sticky;top:calc(14px + var(--i,0) * 10px)}
+/* Mientras la siguiente la tapa, la card de atrás se achica y se apaga:
+   eso es lo que hace que se lea como una pila y no como una lista. El
+   grado de tapada lo calcula PilaVivas en el scroll y llega en --tapada.
+   La escala va en la card entera —con su base de color adentro—: si se
+   achicaba sólo el contenido, la base quedaba asomando alrededor. */
+.pila-c{
+  transform-origin:50% 0;
+  transform:scale(calc(1 - .11 * var(--tapada,0))) translateY(calc(-14px * var(--tapada,0)));
+  filter:brightness(calc(1 - .3 * var(--tapada,0)))}
+/* la que llega tapa con sombra propia: eso es lo que se lee como pila */
+.pila-c>.pila-cnt>*{box-shadow:0 -12px 28px -16px rgba(17,22,20,.5),
+  inset 0 1px 0 rgba(255,255,255,.06),var(--sombra-2)}
+/* al taparse una con otra, los vértices redondeados dejarían ver la card
+   de abajo: atrás de cada una va el color de la página */
+.pila-c::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--fondo)}
 .pila-cnt>*{width:100%}
-/* la card de atrás se toca entera para traerla adelante */
-.pila-traer{position:absolute;left:0;right:0;top:0;bottom:0;z-index:2;border-radius:var(--r-card)}
 
 @media (prefers-reduced-motion:reduce){
-  .widget-panel.cruza-izq,.widget-panel.cruza-der{animation:none}
-  .pila-c{transition:none}
+  :root:not([data-movimiento="forzado"]) .widget-panel.cruza-izq,:root:not([data-movimiento="forzado"]) .widget-panel.cruza-der{animation:none}
 }
-
 
 /* ══ FASE 4 · R01 sobre los componentes nuevos ═══════════════════════ */
 
@@ -2059,25 +2089,12 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
    Son controles, no contenido, pero son los tres que se usan todos los
    días: por eso llevan el botón firma dibujado (D-06). La card entera es
    el control; la flecha es el material, no un segundo botón. */
-.tres .acceso{display:grid;grid-template-columns:1fr auto;align-items:center;
-  gap:12px 6px;padding:12px 12px 13px;min-height:104px;text-align:left}
-.tres .acceso .glifo{grid-column:1;grid-row:1;justify-self:start}
-.tres .acceso .bglass{grid-column:2;grid-row:1}
-.tres .acceso .rot{grid-column:1 / -1;grid-row:2;font-size:12.5px;font-weight:500;line-height:1.25}
 
 /* Los dos contactos pasan a fila completa: con la flecha al final no
    entran de a dos en 390 px sin apretar el nombre del administrador. */
-.directos{grid-template-columns:1fr;gap:8px}
-.directos .directo{padding:10px 12px 10px 14px;gap:12px;border-radius:18px;min-height:var(--tactil)}
-.directos .directo .d{flex:1}
-.directos .directo .d b{font-size:14px;font-weight:700;letter-spacing:-.015em}
-.directos .directo .d i{font-size:12px}
 
 /* ── las cards vivas ─────────────────────────────────────────────────
-   Todas miden lo mismo. Una pila de cards de alturas distintas no se lee
-   como una pila: se lee como un error de maquetación, y además el alto
-   del bloque saltaría en cada giro. */
-.pila{height:150px}
+   Todas miden lo mismo: es una familia, no cuatro piezas distintas. */
 .pila-cnt,.pila-cnt>*{height:100%}
 .viva{width:100%;height:150px;border-radius:26px;text-align:left}
 
@@ -2094,9 +2111,9 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 
 /* el paquete es el único de los cuatro que no tiene foto: vidrio */
 .viva.paquete{display:flex;flex-direction:column;align-items:flex-start;gap:10px;
-  padding:16px 18px;background:var(--vidrio);border:1px solid var(--vidrio-borde);
+  padding:16px 18px;background:var(--vidrio);border:0;
   backdrop-filter:blur(var(--desenfoque));-webkit-backdrop-filter:blur(var(--desenfoque));
-  box-shadow:var(--vidrio-sombra);position:relative}
+  box-shadow:var(--sombra-1);position:relative}
 .viva.paquete .ic{width:48px;height:48px;border-radius:16px;flex:none;
   display:flex;align-items:center;justify-content:center;
   background:var(--amarillo);color:var(--carbon)}
@@ -2108,16 +2125,6 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 /* ── FASE 7 · desplegar bajo demanda ─────────────────────────────────
    Botón de "esto se ve si lo pedís". Misma familia que .tabla-ir, pero
    suelto en la pantalla y con estado abierto/cerrado. */
-.revelar{margin-top:14px;width:100%;min-height:var(--tactil);
-  display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:var(--r-control);
-  background:var(--vidrio);border:1px solid var(--vidrio-borde);color:var(--txt);
-  font-size:13.5px;font-weight:500;
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  transition:background .15s}
-.revelar:hover{background:color-mix(in srgb,var(--txt) 6%,transparent)}
-.revelar>svg:first-child{flex:none;color:var(--txt2)}
-.revelar .flech{margin-left:auto;transition:transform .18s ease-out}
-.revelar[aria-expanded="true"] .flech{transform:rotate(90deg)}
 
 /* la composicion de la expensa usa paneles: el subtotal se lee cerrado */
 #r20 .panel-p{margin-top:10px}
@@ -2128,7 +2135,7 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
    cada una. Ahora el día es un encabezado con línea y el hito sólo dice
    la hora: la división entre ayer y la semana pasada se ve, no se
    deduce. */
-.grupo-dia .dia{display:flex;align-items:center;gap:12px;
+.grupo-dia .dia{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
   padding-bottom:8px;border-bottom:1px solid var(--borde)}
 .grupo-dia .dia span{margin-left:auto;text-transform:none;letter-spacing:0;
   font-size:11.5px;opacity:.85}
@@ -2145,3 +2152,1137 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 .opciones-hoja .d{flex:1;min-width:0}
 .opciones-hoja b{display:block;font-size:15px;font-weight:500;letter-spacing:-.01em}
 .opciones-hoja i{display:block;margin-top:2px;font-style:normal;font-size:12.5px;color:var(--txt2)}
+
+/* ══ RONDA VISUAL 01 · A · SISTEMA ═══════════════════════════════════
+   Todo lo que viene acá lo heredan las 27 pantallas. Se corrige el
+   sistema antes que cualquier pantalla suelta. */
+
+/* ── color funcional ─────────────────────────────────────────────────
+   El amarillo sigue siendo la única identidad. Esto es otra cosa: color
+   que informa (estados) y color que ubica (ámbitos). Todo de baja
+   saturación, todo en token, nada elegido pantalla por pantalla.
+
+   Estados: cada uno trae su tinta y su fondo suave. Siempre van con ícono
+   o texto: el color refuerza, no informa solo. */
+:root{
+  --est-ok:#2E7A50;      --est-ok-fondo:rgba(46,122,80,.12);
+  --est-curso:#3F6F8F;   --est-curso-fondo:rgba(63,111,143,.12);
+  --est-vencido:#B3261E; --est-vencido-fondo:rgba(179,38,30,.10);
+  --est-cerrado:#6B736E; --est-cerrado-fondo:rgba(107,115,110,.12);
+
+  /* ámbitos: tres matices por lugar de la app, en RGB para poder dosar la
+     intensidad por tema. Por defecto, neutro. */
+  --a1:176 168 150; --a2:150 170 160; --a3:17 22 20;
+  --f1:.34; --f2:.22; --f3:.10;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --est-ok:#7CC49A;      --est-ok-fondo:rgba(124,196,154,.16);
+    --est-curso:#86B3D3;   --est-curso-fondo:rgba(134,179,211,.16);
+    --est-vencido:#EE8A84; --est-vencido-fondo:rgba(238,138,132,.14);
+    --est-cerrado:#A7AEA9; --est-cerrado-fondo:rgba(167,174,169,.14);
+    --f1:.20; --f2:.14; --f3:.55;
+  }
+}
+:root[data-tema="oscuro"]{
+  --est-ok:#7CC49A;      --est-ok-fondo:rgba(124,196,154,.16);
+  --est-curso:#86B3D3;   --est-curso-fondo:rgba(134,179,211,.16);
+  --est-vencido:#EE8A84; --est-vencido-fondo:rgba(238,138,132,.14);
+  --est-cerrado:#A7AEA9; --est-cerrado-fondo:rgba(167,174,169,.14);
+  --f1:.20; --f2:.14; --f3:.55;
+}
+
+/* Un matiz por ámbito de la IA, no uno por ruta. Te dice dónde estás
+   antes de leer: la piedra cálida es tu edificio, la pizarra es la plata,
+   el atardecer son los espacios. */
+.screen[data-ambito="edificio"]{ --a1:176 150 112; --a2:120 110 95;  --a3:60 50 35 }
+.screen[data-ambito="expensas"]{ --a1:63 111 143;  --a2:62 140 134;  --a3:30 50 70 }
+.screen[data-ambito="reservas"]{ --a1:192 122 58;  --a2:245 229 0;   --a3:120 70 40 }
+.screen[data-ambito="acceso"]  { --a1:80 90 85;    --a2:245 229 0;   --a3:17 22 20 }
+
+/* ── el campo atmosférico ────────────────────────────────────────────
+   Reemplaza al linear-gradient único. Tres halos radiales de baja
+   saturación, anclados arriba del contenido: scrollean con la pantalla,
+   como un lugar y no como un papel tapiz. Se disuelven antes de la mitad. */
+.device:not(.ancho):not(.extra)::before{
+  background:radial-gradient(96% 40% at 50% 108%,var(--malla-bajo) 0%,transparent 72%)}
+/* sin isolation: atrapaba a la hoja debajo de la barra. .screen ya es el
+   contexto de apilamiento, asi que el campo igual queda detras. */
+.vista::before{content:"";position:absolute;z-index:-1;pointer-events:none;
+  left:0;right:0;top:0;height:640px;
+  background:
+    radial-gradient(78% 46% at 6% -2%, rgb(var(--a1) / var(--f1)) 0%, transparent 72%),
+    radial-gradient(64% 40% at 102% 10%, rgb(var(--a2) / var(--f2)) 0%, transparent 70%),
+    radial-gradient(130% 52% at 50% -14%, rgb(var(--a3) / var(--f3)) 0%, transparent 72%);
+  -webkit-mask-image:linear-gradient(180deg,#000 40%,transparent 100%);
+          mask-image:linear-gradient(180deg,#000 40%,transparent 100%)}
+
+/* ── botones en tres niveles ─────────────────────────────────────────
+   Primario: amarillo sólido. Uno por pantalla, y es la acción para la que
+   la pantalla existe. Antes .entrar era un contorno: se leía como
+   secundario aunque fuera lo único que había que tocar. */
+
+/* Secundario: sólido y quieto. Sobre campo oscuro o foto, vidrio. */
+.btn-sec{height:var(--b-alto-sec);padding:0 var(--b-pad-sec);border-radius:var(--b-radio);
+  display:inline-flex;align-items:center;justify-content:center;gap:var(--b-gap);
+  background:var(--sup);border:var(--b-borde) solid var(--borde-ctrl);color:var(--txt);
+  font-size:var(--b-fs-sec);font-weight:700;letter-spacing:-.01em;
+  transition:background .12s,border-color .12s,transform .12s}
+.btn-sec:hover{border-color:var(--txt)}
+.btn-sec:active{transform:scale(.98)}
+.btn-sec:focus-visible,.btn-ter:focus-visible,.circulo:focus-visible{outline:var(--b-foco);outline-offset:2px}
+.btn-sec:disabled,.btn-ter:disabled,.circulo:disabled{opacity:.4;cursor:not-allowed}
+.btn-sec.claro{background:var(--glass-dark);border:1px solid var(--glass-dark-borde);color:#fff;
+  box-shadow:var(--glass-dark-brillo);
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur)}
+.btn-sec.claro:hover{background:rgba(17,22,20,.56)}
+
+/* Terciario: texto que se sabe botón. Subrayado fino y peso, nunca gris
+   perdido. Área táctil completa aunque se vea chico. */
+.btn-ter{min-height:var(--tactil);padding:0 4px;display:inline-flex;align-items:center;gap:6px;
+  background:none;border:0;font-size:var(--b-fs-sec);font-weight:700;color:var(--txt);text-decoration:none}
+.btn-ter:hover{opacity:.72}
+.btn-ter.claro{color:#fff}
+
+/* ── tipografía: jerarquía por rol, no por tamaño suelto ─────────────
+   Los estados bajan, los datos suben, los títulos de sección se callan. */
+
+.desk h2.sec{margin-top:26px;font-size:11.5px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--txt2)}
+
+.cabecera-ent.dato h1{font-size:38px;font-weight:900;letter-spacing:-.04em;
+  font-variant-numeric:tabular-nums}
+
+/* ── zona de contexto ────────────────────────────────────────────────
+   La parte de arriba de una pantalla que te dice dónde estás antes de que
+   leas: foto del lugar a sangre, o el campo del ámbito con el isotipo
+   grande y casi invisible. El header flota adentro, en vidrio. Termina con
+   radio propio: es una zona, no una card más. */
+.zona-ctx{position:relative;margin:0 -20px;padding:0 20px 22px;min-height:224px;
+  display:flex;flex-direction:column;overflow:hidden;isolation:isolate;
+  border-radius:0 0 30px 30px;color:var(--txt)}
+.zona-ctx.con-foto{color:#fff;min-height:272px;background:var(--carbon)}
+.zona-ctx .zc-foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  z-index:-2;filter:grayscale(.15) contrast(1.04) brightness(.95)}
+.zona-ctx.con-foto::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(8,11,9,.58) 0%,rgba(8,11,9,.08) 36%,
+    rgba(8,11,9,.55) 72%,rgba(8,11,9,.9) 100%)}
+.zona-ctx .zc-iso{position:absolute;right:-46px;top:26px;width:236px;height:248px;
+  z-index:-1;pointer-events:none;background:currentColor;opacity:.07;
+  -webkit-mask:url(/brand/CT_SIMBOLO_V2_MASCARA.png) center / contain no-repeat;
+          mask:url(/brand/CT_SIMBOLO_V2_MASCARA.png) center / contain no-repeat}
+.zona-ctx.con-foto .zc-iso{opacity:.16}
+.zona-ctx .zc-barra{display:flex;align-items:center;gap:12px;padding-top:18px}
+.zona-ctx .zc-barra .ctx{flex:1;min-width:0;font-size:var(--t-meta);font-weight:500;opacity:.82;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zona-ctx .zc-cuerpo{margin-top:auto;padding-top:26px}
+.zona-ctx .zc-cuerpo .vol{display:block;font-size:11px;font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;opacity:.78}
+.zona-ctx .zc-cuerpo h1{margin-top:6px;font-size:var(--t-titulo);line-height:var(--t-titulo-lh);font-weight:700;
+  letter-spacing:var(--t-titulo-tr)}
+.zona-ctx .zc-cuerpo h1.cifra{font-size:var(--t-cifra);font-weight:900;letter-spacing:var(--t-cifra-tr);
+  font-variant-numeric:tabular-nums}
+.zona-ctx .zc-cuerpo .dato{display:block;margin-top:7px;font-size:var(--t-meta);opacity:.86}
+.zona-ctx.con-foto .zc-cuerpo h1{text-shadow:0 1px 14px rgba(0,0,0,.35)}
+/* la subnav adentro de la zona queda pegada abajo, sin su propio margen */
+.zona-ctx .subnav{margin-top:18px;border-bottom:0}
+.zona-ctx.con-foto .subnav button{color:rgba(255,255,255,.72)}
+.zona-ctx.con-foto .subnav button[aria-current="page"]{color:#fff}
+.zona-ctx.con-foto .subnav button[aria-current="page"]::after{background:#fff}
+
+/* ══ RONDA VISUAL 01 · B · HEADER, BARRA Y HOME ══════════════════════ */
+
+/* ── la barra inferior ───────────────────────────────────────────────
+   Pegada al borde, del color del fondo, en vidrio y con una línea arriba:
+   deja de ser la píldora negra flotando que tiene cualquier app. Lo que
+   la hace reconocible es el centro, que asoma por encima del borde.
+   El activo se marca con color sólido, peso y una barra arriba del
+   ícono: tres señales, ninguna de ellas amarilla. */
+.pill{left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom,0px));
+  padding:0 6px env(safe-area-inset-bottom,0px);border-radius:0;
+  background:color-mix(in srgb,var(--fondo) 84%,transparent);
+  border:0;border-top:1px solid var(--borde);
+  backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);
+  box-shadow:0 -12px 30px -22px rgba(17,22,20,.35);
+  align-items:stretch}
+.pill button.dest{position:relative;color:var(--txt2);font-size:10.5px;font-weight:500;gap:4px}
+.pill button.dest .circ{width:26px;height:26px}
+.pill button.dest[aria-current="page"]{color:var(--txt);font-weight:700}
+.pill button.dest[aria-current="page"]::before{content:"";position:absolute;top:0;left:50%;
+  width:22px;height:3px;margin-left:-11px;border-radius:0 0 3px 3px;background:var(--txt)}
+
+/* El centro: la acción que más te conviene ahora (D-25). Una píldora
+   amarilla con el verbo adentro, que sube por encima del borde de la
+   barra. Si cambia la acción, cambia el verbo: por eso lleva texto y no
+   sólo un ícono. */
+.pill button.central{flex:1.25;display:flex;align-items:flex-start;justify-content:center;
+  min-height:var(--tactil)}
+.pill button.central .squircle{margin-top:-16px;width:auto;min-width:74px;height:46px;
+  padding:0 14px;border-radius:17px;gap:6px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--amarillo);color:var(--carbon);
+  box-shadow:0 0 0 4px var(--fondo),0 10px 22px -8px rgba(160,150,0,.75)}
+.pill button.central .squircle .rot{font-size:13px;font-weight:700;letter-spacing:-.01em}
+.pill button.central[aria-current="page"] .squircle{
+  box-shadow:0 0 0 4px var(--fondo),0 0 0 6px var(--txt)}
+
+/* la barra ya no flota: la vista reserva lo que ocupa más lo que asoma
+   el centro, y la última card se sigue viendo entera */
+.vista{padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+
+/* ── HOME · el campo ─────────────────────────────────────────────────
+   Una sola superficie a sangre, carbón con luz cálida, que contiene el
+   header, el estado y los accesos. Es oscura en los dos temas: el carbón
+   es color de marca, y así el home se lee por bloques antes de leer
+   texto. Termina con radio propio. */
+.vista.inicio{padding-top:0}
+.home-campo{position:relative;isolation:isolate;overflow:hidden;
+  margin:0 -20px;padding:0 20px 24px;border-radius:0 0 34px 34px;color:#fff;
+  background:
+    radial-gradient(85% 55% at -6% -4%, rgba(245,229,0,.20) 0%, transparent 62%),
+    radial-gradient(70% 50% at 108% 18%, rgba(176,150,112,.26) 0%, transparent 66%),
+    radial-gradient(120% 70% at 50% 118%, rgba(0,0,0,.55) 0%, transparent 62%),
+    #141A17}
+
+/* el header orienta y se calla: 60 px, sin banda propia */
+.home-cab{display:flex;align-items:center;gap:12px;padding-top:12px}
+.home-cab .marca{height:18px;width:auto;flex:none}
+.home-cab h1{flex:1;min-width:0;font-size:12.5px;font-weight:500;letter-spacing:0;
+  color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home-cab .perfil{width:44px;height:44px;font-size:13px;font-weight:700}
+
+/* ── el widget como campo ────────────────────────────────────────────
+   Tabs en vidrio centrados, la cifra sin caja, una acción, dos enlaces. */
+.widget.en-campo{margin-top:16px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.widget.en-campo .widget-tabs{display:inline-flex;gap:0;margin:0 auto;padding:3px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);box-shadow:none}
+.widget.en-campo .widget-tabs button{flex:none;min-height:36px;padding:0 13px;
+  font-size:12.5px;color:rgba(255,255,255,.62)}
+.widget.en-campo .widget-tabs button[aria-selected="true"]{background:rgba(255,255,255,.16);
+  color:#fff;font-weight:700;box-shadow:none}
+.widget.en-campo .widget-panel{width:100%;padding:24px 0 0;display:flex;flex-direction:column;align-items:center}
+.widget.en-campo .vol{justify-content:center;color:rgba(255,255,255,.66);font-size:11px}
+.widget.en-campo .cifra{margin-top:8px;font-size:50px;color:#fff;letter-spacing:-.045em}
+.widget.en-campo .cifra.texto{font-size:38px;letter-spacing:-.035em}
+.widget.en-campo .det{display:flex;align-items:center;justify-content:center;gap:9px;
+  margin-top:10px;font-style:normal;font-size:13.5px;color:rgba(255,255,255,.82)}
+
+.widget-enlaces{margin-top:8px;display:flex;justify-content:center;gap:18px}
+
+/* ── los accesos: una familia de círculos ────────────────────────────
+   Misma geometría, mismo trazo, mismo vidrio, misma relación con el
+   campo. El círculo es el control y el rótulo lo nombra. */
+.home-acciones{margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1);
+  display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.home-acciones button{display:flex;flex-direction:column;align-items:center;gap:8px;
+  min-height:var(--tactil);color:#fff;text-align:center}
+.home-acciones .circ{width:54px;height:54px;border-radius:var(--r-pill);
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:background .12s,transform .12s}
+.home-acciones button:hover .circ{background:rgba(255,255,255,.16)}
+.home-acciones button:active .circ{transform:scale(.94)}
+.home-acciones .rot{font-size:12px;font-weight:500;color:rgba(255,255,255,.9)}
+
+/* "Lo de hoy" arranca con aire después del campo */
+.vista.inicio h2.sec{margin-top:24px}
+
+.pila-cab{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.pila-c .viva{box-shadow:var(--sombra-2)}
+
+/* Visitas hoy recupera su franja amarilla: el pase vigente es la señal
+   del día, y es lo que tocás parado en la puerta. */
+.viva.visitas .pase-fila.amarilla{background:var(--amarillo);color:var(--carbon);
+  border-top:0;gap:10px}
+.viva.visitas .pase-fila.amarilla b{color:var(--carbon)}
+.viva.visitas .pase-fila.amarilla .ver-pase{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--carbon);font-weight:700}
+.viva.visitas .osc{min-height:0}
+.viva.visitas .n{font-size:44px}
+
+/* ══ RONDA VISUAL 01 · C · EXPENSAS ══════════════════════════════════ */
+
+/* en el campo oscuro del home, el estado va en vidrio: el amarillo es de
+   "Pagar", y dos amarillos seguidos no dicen cuál es el botón */
+
+/* ── la zona de la expensa ───────────────────────────────────────────
+   Monto, vencimiento, estado y Pagar en una sola superficie. */
+.zona-ctx .linea-estado{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px}
+.pastilla.vencida{background:none;border:0;color:var(--est-vencido)}
+.zona-ctx .zc-cta{margin-top:18px;width:100%}
+.zona-ctx .zc-enlaces{margin-top:6px;display:flex;gap:18px}
+#r20 .zona-ctx{min-height:0;padding-bottom:18px}
+
+/* ── pagar ───────────────────────────────────────────────────────────
+   Arriba de la hoja, lo que estás pagando. Después cómo. */
+.pagar-resumen{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding:4px 2px 14px;border-bottom:1px solid var(--borde)}
+.pagar-resumen b{font-size:28px;font-weight:900;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.pagar-resumen span{font-size:13px;color:var(--txt2)}
+
+/* la transferencia manda: el alias es lo que se copia */
+.medio-principal{margin-top:16px;padding:16px;border-radius:var(--r-card);
+  background:var(--sup);border:1px solid var(--borde)}
+.medio-principal>.k{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--txt2)}
+.copia{display:flex;align-items:center;gap:10px;padding:10px 0}
+.copia+.copia{border-top:1px solid var(--borde)}
+.copia .k{flex:none;width:36px;font-size:11.5px;color:var(--txt2)}
+.copia .v{flex:1;min-width:0;font-size:14px;font-weight:500;word-break:break-all}
+.copia.grande .v{font-size:21px;font-weight:900;letter-spacing:-.01em}
+.copia .v.mono{font-variant-numeric:tabular-nums}
+.medio-principal .meta{margin-top:8px;font-size:12.5px;line-height:1.45;color:var(--txt2)}
+.medio-principal .meta.fuerte{margin-top:4px;color:var(--txt)}
+.medios-otros{margin-top:10px;display:flex;flex-direction:column}
+.medios-otros .otro{display:flex;align-items:flex-start;gap:12px;padding:12px 4px}
+.medios-otros .otro+.otro{border-top:1px solid var(--borde)}
+.medios-otros .ic{width:34px;height:34px;border-radius:12px;flex:none;display:flex;
+  align-items:center;justify-content:center;background:color-mix(in srgb,var(--txt) 7%,transparent)}
+.medios-otros .d{flex:1;min-width:0}
+.medios-otros b{display:block;font-size:14px;font-weight:700}
+.medios-otros i{display:block;margin-top:2px;font-style:normal;font-size:12.5px;line-height:1.45;color:var(--txt2)}
+
+/* ── la torta con color de categoría ─────────────────────────────────
+   Cada rubro tiene su tono de la paleta data-viz. Elegir uno no lo pinta
+   de amarillo: lo saca del anillo y apaga los demás. */
+.torta .porcion{transition:opacity .12s}
+.torta.con-eleccion .porcion:not(.on){opacity:.28}
+.torta.con-eleccion .leyenda button:not([aria-pressed="true"]){opacity:.55}
+
+/* La zona sin foto necesita leerse como zona y no como el fondo de
+   siempre: lleva el matiz del ámbito concentrado y un filo abajo. */
+.zona-ctx:not(.con-foto){
+  background:linear-gradient(180deg,rgb(var(--a1) / calc(var(--f1) * .55)) 0%,
+    rgb(var(--a2) / calc(var(--f2) * .5)) 100%);
+  box-shadow:inset 0 -1px 0 var(--borde)}
+
+/* el CBU entra en una línea: 22 dígitos no se cortan a la mitad */
+.copia:not(.grande) .v.mono{font-size:12.5px;letter-spacing:0;word-break:normal;white-space:nowrap}
+
+/* ══ RONDA VISUAL 01 · D · RESERVAS ══════════════════════════════════ */
+
+/* ── qué espacio: foto y nombre, no chips ────────────────────────────
+   Cuatro miniaturas del lugar. La elegida lleva un filo sólido y un
+   tilde: la selección se ve por forma, no sólo por color. */
+/* El espacio elegido es contexto, no una portada: rail de fichas
+   compactas con su foto chica. Explorar espacios con foto grande vive en
+   Mi edificio; acá se reserva. Misma gramática que el rail de fechas. */
+/* rail: se recorre de costado con el dedo y con el mouse */
+.rail{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;
+  -ms-overflow-style:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.rail::-webkit-scrollbar{display:none}
+.rail:active{cursor:grabbing}
+.rail>*{scroll-snap-align:start}
+.esp-selector{margin-top:14px;padding-bottom:2px;
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 94%,transparent 100%);
+          mask-image:linear-gradient(90deg,#000 0,#000 94%,transparent 100%)}
+.esp-op{flex:none;height:46px;border-radius:var(--b-radio);display:flex;align-items:center;gap:9px;
+  padding:0 15px 0 8px;text-align:left;color:var(--txt);
+  background:color-mix(in srgb,var(--txt) 5%,transparent);transition:background .15s,color .15s}
+.esp-op img{width:30px;height:30px;border-radius:10px;object-fit:cover;flex:none;filter:none}
+.esp-op::after{display:none}
+.esp-op .nb{font-size:var(--t-meta);font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.esp-op .ic{width:30px;height:30px;border-radius:10px;flex:none;display:flex;align-items:center;justify-content:center;
+  background:color-mix(in srgb,var(--txt) 10%,transparent);color:var(--txt)}
+.esp-op .tilde{display:none}
+.esp-op:hover{background:color-mix(in srgb,var(--txt) 9%,transparent)}
+.esp-op[aria-checked="true"]{background:var(--txt);color:var(--fondo)}
+.esp-op[aria-checked="true"] .ic{background:color-mix(in srgb,var(--fondo) 20%,transparent);color:var(--fondo)}
+.esp-op:active{transform:scale(.98)}
+
+/* ── el calendario, protagonista ─────────────────────────────────────
+   Ocupa la pantalla, sin placa flotante: el mes grande arriba, las
+   iniciales de los días sueltas y cada día en su cuadrado. El elegido se
+   pinta de amarillo; la disponibilidad es un punto. */
+.cal.sin-caja{margin:22px 0 0;padding:0;border:0;border-radius:0;background:none;
+  color:var(--txt);box-shadow:none}
+.cal.sin-caja::before,.cal.sin-caja::after{display:none}
+.cal.sin-caja .cal-cab{padding:0;justify-content:space-between}
+.cal.sin-caja .cal-cab b{display:flex;align-items:baseline;gap:8px;font-size:32px;line-height:1;
+  font-weight:700;letter-spacing:-.035em;color:var(--txt);white-space:nowrap}
+.cal.sin-caja .cal-cab b em{font-style:normal;font-size:var(--t-meta);font-weight:500;
+  letter-spacing:0;color:var(--txt2)}
+.cal.sin-caja .cal-cab .circulo{width:40px;height:40px;border:0;box-shadow:none;color:var(--txt);
+  background:color-mix(in srgb,var(--txt) 6%,transparent)}
+.cal.sin-caja .cal-cab .circulo:hover{background:color-mix(in srgb,var(--txt) 11%,transparent)}
+.cal.sin-caja .cal-sem{margin-top:22px;gap:6px}
+.cal.sin-caja .cal-sem span{font-size:11px;font-weight:500;letter-spacing:.1em;color:var(--txt2)}
+.cal.sin-caja .cal-grilla{margin-top:8px;gap:6px;transition:none}
+.cal.sin-caja .cal-dia{position:relative;aspect-ratio:1;height:auto;min-width:0;border-radius:16px;gap:0;
+  align-items:flex-start;justify-content:flex-start;padding:9px 10px;
+  background:color-mix(in srgb,var(--txt) 4%,transparent);
+  transition:background .12s ease-out,color .12s ease-out}
+.cal.sin-caja .cal-dia:not(:disabled):hover{background:color-mix(in srgb,var(--txt) 9%,transparent)}
+.cal.sin-caja .cal-dia b{width:auto;max-width:none;aspect-ratio:auto;display:block;
+  border-radius:0;font-size:17px;font-weight:500;line-height:1;color:var(--txt);background:none}
+.cal.sin-caja .cal-dia:not(:disabled):hover b{background:none}
+.cal.sin-caja .cal-dia .pto{position:absolute;left:10px;bottom:9px;width:5px;height:5px;
+  margin:0;background:var(--txt);opacity:.45}
+.cal.sin-caja .cal-dia .pto.poco{background:transparent;border:1.5px solid var(--txt);opacity:.5}
+.cal.sin-caja .cal-dia .pto.sin{background:transparent;border:0}
+.cal.sin-caja .cal-dia.fuera{background:none}
+.cal.sin-caja .cal-dia.fuera b{color:color-mix(in srgb,var(--txt) 22%,transparent)}
+.cal.sin-caja .cal-dia:disabled{opacity:1;background:color-mix(in srgb,var(--txt) 2.5%,transparent)}
+.cal.sin-caja .cal-dia:disabled b{color:color-mix(in srgb,var(--txt) 28%,transparent)}
+.cal.sin-caja .cal-dia.hoy:not(.sel){box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--txt) 34%,transparent)}
+.cal.sin-caja .cal-dia.hoy:not(.sel) b{text-decoration:none;font-weight:700}
+.cal.sin-caja .cal-dia.sel{background:var(--amarillo)}
+.cal.sin-caja .cal-dia.sel b{color:var(--carbon);font-weight:700}
+.cal.sin-caja .cal-dia.sel .pto{background:var(--carbon);opacity:.7;border:0}
+
+/* debajo del calendario: el día elegido y el acceso a Mis reservas son
+   filas de la lista, no cajitas sueltas */
+#r05 .dia-elegido{margin-top:20px;padding:16px 0;background:none;border-radius:0;
+  border-bottom:1px solid var(--borde)}
+#r05 .dia-elegido .btn-sec{height:var(--b-alto-sec);padding:0 18px;border:0;
+  background:var(--txt);color:var(--fondo);font-weight:700}
+#r05 .fila.aire{margin-top:0;padding:16px 0;background:none;border:0;border-radius:0;box-shadow:none}
+#r05 .fila .ic{width:24px;height:24px}
+
+/* ── el día elegido: una línea, no una lista ─────────────────────── */
+.dia-elegido{margin-top:16px;width:100%;display:flex;align-items:center;gap:12px;
+  padding:12px 12px 12px 16px;border-radius:var(--b-radio);text-align:left;
+  background:color-mix(in srgb,var(--txt) 5%,transparent);border:0}
+.dia-elegido .d{flex:1;min-width:0}
+.dia-elegido b{display:block;font-size:var(--t-fila);font-weight:700;letter-spacing:-.015em}
+.dia-elegido i{display:block;margin-top:2px;font-style:normal;font-size:var(--t-meta);color:var(--txt2)}
+.dia-elegido .btn-sec{height:var(--b-alto-chico);padding:0 var(--b-pad-chico);flex:none}
+
+/* ── la hoja de horarios ─────────────────────────────────────────── */
+.hoja .franjas{margin-top:12px}
+.franja > button svg{flex:none;color:var(--txt2)}
+
+/* ── los espacios: foto a sangre con una acción clara ─────────────── */
+.esp{position:relative}
+.esp .esp-ver{position:absolute;inset:0;z-index:1;border-radius:inherit}
+.esp .sobre{z-index:2;pointer-events:none;padding-bottom:52px}
+.esp .esp-reservar{background:var(--glass-dark);border:1px solid var(--glass-dark-borde);color:#fff;
+  box-shadow:var(--glass-dark-brillo);
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);position:absolute;left:12px;bottom:12px;z-index:3;height:var(--b-alto-chico);padding:0 14px;
+  border-radius:var(--b-radio);font-size:var(--b-fs-sec);font-weight:700;
+  transition:background .12s}
+.esp .esp-reservar:hover{background:rgba(17,22,20,.56)}
+/* la lavandería, sin foto propia: carbón y su ícono */
+.esp.sin-foto{aspect-ratio:1/1.1;min-height:148px;display:block}
+.esp.sin-foto .ic-grande{position:absolute;top:16px;left:16px;color:rgba(255,255,255,.7)}
+.esp.sin-foto .sobre{position:absolute;left:0;right:0;bottom:0;padding:14px 14px 52px}
+.esp.sin-foto .sobre b{display:block;font-size:18px;font-weight:700;color:#fff}
+.esp.sin-foto .sobre i{display:block;margin-top:3px;font-style:normal;font-size:12.5px;color:rgba(255,255,255,.8)}
+
+/* ══ RONDA VISUAL 01 · E · MI EDIFICIO Y VISITAS ═════════════════════ */
+
+/* la subnav de Mi edificio vive adentro de la zona, más baja y sin la
+   línea larga: el filo de la zona ya separa */
+.zona-ctx .subnav{margin:16px -4px 0;gap:0}
+.zona-ctx .subnav button{min-height:40px;padding:0 12px 9px;font-size:14px}
+.zona-ctx .subnav button::after{left:12px;right:12px;height:2.5px}
+.zona-ctx.con-foto{min-height:250px}
+
+/* ── visitas: el momento se ve antes de leer ─────────────────────── */
+.visita.vigente{position:relative;isolation:isolate;overflow:hidden;padding:0;
+  border-radius:var(--r-card);color:#fff;background:var(--carbon);
+  box-shadow:var(--sombra-2)}
+.visita.vigente>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;
+  opacity:.7}
+.visita.vigente::after{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(100deg,#0B0F0D 5%,rgba(11,15,13,.82) 45%,rgba(11,15,13,.25) 100%)}
+.visita.vigente .cuerpo{padding:18px 18px 16px}
+.visita.vigente .lb{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;
+  letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+.visita.vigente .lb .pastilla{margin-left:auto;text-transform:none;letter-spacing:.005em}
+.visita.vigente h3{margin-top:10px;font-size:24px;font-weight:700;letter-spacing:-.025em;color:#fff}
+.visita.vigente .hora{display:block;margin-top:5px;font-size:14px;color:rgba(255,255,255,.82)}
+.visita.vigente .apunte{margin-top:8px;font-size:12.5px;color:rgba(255,255,255,.7)}
+.visita.vigente .pase-fila{width:100%;display:flex;align-items:center;gap:10px;
+  padding:13px 18px;background:var(--amarillo);color:var(--carbon);text-align:left}
+.visita.vigente .pase-fila b{flex:1;font-size:14.5px;font-weight:700}
+.visita.vigente .pase-fila .cod{font-size:12.5px;font-weight:500;font-variant-numeric:tabular-nums;opacity:.8}
+
+/* la visita programada es una fila de la lista, con el día como ancla */
+.visita.proxima{width:100%;display:flex;align-items:center;gap:14px;padding:16px 0;margin-top:0;
+  border-radius:0;text-align:left;color:var(--txt);background:none;border:0}
+.visita.proxima+.visita.proxima{border-top:1px solid var(--borde)}
+.visita.proxima .fecha{flex:none;width:52px;height:56px;border-radius:16px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:color-mix(in srgb,var(--txt) 5%,transparent)}
+.visita.proxima .fecha b{font-size:21px;font-weight:900;line-height:1;letter-spacing:-.03em}
+.visita.proxima .fecha i{margin-top:3px;font-style:normal;font-size:11px;font-weight:500;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--txt2)}
+.visita.proxima .d{flex:1;min-width:0}
+.visita.proxima .d b{display:block;font-size:var(--t-fila);font-weight:700;letter-spacing:-.015em}
+.visita.proxima .d i{display:block;margin-top:2px;font-style:normal;font-size:var(--t-meta);color:var(--txt2)}
+
+/* la pasada es historial: fila, sin caja */
+.visita.pasada{width:100%;display:flex;align-items:center;gap:12px;margin-top:0;
+  padding:14px 4px;border-radius:0;text-align:left;color:var(--txt);
+  background:transparent;border-bottom:1px solid var(--borde)}
+.visita.pasada .d{flex:1;min-width:0}
+.visita.pasada .d b{display:block;font-size:var(--t-fila);font-weight:500}
+.visita.pasada .d i{display:block;margin-top:2px;font-style:normal;font-size:var(--t-meta);color:var(--txt2)}
+.visita.pasada .res{flex:none;font-size:12.5px;color:var(--txt2)}
+.visita.pasada>svg{flex:none;color:var(--txt2)}
+
+/* Los filtros dejan de marcar con amarillo (D-26). Con el primario ya
+   amarillo, un filtro amarillo al lado no dejaba claro cuál era el botón.
+   La selección se marca con el sólido del texto: clara y quieta. */
+.chips .marca{background:var(--txt)}
+.chips button[aria-pressed="true"]{color:var(--fondo)}
+
+/* en la visita vigente el estado va en vidrio: el amarillo es del pase */
+.visita.vigente .lb .pastilla{background:none;border:0;color:#fff}
+
+/* ══ RONDA VISUAL 01 · F · HISTORIAL, RECLAMOS Y VACÍOS ══════════════ */
+
+/* ── la línea de tiempo con la hora en columna (§12) ─────────────────
+     18:42  ●  Juan Pérez ingresó
+            │  Visita autorizada
+   La hora es lo primero que se escanea; el evento, lo que se lee. */
+.linea-t.con-hora .hito{display:grid;grid-template-columns:44px 28px 1fr;column-gap:10px;
+  padding:0 0 18px 0}
+.linea-t.con-hora .hito::before{left:67px;top:28px}
+.linea-t.con-hora .hora-col{grid-column:1;padding-top:5px;text-align:right;
+  font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--txt2)}
+.linea-t.con-hora .marca{position:relative;grid-column:2;left:auto;top:auto}
+.linea-t.con-hora .c{grid-column:3;min-width:0;padding-top:3px}
+.linea-t.con-hora .arr b{font-weight:700}
+
+/* la forma del nodo dice cómo se sabe (D-17): lleno registrado, hueco
+   declarado, punteado pendiente. Y además lo dice en texto. */
+.linea-t .hito.declarado .marca{background:transparent;border:1.5px solid var(--txt)}
+.linea-t .hito.pendiente .marca{background:transparent;border:1.5px dashed var(--txt2);color:var(--txt2)}
+.linea-t .certeza{font-style:normal;font-weight:700;color:var(--txt)}
+
+/* ── reclamos: el estado se ve sin leer la pastilla ──────────────── */
+.reclamo-f{position:relative;overflow:hidden}
+.reclamo-f .estado-r{display:inline-flex;align-items:center;gap:6px;padding:0;border:0;border-radius:0;
+  background:none;font-size:var(--t-label);font-weight:500;color:var(--txt);white-space:nowrap}
+.reclamo-f.est-curso .estado-r{background:none;color:var(--txt)}
+.reclamo-f.est-ok .estado-r{background:none;color:var(--txt)}
+.reclamo-f .estado-r::before{content:"";width:7px;height:7px;border-radius:999px;flex:none;background:var(--amarillo)}
+.reclamo-f .estado-r svg{display:none}
+.reclamo-f.est-curso .estado-r::before{background:var(--est-curso)}
+.reclamo-f.est-ok .estado-r::before{background:var(--est-ok)}
+.avance-mini{margin-top:10px;display:flex;gap:4px}
+.avance-mini i{flex:1;height:4px;border-radius:999px;background:var(--borde)}
+.avance-mini i.hecho{background:var(--txt)}
+.avance-mini i.ahora{background:var(--est-curso)}
+.reclamo-f.est-ok .avance-mini i.ahora{background:var(--est-ok)}
+
+/* ── vacíos con identidad ────────────────────────────────────────── */
+.vacio{position:relative;overflow:hidden;isolation:isolate;border:0;
+  background:linear-gradient(180deg,rgb(var(--a1) / calc(var(--f1) * .45)),transparent 90%),var(--sup)}
+.vacio .vacio-iso{position:absolute;right:-30px;bottom:-40px;width:170px;height:180px;z-index:-1;
+  background:var(--txt);opacity:.05;
+  -webkit-mask:url(/brand/CT_SIMBOLO_V2_MASCARA.png) center / contain no-repeat;
+          mask:url(/brand/CT_SIMBOLO_V2_MASCARA.png) center / contain no-repeat}
+
+.vacio .cta.btn-sec{margin-top:18px;background:var(--sup);color:var(--txt);box-shadow:none}
+
+/* ══ LOCK V02 · 0 · BUGS ════════════════════════════════════════════ */
+
+/* A2 · el calendario vuelve a ser un mes con flechas. Las reglas del
+   carrusel (.cal-carrusel, .cal-mes) quedan sin uso; se barren en la
+   fase de pulido. Ancho del mes = ancho de la pantalla menos el margen. */
+.cal.sin-caja{margin:18px 0 0}
+.cal.sin-caja .cal-cab{padding:0 2px}
+.cal.sin-caja .cal-sem{margin-top:12px}
+.cal.sin-caja .cal-pista{margin-top:4px;touch-action:pan-y;overflow:hidden}
+.cal.sin-caja .cal-grilla{transition:none}
+
+/* ══ LOCK V02 · 1 · FAMILIAS ════════════════════════════════════════
+   Consolidación, no framework: los botones, las filas, los acordeones y
+   los velos de foto que ya existían pasan a hablar un solo idioma. */
+
+/* ── botones: tres niveles y un modificador ─────────────────────────
+   Primario .entrar · secundario .btn-sec · terciario .btn-ter.
+   "compacto" = primario del ancho de su texto (en el home, en un grupo).
+   "peligro" = la acción destructiva, en cualquiera de los tres niveles. */
+.entrar.compacto{width:auto;padding:0 32px;margin-top:0;display:inline-flex}
+.entrar.peligro{background:transparent;color:var(--est-vencido);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--est-vencido) 45%,transparent)}
+.entrar:disabled{opacity:.4;cursor:not-allowed;transform:none}
+/* acento: máximo énfasis, uno por contexto, se pide explícitamente */
+.entrar.acento{background:var(--amarillo);color:var(--carbon);box-shadow:none}
+.entrar.acento:hover,.entrar.acento:active{background:var(--amarillo-hundido)}
+/* sobre foto o carbón el primario se invierte para seguir siendo el de más contraste */
+.home-campo,.zona-ctx.con-foto,.lg-card,.saldo-card{--b-prim-fondo:#F1F3EF;--b-prim-txt:#111614}
+.entrar.peligro:hover{background:color-mix(in srgb,var(--est-vencido) 8%,transparent)}
+.btn-sec.peligro{color:var(--est-vencido);border-color:color-mix(in srgb,var(--est-vencido) 40%,transparent)}
+.btn-ter.peligro{color:var(--est-vencido)}
+/* el terciario al pie de una hoja, un formulario o un éxito va centrado */
+.pie-form .btn-ter,.hoja-acciones .btn-ter,.listo .btn-ter{margin:10px auto 0;display:flex}
+.widget.en-campo .entrar.compacto{margin-top:20px}
+/* los botones de los paneles pierden su caja propia: nivel y nada más */
+.acciones-panel .btn-ter{flex:none;min-width:0;height:auto;min-height:var(--tactil);
+  border:0;border-radius:0;background:none}
+.acciones-panel .btn-sec{flex:none;min-width:0}
+.btn-sec.peligro{width:100%;margin-top:12px}
+
+/* ── filas: una sola escala ──────────────────────────────────────────
+   Título 15 · metadata 12,5 en una línea · lo mismo en menús, paneles,
+   tablas, documentos, personas y opciones. Antes cada una tenía su
+   tamaño, de 14,5 a 15,5, y su interlineado. */
+.menu .d b,.mini-f .d b,.persona-f .d b,.tabla-f .d b,
+.medios-otros b,.opciones-hoja b,.visita.pasada .d b{
+  font-size:var(--t-fila);font-weight:500;letter-spacing:-.01em;line-height:1.3}
+.menu .d i,.mini-f .d i,.persona-f .d i,.tabla-f .d i,
+.medios-otros i,.opciones-hoja i,.visita.pasada .d i{
+  font-size:var(--t-meta);line-height:1.4;color:var(--txt2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.menu .d,.mini-f .d,.persona-f .d,.tabla-f .d{min-width:0}
+
+/* ── acordeón con color de categoría ─────────────────────────────── */
+.panel-p.con-color{background:var(--sup);border:1px solid var(--borde);border-radius:var(--r-card);
+  box-shadow:inset 4px 0 0 var(--acento),var(--sombra-1)}
+.panel-p.con-color .cab{padding:15px 16px}
+.panel-p.con-color .cuerpo{padding:2px 16px 16px}
+
+/* ── velos de foto: dos, no uno por pantalla ─────────────────────────
+   Abajo, para cuando el texto se apoya abajo. De lado, para cuando el
+   texto va a la izquierda. */
+:root{
+  --velo-abajo:linear-gradient(180deg,rgba(8,11,9,.30) 0%,rgba(8,11,9,.04) 32%,
+    rgba(8,11,9,.55) 68%,rgba(8,11,9,.9) 100%);
+  --velo-lado:linear-gradient(100deg,#0B0F0D 4%,rgba(11,15,13,.82) 44%,rgba(11,15,13,.2) 100%);
+}
+.mat-foto::after,.esp-op::after{background:var(--velo-abajo)}
+.visita.vigente::after,.visitas .osc::after{background:var(--velo-lado)}
+
+/* ══ LOCK V02 · 2 · ÁREA TÁCTIL ═════════════════════════════════════
+   Las pestañas del widget y "Copiar" se ven chicas a propósito, pero el
+   dedo necesita 44 px. El área se agranda por fuera, sin mover nada. */
+.widget.en-campo .widget-tabs button,.copiar{position:relative}
+.widget.en-campo .widget-tabs button::after,.copiar::after{content:"";position:absolute;
+  left:0;right:0;top:-5px;bottom:-5px}
+/* en el campo las cuatro pestañas entran siempre: sin scroll, el área
+   táctil de arriba no se recorta */
+.widget.en-campo .widget-tabs{overflow:visible}
+
+/* ══ LOCK V02 · 3 · EXPENSAS Y RESERVAS ═════════════════════════════ */
+
+/* acordeones apilados: uno debajo del otro, con la línea sangrada */
+.residente .panel-p+.panel-p{border-top:1px solid var(--borde)}
+.residente .panel-p.abierto+.panel-p{border-top-color:var(--borde)}
+.acordeones{margin-top:18px;display:flex;flex-direction:column;gap:0}
+.acordeones .panel-p .cuerpo .tabla-f:first-child,
+.hoja .panel-p .cuerpo .reglas-hoja{border-top:0}
+.acordeones+.descarga{margin-top:14px}
+/* el nombre del rubro elegido entra en el anillo o se corta */
+.torta .centro .k{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* estado de cuenta: el estado es el color del texto, no una pastilla */
+.tabla-f .d i.est-t.curso{color:var(--est-curso)}
+.tabla-f .d i.est-t.vencido{color:var(--est-vencido)}
+
+/* normas plegadas dentro de la hoja de reserva */
+.hoja .panel-p{margin-top:16px}
+.hoja .panel-p .reglas-hoja{margin-top:12px;padding-top:0}
+
+/* "Reservar" en las cards de espacio: se ve chico, responde en 44 px */
+.esp .esp-reservar::after{content:"";position:absolute;left:-6px;right:-6px;top:-5px;bottom:-5px}
+/* el primario suelto dentro del cuerpo de una hoja ocupa el ancho */
+.hoja-cuerpo>.entrar{width:100%}
+
+/* ══ LOCK V02 · 4 · HOME Y SECCIONES ════════════════════════════════ */
+
+/* tres accesos en el home: el mismo círculo, más aire entre ellos */
+.home-acciones{grid-template-columns:repeat(3,1fr)}
+/* el widget sin pestañas arranca con la volanta */
+.widget.en-campo .widget-panel:first-child{padding-top:8px}
+
+/* documentos: una lista agrupada, cada fila es su descarga */
+/* documentos: lista a sangre con separadores, no una caja con filas */
+.docs{margin:16px -20px 0;padding:0 20px;border-radius:0;overflow:visible;border:0;background:none}
+.docs .descarga{margin:0}
+.docs .descarga+.descarga{border-top:1px solid var(--borde)}
+.docs .descarga>button{min-height:66px;border:0;border-radius:0;background:transparent;padding:12px 0}
+.docs .descarga .detalle-descarga{margin:0 0 12px}
+.docs .descarga.lista>button{border:0}
+.descarga>button .tx b{display:block;font-size:var(--t-fila);font-weight:500;letter-spacing:-.01em;line-height:1.3}
+.descarga>button .tx i{display:block;font-style:normal;margin-top:2px;font-size:var(--t-meta);color:var(--txt2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.descarga>button .tx{min-width:0}
+/* F01: lo opcional, plegado debajo de nombre, día y horario */
+/* "Más datos" es una fila que se abre, no una card adentro del form */
+.mas-datos{margin-top:22px;border-top:1px solid var(--borde);padding-top:4px}
+.mas-datos .panel-p{margin:0;background:none;border:0;border-radius:0;box-shadow:none}
+.mas-datos .panel-p .cab{padding:14px 2px;min-height:52px}
+.mas-datos .panel-p .cab .d b{font-weight:500}
+.mas-datos .panel-p .cuerpo{padding:0 2px 16px}
+.mas-datos .panel-p .cab .d i{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ══ LOCK V02 · 5 · PULIDO ══════════════════════════════════════════ */
+
+/* foto de contexto con desenfoque moderado: el lugar se reconoce, el
+   texto de arriba se lee. La escala tapa el borde que deja el blur. */
+.zona-ctx .zc-foto{filter:grayscale(.15) contrast(1.04) brightness(.95) blur(3px);transform:scale(1.08)}
+/* el resumen de un acordeón es metadata: una línea */
+.panel-p .cab .d i{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ══ RONDA FUERTE · HOME SOBRE LA BASE APROBADA ═════════════════════
+   La estructura es la de siempre: campo con el widget de pestañas, tres
+   accesos y la pila. Se agrega la fachada atrás del campo, vidrio donde
+   ahora sí hay algo detrás, y profundidad en las cards. */
+
+/* la fachada atrás; luz cálida filtrada arriba; el carbón gana abajo */
+.home-campo{background:#111614}
+.home-campo .campo-foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:50% 16%;z-index:-3;border-radius:inherit;
+  /* Acá el desenfoque va en la foto y no en una capa con backdrop-filter:
+     el campo tiene los vértices de abajo redondeados y esa capa le
+     sacaba el fondo claro de la página hacia adentro, que era el halo
+     gris de las esquinas. La imagen se agranda un 12 % para que el
+     borde lavado del blur quede fuera del recorte. */
+  transform:scale(1.12);filter:blur(16px) saturate(.7) brightness(1.02)}
+.home-campo::before{content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;
+  border-radius:inherit;
+  background:
+    radial-gradient(85% 48% at 0% 0%,rgba(222,186,118,.22) 0%,transparent 66%),
+    linear-gradient(180deg,rgba(13,17,15,.14) 0%,rgba(13,17,15,.42) 36%,rgba(13,17,15,.82) 68%,#111614 100%)}
+.home-cab h1{color:rgba(255,255,255,.82)}
+
+/* pestañas: vidrio sobre la foto, con el desenfoque del sistema */
+.widget.en-campo .widget-tabs{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14);
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur)}
+
+/* "Vence 20 sep · Pendiente": una sola línea secundaria. El estado es
+   un punto y el mismo peso que el vencimiento; manda la cifra. */
+.widget.en-campo .det{gap:9px;font-size:14px;color:rgba(255,255,255,.8)}
+.widget.en-campo .det .pastilla{height:auto;padding:0;background:none;border:0;
+  color:inherit;font-size:inherit;font-weight:500;gap:7px}
+.widget.en-campo .det .pastilla::before{content:"";width:6px;height:6px;border-radius:999px;
+  background:var(--amarillo);box-shadow:none}
+.widget.en-campo .det .pastilla.gris::before{background:rgba(255,255,255,.5);box-shadow:none}
+
+/* Pagar: amarillo con relieve, no una cápsula plana */
+
+/* Composición · Movimientos: secundarios de vidrio, no subrayados */
+.widget-enlaces{margin-top:14px;gap:10px}
+
+.widget-enlaces .btn-sec,#r20 .zc-enlaces .btn-sec{height:var(--b-alto-chico);padding:0 var(--b-pad-chico)}
+.btn-sec svg,.entrar svg{flex:none}
+
+/* accesos: vidrio con el ícono al frente */
+.home-acciones .circ{width:58px;height:58px;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.18);color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 22px -14px rgba(0,0,0,.8);
+  backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3)}
+.home-acciones button:hover .circ{background:rgba(255,255,255,.17)}
+.home-acciones button:active .circ{transform:scale(.92);background:rgba(255,255,255,.22)}
+.home-acciones .rot{font-size:12.5px;font-weight:700}
+
+/* lo de hoy: cards del mismo alto, carbón, con profundidad */
+.viva{height:188px;border:0}
+.pila-c .viva{box-shadow:inset 0 1px 0 rgba(255,255,255,.06),var(--sombra-2)}
+/* Lo de hoy · un solo velo para las tres cards con foto: se abre de
+   izquierda a derecha, donde vive el texto, y cierra apenas abajo. Sin
+   corte duro: la foto nunca desaparece del todo ni tapa el título. */
+.pila-c .viva.mat-foto>img,
+.pila-c .viva.visitas .osc img{filter:saturate(.62) brightness(.82) blur(1.5px);transform:scale(1.04)}
+.pila-c .viva.mat-foto::after,
+.pila-c .viva.visitas .osc::after{
+  background:
+    linear-gradient(100deg,rgba(8,11,9,.94) 0%,rgba(8,11,9,.8) 34%,rgba(8,11,9,.46) 66%,rgba(8,11,9,.26) 100%),
+    linear-gradient(180deg,transparent 42%,rgba(8,11,9,.5) 100%)}
+.pila-c .viva.visitas .osc img{opacity:.82;filter:grayscale(.26) contrast(1.03)}
+.viva.paquete{display:block;padding:0;background:#1A211D;border:0;color:#fff;
+  backdrop-filter:none;-webkit-backdrop-filter:none}
+.viva.paquete .sobre .tx b{font-size:22px;font-weight:900;letter-spacing:-.03em;color:#fff}
+.viva.paquete .sobre .tx i{font-size:13px;color:rgba(255,255,255,.72)}
+.viva.paquete .flech{color:#fff;flex:none}
+
+/* cada card abre su destino al tocarla; no hay gesto lateral */
+.pila-c .viva{transition:transform .12s ease}
+.pila-c .viva:active{transform:scale(.99)}
+
+/* ══ FASE 2A · G01 LOGIN · G02 RECUPERAR ═══════════════════════════
+   Una sola escena para las dos: la fachada desenfocada atrás, luz cálida
+   filtrada y viñeta; adelante, una card de vidrio carbón con filo fino.
+   Mismo layout de siempre; Recuperar usa la misma card. */
+.login.ingreso{isolation:isolate;background:#111614;color:#fff;overflow-x:hidden}
+.lg-foto{position:absolute;left:0;right:0;top:0;height:74%;width:100%;object-fit:cover;object-position:50% 20%;
+  z-index:-2;filter:saturate(.8) brightness(.86)}
+.login.ingreso::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  /* el desenfoque va en la capa de atmósfera y no en la foto: así los
+     bordes no se lavan y no hace falta agrandar la imagen */
+  backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+  background:
+    radial-gradient(100% 44% at 12% 0%,rgba(222,186,118,.26) 0%,transparent 68%),
+    radial-gradient(140% 72% at 50% 28%,transparent 45%,rgba(10,13,12,.45) 100%),
+    linear-gradient(180deg,rgba(13,17,15,.06) 0%,rgba(13,17,15,.32) 36%,rgba(17,22,20,.88) 66%,#111614 86%)}
+
+/* la card: carbón translúcido, blur alto, filo de 1px y un brillo arriba */
+.lg-card{margin-top:118px;padding:26px 22px 24px;border-radius:var(--r-feature);
+  --txt:#F1F3EF;--txt2:rgba(241,243,239,.64);--borde-ctrl:rgba(255,255,255,.22);--sup:rgba(255,255,255,.06);
+  --error:#E88A8A;--error-borde:rgba(232,138,138,.32);
+  color:var(--txt);
+  background:rgba(20,26,23,.64);border:1px solid rgba(255,255,255,.1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 24px 48px -28px rgba(0,0,0,.75);
+  backdrop-filter:blur(28px) saturate(1.15);-webkit-backdrop-filter:blur(28px) saturate(1.15)}
+.lg-card .lg-top{padding:0;justify-content:flex-start}
+.lg-card .lg-top img{height:22px}
+.lg-card h1{margin-top:24px;text-align:left;color:#fff}
+.lg-card .sub{margin:8px 0 0;max-width:none;text-align:left;text-wrap:pretty;font-size:var(--t-cuerpo);line-height:var(--t-cuerpo-lh);color:var(--txt2)}
+.lg-card .sub strong{font-weight:700;color:#fff}
+.lg-card form{margin-top:22px;gap:12px}
+
+/* campos: misma forma que el botón, más claros que la card, sin sombra */
+.lg-card .campo{height:var(--b-alto);border-radius:var(--b-radio);padding-left:48px;
+  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);box-shadow:none;
+  transition:border-color .15s,background .15s}
+.lg-card .campo:hover{border-color:rgba(255,255,255,.18)}
+.lg-card .campo:focus-within{background:rgba(255,255,255,.08);border-color:var(--amarillo);box-shadow:none}
+.lg-card .campo .glifo-campo{left:16px;color:rgba(241,243,239,.6)}
+.lg-card .campo:focus-within .glifo-campo{color:#fff}
+.lg-card .campo input{font-size:var(--t-cuerpo);font-weight:500;color:#fff;caret-color:var(--amarillo)}
+.lg-card .campo input::placeholder{color:rgba(241,243,239,.56);opacity:1;font-weight:400}
+/* autofill: a Chrome se le posterga la transición del relleno para que
+   nunca llegue a pintarlo. El campo conserva su material: default, foco y
+   autocompletado se ven iguales, sin ningún bloque opaco adentro. */
+.lg-card .campo input:-webkit-autofill,
+.lg-card .campo input:-webkit-autofill:hover,
+.lg-card .campo input:-webkit-autofill:focus,
+.lg-card .campo input:-webkit-autofill:active{
+  -webkit-text-fill-color:#F1F3EF;caret-color:var(--amarillo);
+  transition:background-color 100000s ease-in-out 0s}
+.lg-card .ver{right:6px;width:40px;height:40px;border-radius:var(--b-radio);color:rgba(241,243,239,.6)}
+.lg-card .ver:hover{background:rgba(255,255,255,.07);color:#fff}
+.lg-card .ver[aria-pressed="true"]{color:#fff}
+.lg-card .olvide-fila{margin-top:0}
+.lg-card .olvide{color:rgba(241,243,239,.72);border-bottom-color:rgba(255,255,255,.2)}
+.lg-card .olvide:hover{color:#fff}
+
+/* primario: hueso macizo, sin degradé; se hunde un tono al presionar */
+.lg-card .entrar{margin-top:8px;width:100%;
+  box-shadow:inset 0 -1px 0 rgba(17,22,20,.1),0 10px 22px -14px rgba(0,0,0,.7)}
+.lg-card .entrar:hover{background:#FFFFFF}
+.lg-card .entrar:active{background:#DCDFD8;box-shadow:inset 0 1px 2px rgba(17,22,20,.18)}
+.lg-card .alerta{background:rgba(232,138,138,.08);border-color:var(--error-borde);border-left-color:var(--error);border-radius:var(--b-radio)}
+
+/* confirmación de Recuperar: glifo del sobre en vidrio */
+.lg-card .lg-glifo{margin-top:26px;width:52px;height:52px;border-radius:var(--r-pill);
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+.lg-card .lg-glifo+h1{margin-top:18px}
+.lg-card .sub+.entrar{margin-top:24px}
+
+/* volver sobre la foto: vidrio oscuro */
+.login.ingreso .volver-redondo{background:var(--glass-dark);border:1px solid var(--glass-dark-borde);color:#fff;
+  box-shadow:var(--glass-dark-brillo);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur)}
+.login.ingreso .volver-redondo:hover{background:rgba(17,22,20,.56)}
+
+/* cuentas de demostración: lista quieta, sin cards adentro de la card */
+.login.ingreso .demo{margin-top:20px;padding:16px 18px 6px;border-radius:var(--r-card);
+  --txt:#F1F3EF;--txt2:rgba(241,243,239,.56);color:var(--txt);
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);box-shadow:none}
+.login.ingreso .demo h2{text-transform:none;letter-spacing:0;font-size:var(--t-label);font-weight:500;color:var(--txt2)}
+.login.ingreso .demo ul{margin-top:6px;gap:0}
+.login.ingreso .demo li+li{border-top:1px solid rgba(255,255,255,.07)}
+.login.ingreso .demo button{padding:12px 0;border-radius:0;background:none;transition:opacity .15s}
+.login.ingreso .demo button:hover{background:none;opacity:.72}
+.login.ingreso .demo b{display:block;font-size:14px;font-weight:500;color:rgba(241,243,239,.92)}
+.login.ingreso .demo small{font-size:var(--t-label);margin-top:3px}
+.login.ingreso .demo em{font-size:var(--t-label);color:var(--txt2)}
+
+/* textos al pie */
+.login.ingreso .ayuda{padding:24px 0 30px;
+  --txt:#F1F3EF;--txt2:rgba(241,243,239,.6);--borde-ctrl:rgba(255,255,255,.26)}
+.login.ingreso .ayuda p{font-size:var(--t-label);text-wrap:balance}
+.login.ingreso .ayuda b{color:rgba(241,243,239,.9)}
+.login.ingreso .cambiar{margin-top:22px;
+  --txt:#F1F3EF;--txt2:rgba(241,243,239,.62);--borde-ctrl:rgba(255,255,255,.26)}
+
+/* ══ RONDA FUERTE · R07 PASE ════════════════════════════════════════
+   La card es carbón liso con relieve; la atmósfera queda atrás, en la
+   pantalla. Código y Copiar juntos; Compartir primario; Dar de baja
+   como texto. */
+#r07 .pase{background:#141A17;color:#fff;border:1px solid rgba(255,255,255,.07);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),var(--sombra-2)}
+#r07 .pase::before,#r07 .pase::after{display:none}
+#r07 .pase .et{text-transform:none;letter-spacing:0;font-size:13px;font-weight:700;color:rgba(255,255,255,.6)}
+#r07 .pase h2{font-size:26px}
+#r07 .pase .qr{width:220px;height:220px;margin-top:22px;box-shadow:0 18px 36px -20px rgba(0,0,0,.9)}
+.pase-cod{margin-top:18px;display:flex;align-items:center;justify-content:center;gap:12px}
+.pase-cod .codigo{margin:0;font-size:14px;letter-spacing:.2em;color:#E6EAE5;font-variant-numeric:tabular-nums}
+.pase-cod .copiar{color:#fff}
+.pase-cod .copiar:hover{opacity:.72}
+.pase-acciones{margin-top:16px;display:flex;flex-direction:column;align-items:stretch;gap:4px}
+.pase-acciones .entrar{width:100%;margin-top:0}
+.pase-acciones .btn-ter{align-self:center}
+#r07 h2.sec{margin-top:26px}
+
+/* ══ RONDA FUERTE · R21 GASTOS DEL CONSORCIO ════════════════════════
+   El gráfico es parte de la pantalla, no un bloque negro aparte:
+   título → período → donut con el total → pestañas → desglose. */
+#r21{
+  --rubro-1:#5B7CFA;--rubro-2:#9D6BEF;--rubro-3:#2BAF8A;--rubro-4:#EE8646;
+  --rubro-5:#DF5689;--rubro-6:#8DB93A;--rubro-7:#38A4D6;--rubro-8:#C2A271}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) #r21{
+  --rubro-1:#8FA8FF;--rubro-2:#C29CFF;--rubro-3:#5FD6B6;--rubro-4:#FFA877;
+  --rubro-5:#FF7FA8;--rubro-6:#C3E66E;--rubro-7:#69C9F2;--rubro-8:#E3CFA8}}
+:root[data-tema="oscuro"] #r21{
+  --rubro-1:#8FA8FF;--rubro-2:#C29CFF;--rubro-3:#5FD6B6;--rubro-4:#FFA877;
+  --rubro-5:#FF7FA8;--rubro-6:#C3E66E;--rubro-7:#69C9F2;--rubro-8:#E3CFA8}
+.comp-tit{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.comp-sin{margin-top:10px;font-size:var(--t-meta);line-height:var(--t-meta-lh);color:var(--txt2);max-width:34ch}
+.comp-periodo{position:relative;height:36px;padding:0 10px 0 14px;border-radius:999px;
+  display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700;color:var(--txt);
+  background:var(--sup);border:1px solid var(--borde-ctrl);
+  box-shadow:var(--sombra-1)}
+.comp-periodo svg{transform:rotate(90deg);opacity:.6;flex:none}
+.comp-periodo::after{content:"";position:absolute;left:0;right:0;top:-4px;bottom:-4px}
+.comp{margin-top:6px}
+
+/* donut: protagonista, sin caja, con el total al centro */
+.comp .torta{position:relative;margin:6px auto 0;width:252px;max-width:100%;display:block}
+.comp .torta svg{width:100%;height:auto;display:block;overflow:visible}
+.torta .aro-base{fill:none;stroke:color-mix(in srgb,var(--txt) 7%,transparent)}
+.torta .porcion{fill:none;cursor:pointer;transition:stroke-width .2s ease,opacity .2s ease}
+.torta.con-eleccion .porcion:not(.on){opacity:.24}
+.torta .centro{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;pointer-events:none;padding:0 50px}
+.torta .centro .k{max-width:100%;font-size:12.5px;font-weight:500;letter-spacing:0;text-transform:none;
+  color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.torta .centro b{margin-top:6px;font-size:26px;font-weight:900;letter-spacing:-.035em;line-height:1;
+  font-variant-numeric:tabular-nums;color:var(--txt)}
+.torta .centro .p{margin-top:6px;font-size:13px;font-weight:700;color:var(--txt2)}
+.comp .chips{margin-top:18px}
+
+/* desglose: lista agrupada de una línea */
+.comp-filas{list-style:none;margin-top:14px;border-radius:var(--r-card);overflow:hidden;
+  background:var(--sup);border:1px solid var(--borde);box-shadow:var(--sombra-1)}
+.comp-filas li+li{border-top:1px solid var(--borde)}
+.comp-filas>li>button{width:100%;min-height:54px;display:flex;align-items:center;gap:10px;padding:0 14px;
+  text-align:left;color:var(--txt)}
+.comp-filas .pt{width:10px;height:10px;border-radius:999px;flex:none}
+.comp-filas .pt.neutro{background:color-mix(in srgb,var(--txt) 30%,transparent)}
+/* fila de rubro/proveedor: el nombre entero antes que el adorno. Con
+   nombres largos (proveedores) el monto y el porcentaje ceden tamaño. */
+.comp-filas .nb{flex:1;min-width:0;font-size:var(--t-cuerpo);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.comp-filas .mt{flex:none;font-size:var(--t-cuerpo);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.comp-filas .pc{width:42px;flex:none;text-align:right;font-size:var(--t-label);font-weight:500;color:var(--txt2);
+  font-variant-numeric:tabular-nums}
+.comp-filas li.abierta>button{background:color-mix(in srgb,var(--txt) 3%,transparent)}
+.comp-filas li.abierta>button .nb{font-weight:700}
+.comp-detalle{padding:2px 16px 10px 38px;background:color-mix(in srgb,var(--txt) 3%,transparent)}
+.cd-f{display:flex;align-items:center;gap:10px;padding:9px 0}
+.cd-f+.cd-f{border-top:1px solid var(--borde)}
+.cd-f .d{flex:1;min-width:0}
+.cd-f .d b,.cd-f .d i{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cd-f .d b{font-size:var(--t-meta);font-weight:500}
+.cd-f .d i{font-style:normal;margin-top:2px;font-size:var(--t-label);color:var(--txt2)}
+.cd-f .n{font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.cd-f .descarga{margin:0}
+.cd-f .descarga.chica>button{min-height:34px;height:34px;padding:0 10px;font-size:12px;position:relative}
+.cd-f .descarga.chica>button::after{content:"";position:absolute;left:-3px;right:-3px;top:-5px;bottom:-5px}
+.cd-f .detalle-descarga{display:none}
+.comp-solo{padding:34px 0 10px;text-align:center}
+.comp-solo .k{display:block;font-size:12.5px;font-weight:500;color:var(--txt2)}
+.comp-solo b{display:block;margin-top:8px;font-size:36px;font-weight:900;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.comp-pie{margin-top:12px;display:flex;justify-content:flex-end}
+.comp-pie .descarga{margin:0}
+.tu-parte .tabla{margin-top:12px}
+.tu-parte .descarga{margin-top:12px}
+
+/* ══ RONDA FUERTE · R23 ESTADO DE CUENTA ════════════════════════════
+   El saldo habla como el campo del home: fachada atrás, luz cálida,
+   la cifra al frente. */
+/* El saldo vuelve a ser una pieza con la casa atrás: rótulo, cifra y el
+   vencimiento. Sin punto de estado: el estado lo dicen los movimientos. */
+.saldo-card{position:relative;isolation:isolate;overflow:hidden;margin-top:18px;padding:22px 22px 24px;
+  min-height:160px;display:flex;flex-direction:column;justify-content:flex-end;
+  border-radius:var(--r-feature);background:#111614;color:#fff;border:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),var(--sombra-2)}
+.saldo-card .campo-foto{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  object-position:50% 30%;z-index:-2;filter:saturate(.6) brightness(1.02) blur(2px);transform:scale(1.06)}
+.saldo-card::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(90% 60% at 0% 0%,rgba(222,186,118,.26) 0%,transparent 64%),
+    linear-gradient(180deg,rgba(13,17,15,.42) 0%,rgba(13,17,15,.82) 62%,rgba(13,17,15,.94) 100%)}
+.saldo-card .k{display:block;font-size:var(--t-meta);font-weight:500;color:rgba(255,255,255,.75)}
+.saldo-card b{display:block;margin-top:6px;font-size:var(--t-cifra);font-weight:900;
+  letter-spacing:var(--t-cifra-tr);line-height:1;font-variant-numeric:tabular-nums}
+.saldo-card .pie{display:block;margin-top:10px;font-size:var(--t-meta);color:rgba(255,255,255,.78)}
+.movs .mov-pago .n{color:var(--est-ok)}
+.movs .est-t.ok{color:var(--est-ok)}
+/* movimientos: lista, no una caja con renglones */
+.movs{margin:14px -20px 0;padding:0 20px;border:0;border-radius:0;background:none;overflow:visible}
+.movs .tabla-f{padding:15px 0}
+.movs .tabla-f .n{font-size:var(--t-fila);font-weight:700}
+.movs .est-t{font-weight:700}
+.movs .est-t.curso{color:var(--txt)}
+.movs .est-t.vencido{color:var(--est-vencido)}
+.pie-descarga{margin-top:14px;display:flex;justify-content:flex-end}
+.pie-descarga .descarga{margin:0}
+
+/* R20 · el mismo lenguaje que el home: fachada atrás, estado con punto */
+#r20 .zona-ctx.con-foto .zc-foto{filter:saturate(.82) contrast(1.06);transform:none}
+#r20 .zona-ctx.con-foto::after{background:
+  radial-gradient(90% 50% at 0% 0%,rgba(222,186,118,.28) 0%,transparent 64%),
+  linear-gradient(180deg,rgba(13,17,15,.5) 0%,rgba(13,17,15,.72) 40%,rgba(13,17,15,.93) 100%)}
+.estado-punto{display:inline-flex;align-items:center;gap:7px;font-weight:700;color:#fff}
+.estado-punto::before{content:"";width:7px;height:7px;border-radius:999px;background:var(--amarillo);
+  box-shadow:0 0 0 3px rgba(245,229,0,.22)}
+.estado-punto.vencido::before{background:var(--est-vencido);box-shadow:none}
+#r20 .zc-enlaces{display:flex;gap:10px;margin-top:12px}
+
+/* ══ RONDA FUERTE · TIPOGRAFÍA DEL RESIDENTE ════════════════════════
+   Satoshi en toda la jerarquía y sin mayúsculas sostenidas: títulos de
+   sección medianos y claros; rótulos cortos en peso, no en versalitas.
+   Quedan en mayúsculas sólo los días de la semana del calendario. */
+
+.residente :is(.zona-ctx .zc-cuerpo .vol,.mat-foto .et,.widget-panel .vol,.selector .k,.resumen-hoja .k,
+  .et-hoja,.grupo-tit,.revocados .k,.medio-principal>.k,.visita.vigente .lb,h3.grupo,.dia,
+  .cabecera-ent .et,.tabla-cab span,.hero-ed .lb,.visita .top .lb,.regla-s h2,h2.chico,.saldo .k){
+  text-transform:none;letter-spacing:0;font-size:var(--t-meta);font-weight:700}
+.residente h3.grupo{margin-top:28px;color:var(--txt2)}
+.residente .zona-ctx .zc-cuerpo .vol{opacity:.82}
+button,input,select,textarea{font-family:inherit}
+
+/* ══ FILAS (Más, menús, listas internas) ════════════════════════════
+   Sin card adentro de card: la lista va a sangre, con separadores finos
+   sangrados bajo el título. Ícono suelto —sin baldosa—, título, una
+   línea de estado sólo si aporta, y el chevron quieto. El ritmo lo dan
+   el aire y los rótulos de grupo, no las cajas. */
+.residente .flech{width:auto;height:auto;min-width:18px;border:0;background:none;
+  color:color-mix(in srgb,var(--txt2) 60%,transparent)}
+.residente .menu{margin:0 -20px;padding:0 20px;border-radius:0;background:none;border:0;box-shadow:none}
+.residente .menu button{position:relative;min-height:60px;padding:12px 0;gap:14px}
+.residente .menu button+button{border-top:0}
+.residente .menu button+button::before{content:"";position:absolute;top:0;left:38px;right:0;height:1px;
+  background:var(--borde)}
+.residente .menu .ic{width:24px;height:24px;border-radius:0;flex:none;background:none;color:var(--txt)}
+.residente .menu .d b{font-weight:500;letter-spacing:-.01em}
+.residente .menu .d i{margin-top:3px;color:var(--txt2)}
+.residente .menu button:active .d b{opacity:.6}
+/* rótulo de grupo: sin versalitas ni caja, sólo jerarquía */
+.residente h3.grupo{margin-top:32px;margin-bottom:4px;font-size:15px;font-weight:700;
+  letter-spacing:-.015em;text-transform:none;color:var(--txt)}
+/* el perfil abre la lista: misma fila, con más peso */
+/* Tu cuenta: la pieza que abre Más lleva la casa atrás, como la cabecera
+   de las internas. El botón de perfil del home es .circulo y no entra
+   acá. */
+.residente .perfil:not(.circulo){position:relative;isolation:isolate;overflow:hidden;
+  margin-top:18px;padding:18px;border-radius:var(--r-card);color:#fff;background:#141A17;
+  border:0;box-shadow:var(--sombra-2)}
+.residente .perfil:not(.circulo)::before{content:"";position:absolute;inset:0;z-index:-2;
+  background:url(/img/fachada.jpg) center 34% / cover;
+  filter:blur(14px) saturate(.6) brightness(1.1);transform:scale(1.2)}
+.residente .perfil:not(.circulo)::after{content:"";position:absolute;inset:0;z-index:-1;
+  background:
+    radial-gradient(110% 140% at 100% 0%,rgba(222,186,118,.24) 0%,transparent 62%),
+    linear-gradient(180deg,rgba(13,17,15,.46) 0%,rgba(13,17,15,.82) 100%)}
+.residente .perfil:not(.circulo) .avatar{width:48px;height:48px;font-size:15px;
+  background:rgba(255,255,255,.14);color:#fff}
+.residente .perfil:not(.circulo) .d b{color:#fff}
+.residente .perfil:not(.circulo) .d i{color:rgba(255,255,255,.72)}
+.residente .perfil:not(.circulo) .flech{color:rgba(255,255,255,.7)}
+/* cerrar sesión es la única fila que se pinta: es salida */
+.residente .menu button.salir .ic,
+.residente .menu button.salir .d b{color:var(--est-vencido)}
+.residente .menu .contador{min-width:22px;height:22px;padding:0 7px;border-radius:999px;
+  background:var(--txt);color:var(--fondo);font-size:12px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center}
+
+
+/* horarios: la misma familia que el rail de fechas y los segmentos */
+.horas{margin-top:8px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.horas button{height:var(--b-alto-sec);border-radius:var(--b-radio);border:0;
+  background:color-mix(in srgb,var(--txt) 5%,transparent);
+  color:var(--txt);font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;
+  transition:background .15s,color .15s,transform .12s}
+.horas button:hover:not([aria-checked="true"]){background:color-mix(in srgb,var(--txt) 9%,transparent)}
+.horas button[aria-checked="true"]{background:var(--txt);color:var(--fondo);box-shadow:none}
+.horas button:active{transform:scale(.96)}
+.hoja-cta{width:100%;margin-top:18px;margin-bottom:18px}
+.hoja-vacio{margin-top:6px;font-size:15px;font-weight:500;color:var(--txt2)}
+.confirma-res{margin-top:6px;padding:18px 0 4px;border-radius:0;background:none;border:0}
+.confirma-res b{display:block;font-size:var(--t-titulo);line-height:var(--t-titulo-lh);
+  font-weight:700;letter-spacing:var(--t-titulo-tr)}
+.confirma-res span{display:block;margin-top:6px;font-size:15.5px;font-weight:700;color:var(--txt2)}
+.horas button{display:flex;align-items:center;justify-content:center;padding:0}
+
+/* ══ RONDA FUERTE · ATMÓSFERA ═══════════════════════════════════════
+   El degradé deja de ser gris o de colores de sistema: es luz filtrada,
+   como la que entra por un ventanal. Champagne arriba a la izquierda,
+   piedra y oliva del otro lado, un velo de musgo. Acompaña, no invade:
+   ningún ámbito lleva amarillo ni azul. */
+.residente.screen{ --a1:218 198 160; --a2:168 166 138; --a3:96 94 74 }
+.residente.screen[data-ambito="edificio"]{ --a1:214 190 150; --a2:176 164 138; --a3:98 88 70 }
+.residente.screen[data-ambito="expensas"]{ --a1:212 198 168; --a2:150 158 128; --a3:84 90 72 }
+.residente.screen[data-ambito="reservas"]{ --a1:226 190 138; --a2:190 170 136; --a3:110 92 66 }
+.residente.screen[data-ambito="acceso"]  { --a1:206 196 160; --a2:156 164 130; --a3:70 78 62 }
+.residente .vista::before{height:760px;
+  background:
+    radial-gradient(84% 34% at 0% -6%, rgb(var(--a1) / var(--f1)) 0%, transparent 70%),
+    radial-gradient(70% 30% at 104% 6%, rgb(var(--a2) / var(--f2)) 0%, transparent 70%),
+    radial-gradient(120% 32% at 50% -14%, rgb(var(--a3) / var(--f3)) 0%, transparent 72%),
+    radial-gradient(120% 40% at 50% 100%, rgb(var(--a1) / calc(var(--f1) * .5)) 0%, transparent 70%)}
+
+/* ══ RONDA FUERTE · MI EDIFICIO ═════════════════════════════════════
+   La fachada a sangre, sin blur, con la misma luz que el home; las
+   pestañas como control segmentado de vidrio sobre la foto. */
+.residente .zona-ctx.con-foto .zc-foto{filter:saturate(.82) contrast(1.06);transform:none}
+.residente .zona-ctx.con-foto::after{background:
+  radial-gradient(90% 50% at 0% 0%,rgba(222,186,118,.26) 0%,transparent 64%),
+  linear-gradient(180deg,rgba(13,17,15,.46) 0%,rgba(13,17,15,.6) 40%,rgba(13,17,15,.9) 100%)}
+.residente .zona-ctx .subnav{margin-top:18px;width:100%;display:flex;gap:0;padding:4px;overflow:visible;
+  border-radius:999px;
+  background:var(--glass-dark);border:1px solid var(--glass-dark-borde);box-shadow:var(--glass-dark-brillo);
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur)}
+.residente .zona-ctx .subnav button{flex:1;justify-content:center;min-height:38px;padding:0 10px;border-radius:999px;
+  font-size:13.5px;font-weight:700;color:rgba(255,255,255,.76);transition:background .2s ease,color .2s ease}
+.residente .zona-ctx .subnav button::after{display:none}
+.residente .zona-ctx .subnav button[aria-current="page"]{background:#fff;color:var(--carbon);
+  box-shadow:var(--sombra-1)}
+
+/* personas: avatar, nombre, vínculo y teléfono */
+.persona-f .d i+i{margin-top:1px}
+
+/* contactos: fila de la lista, no una card por persona. La acción es un
+   ícono quieto al final. */
+.contacto{margin:0;padding:16px 0;display:flex;align-items:center;gap:12px;
+  background:none;border:0;border-radius:0;box-shadow:none}
+.contacto+.contacto{border-top:1px solid var(--borde)}
+.contacto .arr{flex:1;min-width:0}
+.contacto .ct-acciones{display:flex;gap:8px;flex:none}
+.contacto .ct-acciones .circulo{background:none;border:1px solid var(--borde);
+  box-shadow:none;color:var(--txt)}
+.contacto .ct-acciones .circulo:hover{background:color-mix(in srgb,var(--txt) 6%,transparent)}
+
+/* documentos: ícono · nombre · PDF · peso · descarga */
+.docs .descarga>button .dl-ic{width:34px;height:34px;border-radius:999px;flex:none;
+  display:flex;align-items:center;justify-content:center;border:1px solid var(--borde-ctrl);color:var(--txt)}
+.docs .descarga>button>svg{color:var(--txt2)}
+.contacto .d i{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.contacto .d i.hor{margin-top:0;font-size:var(--t-meta);opacity:.85}
+
+/* ══ RONDA FUERTE · DESLIZAR ════════════════════════════════════════
+   Sin "Deslizá" escrito: el pulgar amaga dos veces hacia la derecha y
+   eso enseña el gesto. Con reducir movimiento, queda quieto. */
+@keyframes amague{0%,55%,100%{translate:0 0}18%{translate:16px 0}34%{translate:4px 0}}
+.swipe[data-quieto="1"] .pulgar{animation:amague 1.6s ease-in-out .9s 2}
+@media (prefers-reduced-motion:reduce){
+  :root:not([data-movimiento="forzado"]) .swipe .pulgar{animation:none}
+}
+.tira{cursor:grab;user-select:none;-webkit-user-select:none}
+
+/* ══ RONDA FUERTE · MOTION QUE SE VE ════════════════════════════════
+   Corto y físico. La pantalla entra del lado de la navegación; el mes,
+   del lado de la flecha; la cara del widget se corre con la pestaña. */
+@keyframes vista-adelante{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes vista-atras{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
+.residente[data-dir="adelante"] .vista{animation:vista-adelante .3s cubic-bezier(.2,.8,.2,1)}
+.residente[data-dir="atras"] .vista{animation:vista-atras .3s cubic-bezier(.2,.8,.2,1)}
+.widget-panel.cruza-izq{animation:cruza-der .26s cubic-bezier(.2,.8,.2,1)}
+.widget-panel.cruza-der{animation:cruza-izq .26s cubic-bezier(.2,.8,.2,1)}
+@keyframes cruza-der{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+@keyframes cruza-izq{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+.cal-grilla.entra-izq{animation:desde-der .28s cubic-bezier(.2,.8,.2,1)}
+.cal-grilla.entra-der{animation:desde-izq .28s cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion:reduce){
+  :root:not([data-movimiento="forzado"]) .residente .vista,
+  :root:not([data-movimiento="forzado"]) .widget-panel,
+  :root:not([data-movimiento="forzado"]) .cal-grilla{animation:none}
+}

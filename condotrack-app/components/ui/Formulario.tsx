@@ -1,6 +1,7 @@
 "use client";
 import { useId, useState, type ReactNode } from "react";
 import { SwipeButton } from "./SwipeButton";
+import { Hoja } from "./Hoja";
 import { Icon, type NombreIcono } from "./Icon";
 
 /** Controles de formulario. Uno solo para todo el producto: si cada
@@ -64,23 +65,47 @@ export function Area({
   );
 }
 
+/** Elegir entre opciones. No usa el select del navegador —que trae su
+ *  propia estética y su propia lista— sino una fila del sistema que abre
+ *  la hoja con las opciones, como el resto de la app. */
 export function Elegir<T extends string>({
-  etiqueta, valor, onCambio, opciones, ayuda, error, opcional,
-}: Base & { valor: T; onCambio: (v: T) => void; opciones: { id: T; rotulo: string }[] }) {
-  const id = useId();
+  etiqueta, valor, onCambio, opciones, ayuda, error, opcional, placeholder,
+}: Base & {
+  valor: T; onCambio: (v: T) => void; opciones: { id: T; rotulo: string }[];
+  placeholder?: string;
+}) {
+  const [abierto, setAbierto] = useState(false);
+  const elegida = opciones.find((o) => o.id === valor);
   return (
     <div className={"campo-f" + (error ? " mal" : "")}>
-      <label htmlFor={id}>{etiqueta}{opcional && <em>opcional</em>}</label>
-      <div className="caja">
-        <select id={id} value={valor} onChange={(e) => onCambio(e.target.value as T)}
-          aria-invalid={error ? true : undefined}>
-          {opciones.map((o) => <option key={o.id} value={o.id}>{o.rotulo}</option>)}
-        </select>
-        <span className="chev-sel" aria-hidden="true"><Icon n="chevron" s={15} w={2.2} /></span>
-      </div>
+      <span className="et">{etiqueta}{opcional && <em>opcional</em>}</span>
+      <button className="caja elige" type="button" onClick={() => setAbierto(true)}
+        aria-haspopup="dialog" aria-invalid={error ? true : undefined}>
+        <span className={"val" + (elegida ? "" : " vacio")}>
+          {elegida ? elegida.rotulo : placeholder ?? "Elegir"}
+        </span>
+        <span className="chev-sel" aria-hidden="true"><Icon n="chevron" s={16} w={2.2} /></span>
+      </button>
       {error
         ? <p className="err"><Icon n="alerta" s={14} w={2} />{error}</p>
         : ayuda ? <p className="ay">{ayuda}</p> : null}
+
+      {abierto && (
+        <Hoja titulo={etiqueta} onCancelar={() => setAbierto(false)} cerrarRotulo="Cerrar" sinAcciones>
+          <ul className="opciones-hoja">
+            {opciones.map((o) => (
+              <li key={o.id}>
+                <button type="button" aria-current={o.id === valor ? "true" : undefined}
+                  onClick={() => { onCambio(o.id); setAbierto(false); }}>
+                  <b>{o.rotulo}</b>
+                  {o.id === valor && <span className="tic"><Icon n="check" s={16} w={2.4} /></span>}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div style={{ height: 12 }} />
+        </Hoja>
+      )}
     </div>
   );
 }
@@ -124,7 +149,12 @@ export function Interruptor({
  *  lo dice, en vez de fingir una subida que no existe. */
 export function Adjuntar({
   etiqueta, archivo, onCambio, nombreSugerido,
-}: { etiqueta: string; archivo?: string; onCambio: (v?: string) => void; nombreSugerido: string }) {
+  titulo = "Adjuntar una foto", ayuda = "Una foto ayuda a entender de qué se trata",
+  icono = "camara",
+}: {
+  etiqueta: string; archivo?: string; onCambio: (v?: string) => void; nombreSugerido: string;
+  titulo?: string; ayuda?: string; icono?: NombreIcono;
+}) {
   const [abierto, setAbierto] = useState(false);
   return (
     <div className="campo-f">
@@ -141,8 +171,11 @@ export function Adjuntar({
         <>
           <button className="adjuntar" type="button"
             onClick={() => { onCambio(nombreSugerido); setAbierto(true); }}>
-            <Icon n="mas" s={17} w={2.4} />
-            Adjuntar una foto
+            <span className="ic" aria-hidden="true"><Icon n={icono} s={20} w={1.9} /></span>
+            <span className="tx">
+              <b>{titulo}</b>
+              <i>{ayuda}</i>
+            </span>
           </button>
           {abierto && <p className="ay">En el prototipo no se sube el archivo: se guarda el nombre para mostrar cómo queda.</p>}
         </>
@@ -173,14 +206,14 @@ export function PieForm({
     <div className="pie-form">
       {nota && <p className="nota-form">{nota}</p>}
       {gesto ? (
-        <SwipeButton rotulo={accion} pista="Deslizá" onConfirm={onAccion} />
+        <SwipeButton rotulo={accion} onConfirm={onAccion} />
       ) : (
         <button className="entrar" type="button" onClick={onAccion}
           disabled={deshabilitado || cargando} aria-busy={cargando || undefined}>
           {cargando ? <><span className="giro" />Confirmando…</> : accion}
         </button>
       )}
-      <button className="volver-txt" type="button" onClick={onCancelar}>{rotuloCancelar}</button>
+      <button className="btn-ter" type="button" onClick={onCancelar}>{rotuloCancelar}</button>
     </div>
   );
 }

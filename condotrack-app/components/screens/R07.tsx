@@ -50,9 +50,8 @@ export function R07({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
     return (
       <div className="vista" id="r07">
         <TopBar volverA="r06" ir={ir} />
-        <div className="tit"><h1>Pase de acceso</h1><p>Mostralo en recepción o en el lector de la entrada.</p></div>
-        <Vacio icono="qr" titulo="No hay ningún pase vigente"
-          texto="Autorizá una visita y el pase queda disponible en el momento."
+        <div className="tit"><h1>Pase de acceso</h1></div>
+        <Vacio icono="qr" titulo="Sin pase activo"
           accion="Autorizar visita" onAccion={() => ir("f01")} />
       </div>
     );
@@ -63,14 +62,13 @@ export function R07({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
   return (
     <div className="vista" id="r07">
       <TopBar volverA="r06" ir={ir} />
-      <div className="tit"><h1>Pase de acceso</h1><p>Mostralo en recepción o en el lector de la entrada.</p></div>
+      <div className="tit"><h1>Pase de acceso</h1></div>
 
-      <div className="pase mat-carbon">
+      <div className="pase">
         <div className="et">Visita autorizada</div>
         <h2>{v.nombre}</h2>
         <div className="meta">
           {v.dia ? `${v.dia} · ${v.horario}` : `${diaEnPalabras(new Date(v.fecha))} · ${v.horario}`}
-          {" · Unidad "}{v.unidad}
         </div>
 
         <div className="qr">
@@ -85,28 +83,24 @@ export function R07({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
           </svg>
         </div>
 
-        <div className="codigo">{v.codigo}</div>
-        <div className="vence">El pase se activa 30 minutos antes y vence al terminar la franja.</div>
+        <div className="pase-cod">
+          <span className="codigo">{v.codigo}</span>
+          <Copiar valor={v.codigo} etiqueta="el código del pase" />
+        </div>
       </div>
 
-      <div className="acciones">
-        <button className="prim" type="button"><Icon n="flechaDiag" s={18} w={2.1} />Compartir</button>
-        <button className="sec" type="button" onClick={() => setRevocar(true)}>
-          <Icon n="alerta" s={18} w={1.9} />Dar de baja
-        </button>
-      </div>
-
-      <div style={{ marginTop: 14, display: "flex", justifyContent: "center" }}>
-        <Copiar valor={v.codigo} etiqueta="el código del pase" />
+      <div className="pase-acciones">
+        <button className="entrar" type="button"><Icon n="flechaDiag" s={20} />Compartir</button>
+        <button className="btn-ter peligro" type="button" onClick={() => setRevocar(true)}>Dar de baja</button>
       </div>
 
       {vigentes.length > 1 && (
         <>
-          <div className="subtit"><h2>Otros pases</h2><span>{vigentes.length - 1}</span></div>
+          <h2 className="sec">Otros pases</h2>
           <div className="menu">
             {vigentes.filter((x) => x.id !== v.id).map((x) => (
               <button key={x.id} type="button" onClick={() => ir("r07", x.id)}>
-                <span className="ic"><Icon n="qr" s={19} w={1.8} /></span>
+                <span className="ic"><Icon n="qr" s={20} w={1.8} /></span>
                 <span className="d">
                   <b>{x.nombre}</b>
                   <i>{x.dia ? `${x.dia} · ${x.horario}` : `${diaEnPalabras(new Date(x.fecha))} · ${x.horario}`}</i>
@@ -118,16 +112,11 @@ export function R07({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
         </>
       )}
 
-      <Aviso icono="info">
-        Validar el pase no registra el ingreso. Recepción primero verifica que la
-        autorización esté vigente y después registra la entrada: son dos acciones
-        distintas y las dos quedan en el historial de la unidad.
-      </Aviso>
 
       {revocar && (
         <Hoja
           titulo={`Dar de baja el pase de ${v.nombre}`}
-          texto="El código deja de servir enseguida. Si la visita llega igual, recepción va a ver que la autorización está dada de baja."
+          texto="El código deja de servir enseguida."
           confirmar="Dar de baja"
           peligro
           onConfirmar={() => { hacer({ t: "visita/cancelar", id: v.id }); setRevocar(false); ir("r06"); }}

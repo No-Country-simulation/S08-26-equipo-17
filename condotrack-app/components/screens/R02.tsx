@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Icon } from "../ui/Icon";
-import { TopBar } from "../ui/TopBar";
+import { ZonaContexto } from "../ui/ZonaContexto";
 import { Panel, Ficha, Dato } from "../ui/Panel";
 import { SubNav } from "../ui/SubNav";
 import { Hoja } from "../ui/Hoja";
@@ -32,38 +32,25 @@ export function R02({ ir }: { ir: (v: Vista, ref?: string) => void }) {
 
   return (
     <div className="vista" id="r02">
-      <TopBar volverA="r01" ir={ir} contexto={EDIFICIO.nombreLargo} />
-
-      <div className="tit">
-        <h1>Mi edificio</h1>
-        <p>Unidad {UNIDAD.codigo} · {UNIDAD.piso} · {UNIDAD.ambientes}</p>
-      </div>
-
-      <SubNav etiqueta="Secciones de Mi edificio" opciones={PESTANAS_EDIFICIO}
-        valor={"r02" as Vista} onCambio={(v) => ir(v)} />
+      <ZonaContexto ir={ir} volverA="r01" foto="/img/fachada.jpg"
+        contexto={EDIFICIO.ciudad}
+        titulo={EDIFICIO.nombre + " · " + UNIDAD.codigo}
+        dato={UNIDAD.piso + " · " + UNIDAD.ambientes}>
+        <SubNav etiqueta="Secciones de Mi edificio" opciones={PESTANAS_EDIFICIO}
+          valor={"r02" as Vista} onCambio={(v) => ir(v)} />
+      </ZonaContexto>
 
       <div className="paneles">
-        <Panel icono="personas" titulo="Quiénes viven acá"
+        <Panel icono="personas" titulo="Personas"
           resumen={PERSONAS.map((p) => p.nombre.split(" ")[0]).join(", ")}
           contador={PERSONAS.length}>
-          <p className="vacio-chico">
-            Estos datos los ven sólo los residentes de esta unidad. Recepción ve
-            el nombre; administración ve nombre y vínculo. El documento no se
-            muestra acá: aparece en la autorización de una visita y en la
-            pantalla de recepción, que es donde hace falta para identificar a
-            alguien.
-          </p>
           {PERSONAS.map((p) => (
             <div className="persona-f" key={p.id}>
               <span className="av">{p.iniciales}</span>
               <span className="d">
                 <b>{p.nombre}</b>
-                <i>
-                  {ROTULO_VINCULO[p.vinculo]}
-                  {p.esTitular ? " · titular de la unidad" : ""}
-                  {" · desde "}{fechaCorta(p.desde)}
-                </i>
-                {p.contacto && <i>Teléfono · {p.contacto}</i>}
+                <i>{ROTULO_VINCULO[p.vinculo]}</i>
+                {p.contacto && <i>{p.contacto}</i>}
               </span>
             </div>
           ))}
@@ -71,16 +58,13 @@ export function R02({ ir }: { ir: (v: Vista, ref?: string) => void }) {
 
         {/* El panel más delicado del producto: va segundo, abierto, y con la
             baja a un toque. */}
-        <Panel icono="candado" titulo="Permiso permanente de entrar"
+        <Panel icono="candado" titulo="Permisos permanentes"
           resumen={permisos.length === 0
-            ? "Nadie entra sin autorización puntual"
-            : "Entran sin que autorices cada vez"}
+            ? "Ninguno activo"
+            : permisos.map((p) => p.tipo === "proveedor" ? p.nombre : p.nombre.split(" ")[0]).join(", ")}
           contador={permisos.length}>
           {permisos.length === 0 ? (
-            <p className="vacio-chico">
-              No hay nadie con permiso permanente. Todo el que entre necesita una
-              autorización puntual tuya.
-            </p>
+            <p className="vacio-chico">Nadie tiene permiso permanente.</p>
           ) : (
             permisos.map((p) => (
               <div className="permiso" key={p.id}>
@@ -90,13 +74,14 @@ export function R02({ ir }: { ir: (v: Vista, ref?: string) => void }) {
                     <b>{p.nombre}</b>
                     <i>{ROTULO_PERMISO[p.tipo]} · {p.detalle}</i>
                   </span>
+                  <span className="estado-acceso chico">Activo</span>
                 </div>
-                <Ficha>
-                  <Dato k="Lo dio" v={`${p.otorgadoPor} · ${fechaCorta(p.otorgadoEl)}`} />
-                  <Dato k="Último ingreso" v={p.ultimoIngreso ? hace(p.ultimoIngreso) : "Todavía no entró"} />
-                </Ficha>
-                <button className="dar-baja" type="button" onClick={() => setRevocar(p.id)}>
-                  <Icon n="alerta" s={16} w={2} />
+                <p className="meta-acceso">
+                  Lo dio {p.otorgadoPor} · {fechaCorta(p.otorgadoEl)}
+                  {" · "}
+                  {p.ultimoIngreso ? `último ingreso ${hace(p.ultimoIngreso)}` : "todavía no entró"}
+                </p>
+                <button className="btn-ter peligro" type="button" onClick={() => setRevocar(p.id)}>
                   Dar de baja el permiso
                 </button>
               </div>
@@ -112,10 +97,6 @@ export function R02({ ir }: { ir: (v: Vista, ref?: string) => void }) {
             </div>
           )}
 
-          <Aviso icono="info">
-            Un permiso permanente deja entrar sin aviso previo. Dar de baja es
-            inmediato y queda registrado en el historial de la unidad.
-          </Aviso>
         </Panel>
 
         <Panel icono="personaMas" titulo="Visitas"
@@ -135,19 +116,17 @@ export function R02({ ir }: { ir: (v: Vista, ref?: string) => void }) {
             </button>
           ))}
           <div className="acciones-panel">
-            <button className="secundario" type="button" onClick={() => ir("r06")}>
+            <button className="btn-ter" type="button" onClick={() => ir("r06")}>
               Ver todas las visitas
             </button>
-            <button className="principal" type="button" onClick={() => ir("f01")}>
+            <button className="btn-sec" type="button" onClick={() => ir("f01")}>
               <Icon n="mas" s={16} w={2.4} />Autorizar visita
             </button>
           </div>
         </Panel>
 
         <Panel icono="caja" titulo="Entregas"
-          resumen={aRetirar.length > 0
-            ? `${aRetirar.length} para retirar en recepción`
-            : "Nada pendiente de retirar"}
+          resumen={aRetirar.length > 0 ? `${aRetirar.length} para retirar` : "Nada para retirar"}
           contador={aRetirar.length || undefined}>
           {entregas.slice(0, 3).map((e) => (
             <button className="mini-f" type="button" key={e.id} onClick={() => ir("g11", e.id)}>
@@ -161,7 +140,7 @@ export function R02({ ir }: { ir: (v: Vista, ref?: string) => void }) {
             </button>
           ))}
           <div className="acciones-panel">
-            <button className="secundario" type="button" onClick={() => ir("r08")}>
+            <button className="btn-ter" type="button" onClick={() => ir("r08")}>
               Ver todas las entregas
             </button>
           </div>
@@ -177,7 +156,7 @@ export function R02({ ir }: { ir: (v: Vista, ref?: string) => void }) {
             <Dato k="Participación" v={UNIDAD.participacion} />
           </Ficha>
           <div className="acciones-panel">
-            <button className="secundario" type="button" onClick={() => ir("g15")}>
+            <button className="btn-ter" type="button" onClick={() => ir("g15")}>
               Ver el edificio
             </button>
           </div>
@@ -185,18 +164,17 @@ export function R02({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       </div>
 
       <button className="fila aire" type="button" onClick={() => ir("r17")} style={{ marginTop: 16 }}>
-        <span className="ic"><Icon n="lista" s={24} w={1.8} /></span>
+        <span className="ic"><Icon n="lista" s={20} w={1.8} /></span>
         <span className="cu">
           <span className="t">Historial de la unidad</span>
-          <span className="m">Todo lo que pasó, quién lo hizo y cuándo</span>
         </span>
-        <span className="flech"><Icon n="chevron" s={17} w={2.1} /></span>
+        <span className="flech"><Icon n="chevron" s={16} w={2.1} /></span>
       </button>
 
       {elegido && (
         <Hoja
           titulo={`Dar de baja a ${elegido.nombre}`}
-          texto="Desde ahora va a necesitar una autorización puntual tuya para entrar. La baja es inmediata y queda registrada en el historial de la unidad."
+          texto="Va a necesitar tu autorización para entrar."
           confirmar="Dar de baja"
           peligro
           onConfirmar={() => {

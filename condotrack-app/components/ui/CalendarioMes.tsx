@@ -3,26 +3,27 @@ import { useMemo, useRef, useState } from "react";
 import { Icon } from "./Icon";
 import { mesDe, mesLargo, mismoDia, numDia, mesCorto, esHoy, type Celda } from "@/lib/reservas";
 
-/** Calendario de mes (D-08).
+/** Calendario de mes (D-08 · lock V02).
  *
- *  Grilla de mes completa, no una tira. El día elegido va en círculo
- *  sólido y la disponibilidad se cuenta con puntos abajo del número, no
- *  con texto. Navegación de mes con flechas, y además se puede deslizar.
+ *  Un mes, flechas, y un gesto horizontal simple. Nada más.
  *
- *  BUG-01 — por qué el gesto está escrito así: la versión anterior tomaba
- *  el puntero con setPointerCapture apenas apoyabas el dedo. Con la
- *  captura puesta, el click posterior se redirige al contenedor que
- *  capturó y nunca llega al botón del día: el calendario se veía bien y no
- *  se podía elegir nada. Acá la captura se toma recién cuando el gesto se
- *  convirtió en arrastre —más de UMBRAL_ARRASTRE px—, así que un toque
- *  sigue siendo un toque.
+ *  La ronda visual 01 lo había convertido en un carrusel de meses con
+ *  scroll nativo y scroll-snap: se veía bien y se trababa (A2). El lock V02
+ *  pide lo contrario: interacción simple aunque la presentación siga
+ *  siendo premium. Se sacó el carrusel y toda su lógica de centrado.
  *
- *  El componente no sabe de reservas: quién está libre lo decide la
- *  pantalla y llega por estadoDe(). */
+ *  El gesto es el de la fase 3, que ya estaba probado: un toque sigue
+ *  siendo un toque —la captura del puntero se toma recién pasados 8 px,
+ *  así el click del día no se pierde (BUG-01)— y a partir de 60 px de
+ *  arrastre cambia el mes. `touch-action: pan-y` deja que el scroll
+ *  vertical de la pantalla siga funcionando encima del calendario.
+ *
+ *  El día elegido lleva una marca del tamaño del número, no el círculo
+ *  que ocupaba la celda. La disponibilidad se cuenta con puntos: lleno hay
+ *  lugar, hueco quedan pocos, sin punto no hay. */
 
 export type PuntoDia = "lleno" | "poco" | "sin";
 export type EstadoDia = {
-  /** Cuántos turnos quedan, traducido a punto. */
   punto: PuntoDia;
   deshabilitado?: boolean;
   /** Lo que lee un lector de pantalla además de la fecha. */
@@ -40,7 +41,6 @@ export function CalendarioMes({
   onDia,
   estadoDe,
   etiqueta = "Calendario",
-  grande = true,
 }: {
   /** Primer día del mes que se está mirando. */
   ancla: Date;
@@ -49,18 +49,24 @@ export function CalendarioMes({
   onDia: (d: Date) => void;
   estadoDe: (c: Celda) => EstadoDia;
   etiqueta?: string;
+  /** Se acepta por compatibilidad; hay una sola versión. */
   grande?: boolean;
 }) {
   const [desliz, setDesliz] = useState(0);
-  const [sentido, setSentido] = useState<"izq" | "der" | null>(null);
+  const [lado, setLado] = useState<"" | "entra-izq" | "entra-der">("");
   const gesto = useRef<{ x: number; arrastrando: boolean } | null>(null);
-  const celdas = useMemo(() => mesDe(ancla), [ancla]);
+  /* Sin la semana final si es toda del mes siguiente: el calendario no
+     tiene por qué comerse la pantalla. */
+  const celdas = useMemo(() => {
+    const c = mesDe(ancla);
+    while (c.length > 35 && c.slice(-7).every((x) => !x.delMes)) c.splice(-7);
+    return c;
+  }, [ancla]);
 
-  function correrMes(pasos: number) {
-    setSentido(pasos > 0 ? "izq" : "der");
+  const correrMes = (pasos: number) => {
+    setLado(pasos > 0 ? "entra-izq" : "entra-der");
     onAncla(new Date(ancla.getFullYear(), ancla.getMonth() + pasos, 1));
-    window.setTimeout(() => setSentido(null), 280);
-  }
+  };
 
   function tomar(e: React.PointerEvent) {
     gesto.current = { x: e.clientX, arrastrando: false };
@@ -71,8 +77,6 @@ export function CalendarioMes({
     const dx = e.clientX - g.x;
     if (!g.arrastrando) {
       if (Math.abs(dx) < UMBRAL_ARRASTRE) return;
-      /* Recién acá es un arrastre: ahora sí conviene capturar, para no
-         perder el gesto si el dedo se va del calendario. */
       g.arrastrando = true;
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     }
@@ -92,16 +96,17 @@ export function CalendarioMes({
   }
 
   return (
-    <div className={"cal" + (grande ? " grande" : "")}>
+    <div className="cal sin-caja">
       <div className="cal-cab">
-        <button className="circulo" type="button" aria-label="Mes anterior"
-          onClick={() => correrMes(-1)}>
-          <Icon n="volver" s={18} w={2.1} />
+        <button className="circulo" type="button" aria-label="Mes anterior" onClick={() => correrMes(-1)}>
+          <Icon n="volver" s={18} />
         </button>
-        <b>{mesLargo(ancla)}</b>
-        <button className="circulo" type="button" aria-label="Mes siguiente"
-          onClick={() => correrMes(1)}>
-          <Icon n="flechaDer" s={18} w={2.1} />
+        <b aria-live="polite">
+          <span>{ancla.toLocaleDateString("es-AR", { month: "long" }).replace(/^./, (c) => c.toUpperCase())}</span>
+          <em>{ancla.getFullYear()}</em>
+        </b>
+        <button className="circulo" type="button" aria-label="Mes siguiente" onClick={() => correrMes(1)}>
+          <Icon n="flechaDer" s={18} />
         </button>
       </div>
 
@@ -112,9 +117,8 @@ export function CalendarioMes({
       <div className="cal-pista"
         onPointerDown={tomar} onPointerMove={mover}
         onPointerUp={soltar} onPointerCancel={soltar}>
-        <div className={"cal-grilla" + (sentido ? " entra-" + sentido : "")}
-          role="grid" aria-label={etiqueta + ", " + mesLargo(ancla)}
-          style={desliz ? { transform: "translateX(" + desliz * 0.35 + "px)" } : undefined}>
+        <div key={ancla.getTime()} className={"cal-grilla " + lado} role="grid" aria-label={etiqueta + ", " + mesLargo(ancla)}
+          style={desliz ? { transform: "translateX(" + desliz * 0.3 + "px)" } : undefined}>
           {celdas.map((c, i) => {
             const est = estadoDe(c);
             const sel = dia ? mismoDia(c.fecha, dia) : false;

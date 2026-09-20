@@ -23,7 +23,6 @@ export function G10({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
         <TopBar volverA="r09" ir={ir} />
         <ErrorEstado
           titulo="No encontramos ese reclamo"
-          texto="Puede que se haya cerrado o que el enlace esté viejo. Volvé a la lista y elegilo de nuevo."
           onReintentar={() => ir("r09")}
         />
       </div>
@@ -77,20 +76,6 @@ export function G10({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
 
       <h2 className="sec">Historial</h2>
       <Linea hitos={hitos} />
-
-      {!cerrado && (
-        <Aviso icono="info">
-          Cada cambio de estado lo hace administración y queda firmado con su nombre
-          y la hora. Si pasa una semana sin movimiento, escribile desde Mi edificio.
-        </Aviso>
-      )}
-
-      {cerrado && (
-        <Aviso icono="check">
-          El reclamo está {ROTULO_RECLAMO[r.estado].toLowerCase()}. Si el problema vuelve,
-          creá uno nuevo citando este código: {r.codigo}.
-        </Aviso>
-      )}
 
       <FinLista texto={`Reclamo ${r.codigo}`} />
     </div>

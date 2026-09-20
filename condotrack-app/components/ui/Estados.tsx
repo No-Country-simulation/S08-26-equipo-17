@@ -17,12 +17,12 @@ export function Cargando({ texto = "Cargando…" }: { texto?: string }) {
 
 export function Error({
   titulo = "No pudimos cargar esto", texto, onReintentar,
-}: { titulo?: string; texto: string; onReintentar?: () => void }) {
+}: { titulo?: string; texto?: string; onReintentar?: () => void }) {
   return (
     <div className="estado-sis mal" role="alert">
       <span className="glifo"><Icon n="alerta" s={22} w={1.9} /></span>
       <h3>{titulo}</h3>
-      <p>{texto}</p>
+      {texto && <p>{texto}</p>}
       {onReintentar && (
         <button className="entrar" type="button" onClick={onReintentar}>Reintentar</button>
       )}
@@ -47,26 +47,29 @@ export function SinPermiso({
 /** Confirmación de una operación. Dice qué pasó, qué queda registrado y
  *  cuál es el paso siguiente: sin eso es un cartel de felicitaciones. */
 export function Confirmacion({
-  titulo, principal, secundario, registro, accion, onAccion, alterna, onAlterna,
+  titulo, principal, secundario, registro, accion, onAccion, alterna, onAlterna, pieza,
 }: {
   titulo: string; principal: string; secundario?: string; registro?: string;
   accion: string; onAccion: () => void; alterna?: string; onAlterna?: () => void;
+  /** Lo que se emitió: el pase, el ticket de la reserva. Va en lugar del
+   *  texto, cuando hay algo para mostrar y no sólo para decir. */
+  pieza?: ReactNode;
 }) {
   return (
     <div className="listo" role="status" aria-live="polite">
       <span className="tilde"><Icon n="check" s={26} w={2.6} /></span>
       <h1>{titulo}</h1>
-      <p>{principal}</p>
-      {secundario && <p className="cuando">{secundario}</p>}
+      {pieza ?? <p>{principal}</p>}
+      {!pieza && secundario && <p className="cuando">{secundario}</p>}
       {registro && (
         <div className="listo-nota">
-          <Icon n="info" s={17} w={2} />
+          <Icon n="info" s={16} w={2} />
           <p>{registro}</p>
         </div>
       )}
       <button className="entrar" type="button" onClick={onAccion}>{accion}</button>
       {alterna && onAlterna && (
-        <button className="volver-txt" type="button" onClick={onAlterna}>{alterna}</button>
+        <button className="btn-ter" type="button" onClick={onAlterna}>{alterna}</button>
       )}
     </div>
   );
