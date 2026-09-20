@@ -5,14 +5,19 @@ export function Hub() {
   const [activeTab, setActiveTab] = useState<TabOption>('expensas');
 
   return (
-    <div className="w-full p-4 grid gap-4">
+    <div className="w-full p-4 grid gap-4 ">
       <HubTabs activeTab={activeTab} onChange={setActiveTab} />
       {/* 
       {activeTab === 'expensas' && <ExpensesView />}
       {activeTab === 'visitas' && <VisitorsView />}
       {activeTab === 'entregas' && <DeliveriesView />}
       {activeTab === 'reservas' && <BookingsView />} */}
-      <FastSelector title="Cowork" subtitle="Tu proxima semana" />
+      <FastSelector
+        title="Cowork"
+        subtitle="Tu proxima semana"
+        date="lun 21 sept - 09:00"
+        buttonTitle="Ver mi reservas"
+      />
     </div>
   );
 }

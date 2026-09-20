@@ -22,7 +22,7 @@ export const HubTabs = ({ activeTab, onChange }: HubTabsProps) => {
   return (
     <div className="w-full flex justify-center items-center">
       <nav
-        className="flex gap-1 p-1 rounded-full w-max bg-background-components min-w-full sm:min-w-0"
+        className="flex justify-between gap-1 p-1 rounded-full w-max bg-background-components min-w-full sm:min-w-0  border border-border-components"
         role="tablist"
         aria-label="Pestañas del Hub"
       >

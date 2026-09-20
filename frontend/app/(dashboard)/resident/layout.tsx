@@ -6,9 +6,9 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="h-full w-full">
+    <div className="relative h-full w-full">
       {children}
-      <div className="absolute inset-0 via-transparent to-[#1e201f]" />
+      <div className="pointer-events-none absolute inset-0  from-black/60 via-transparent to-[#1e201f]" />
       <Navbar />
     </div>
   );

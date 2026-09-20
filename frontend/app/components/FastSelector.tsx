@@ -1,17 +1,20 @@
 interface props {
   title: string;
   subtitle: string;
+  date: string;
+  buttonTitle: string;
 }
 
-export const FastSelector = ({ title, subtitle }: props) => {
+export const FastSelector = ({ title, subtitle, date, buttonTitle }: props) => {
   return (
-    <div className="mx-2">
-      <div>
+    <div className="mx-2 grid gap-2 ">
+      <div className="grid gap-1">
         <p className="font-bold text-secondary-text text-xs">{subtitle}</p>
         <p className="text-4xl font-black">{title}</p>
+        <p className="font-bold text-secondary-text text-xs">{date}</p>
       </div>
-      <div className="flex items-center justify-between p-3 rounded-2xl bg-background-components w-full text-xs font-bold ">
-        <div className="flex items-center gap-5">
+      <div className="flex items-center justify-between p-3 rounded-2xl bg-background-components w-full text-xs font-bold border border-border-components">
+        <div className="flex items-center gap-3">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -25,7 +28,7 @@ export const FastSelector = ({ title, subtitle }: props) => {
             <rect x="3" y="5" width="18" height="16" rx="2" />
             <path d="M16 3v4M8 3v4M3 10h18" />
           </svg>
-          ver mis reservas
+          <p>{buttonTitle}</p>
         </div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
