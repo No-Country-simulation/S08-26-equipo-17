@@ -1,3 +1,4 @@
+// HubTabs.tsx
 // Tipos para las pestañas
 export type TabOption = 'expensas' | 'visitas' | 'entregas' | 'reservas';
 
