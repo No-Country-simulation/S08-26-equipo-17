@@ -32,3 +32,6 @@ frontend/pnpm-debug.log*
 
 # Docker
 postgres_data/
+
+# Temporary files
+temp/
