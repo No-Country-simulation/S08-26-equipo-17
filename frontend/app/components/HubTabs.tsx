@@ -23,7 +23,7 @@ export const HubTabs = ({ activeTab, onChange }: HubTabsProps) => {
   return (
     <div className="w-full flex justify-center items-center">
       <nav
-        className="flex justify-between gap-1 p-1 rounded-full w-max bg-background-components min-w-full sm:min-w-0  border border-border-components"
+        className="glass flex justify-between gap-1 p-1 rounded-full w-max min-w-full sm:min-w-0"
         role="tablist"
         aria-label="Pestañas del Hub"
       >
@@ -33,12 +33,13 @@ export const HubTabs = ({ activeTab, onChange }: HubTabsProps) => {
           return (
             <button
               key={tab.id}
+              type="button"
               onClick={() => onChange(tab.id)}
               role="tab"
               aria-selected={isActive}
               className={`
                 px-3 py-2 text-xs font-medium rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400
-                ${isActive ? 'bg-pressed-button' : 'text-neutral-400'}
+                ${isActive ? 'bg-white/20 text-white' : 'text-white/60'}
               `}
             >
               {tab.label}

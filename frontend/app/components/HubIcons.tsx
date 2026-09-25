@@ -73,3 +73,23 @@ export const ChevronRightIcon = () => (
     <path d="m9 5 7 7-7 7" />
   </svg>
 );
+
+export const ScanIcon = () => (
+  <svg {...base}>
+    <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
+    <rect x="9" y="9" width="6" height="6" rx="1" />
+  </svg>
+);
+
+export const PieChartIcon = () => (
+  <svg {...base}>
+    <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+    <path d="M22 12A10 10 0 0 0 12 2v10Z" />
+  </svg>
+);
+
+export const ListIcon = () => (
+  <svg {...base}>
+    <path d="M4 6h16M4 12h16M4 18h10" />
+  </svg>
+);

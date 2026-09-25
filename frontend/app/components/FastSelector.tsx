@@ -1,69 +1,58 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-interface FastSelectorProps {
-  eyebrow: string;
-  title: string;
-  detail: string;
-  buttonTitle: string;
-  icon: ReactNode;
+export interface HubAction {
+  label: string;
   href: string;
-  badge?: ReactNode;
-  children?: ReactNode;
+  icon?: ReactNode;
 }
+
+interface FastSelectorProps {
+  eyebrow?: string;
+  title: string;
+  detail: ReactNode;
+  primary: HubAction;
+  secondary: HubAction[];
+}
+
+const FOCUS =
+  'focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400';
 
 export const FastSelector = ({
   eyebrow,
   title,
   detail,
-  buttonTitle,
-  icon,
-  href,
-  badge,
-  children,
-}: FastSelectorProps) => {
-  return (
-    <div className="mx-2 grid gap-4">
-      <div className="grid gap-2">
-        <div className="flex items-center justify-between gap-2">
-          <p className="font-bold text-secondary-text text-xs uppercase tracking-widest">
-            {eyebrow}
-          </p>
-          {badge}
-        </div>
-        <p className="text-4xl font-black">{title}</p>
-        <p className="font-bold text-secondary-text text-xs">{detail}</p>
+  primary,
+  secondary,
+}: FastSelectorProps) => (
+  <div className="grid justify-items-center gap-5 text-center text-white">
+    <div className="grid gap-1">
+      {eyebrow && <p className="text-xs">{eyebrow}</p>}
+      <p className="text-5xl font-black tracking-tight">{title}</p>
+      <div className="flex items-center justify-center gap-1.5 text-xs ">
+        {detail}
       </div>
-
-      {children}
-
-      <Link
-        href={href}
-        className="flex items-center justify-between p-3 rounded-2xl bg-background-components w-full text-xs font-bold border border-border-components focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400"
-      >
-        <span className="flex items-center gap-3">
-          {icon}
-          {buttonTitle}
-        </span>
-        <ChevronIcon />
-      </Link>
     </div>
-  );
-};
 
-const ChevronIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={2.2}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-    focusable="false"
-    className="h-4 w-4"
-  >
-    <path d="m9 5 7 7-7 7" />
-  </svg>
+    <Link
+      href={primary.href}
+      className={`flex items-center gap-2 rounded-2xl bg-neutral-100 px-8 py-3 text-sm font-bold text-black  [&_svg]:h-4 [&_svg]:w-4 ${FOCUS}`}
+    >
+      {primary.icon}
+      {primary.label}
+    </Link>
+
+    <div className="flex flex-wrap justify-center gap-2">
+      {secondary.map(({ label, href, icon }) => (
+        <Link
+          key={href + label}
+          href={href}
+          className={`flex items-center  gap-2 rounded-2xl glass px-4 py-2 text-xs font-bold [&_svg]:h-4 [&_svg]:w-4 ${FOCUS}`}
+        >
+          {icon}
+          {label}
+        </Link>
+      ))}
+    </div>
+  </div>
 );

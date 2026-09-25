@@ -10,7 +10,7 @@ const STATUS_STYLES: Record<
   overdue: { label: 'Vencida', className: 'bg-red-500 text-white' },
 };
 
-export const StatusBadge = ({ status }: { status: ExpenseStatus }) => {
+export const StatusDot = ({ status }: { status: ExpenseStatus }) => {
   const { label, className } = STATUS_STYLES[status];
 
   return (

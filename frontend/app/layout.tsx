@@ -25,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       suppressHydrationWarning
     >
       <body className="text-foreground antialiased h-full grid place-items-center">
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
         {children}
       </body>
     </html>

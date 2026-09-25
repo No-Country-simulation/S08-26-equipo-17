@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { ArrowButton } from './ArrowButton';
 import { CalendarIcon, MessageIcon, UserPlusIcon } from './HubIcons';
 
 interface QuickAction {
@@ -11,29 +10,27 @@ interface QuickAction {
 
 // TODO: ajustar las rutas a las reales
 const QUICK_ACTIONS: QuickAction[] = [
-  { label: 'Autorizar visita', href: '/visits/new', icon: <UserPlusIcon /> },
-  { label: 'Hacer reclamo', href: '/claims/new', icon: <MessageIcon /> },
-  {
-    label: 'Reservar espacio',
-    href: '/reservations/new',
-    icon: <CalendarIcon />,
-  },
+  { label: 'Autorizar', href: '/visits/new', icon: <UserPlusIcon /> },
+  { label: 'Reclamar', href: '/claims/new', icon: <MessageIcon /> },
+  { label: 'Reservar', href: '/reservations/new', icon: <CalendarIcon /> },
 ];
 
 export const QuickActions = () => (
-  <div className="grid grid-cols-3 gap-2">
+  <nav
+    aria-label="Acciones rápidas"
+    className="grid grid-cols-3 gap-2 text-white"
+  >
     {QUICK_ACTIONS.map(({ label, href, icon }) => (
       <Link
         key={href}
         href={href}
-        className="grid min-w-0 gap-6 rounded-3xl border border-border-components bg-background-components p-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400"
+        className="group grid justify-items-center gap-2 focus:outline-none"
       >
-        <span className="flex items-start justify-between">
+        <span className="glass flex h-14 w-14 items-center justify-center rounded-full group-focus-visible:ring-2 group-focus-visible:ring-yellow-400">
           {icon}
-          <ArrowButton />
         </span>
-        <span className="text-xs font-bold leading-tight">{label}</span>
+        <span className="text-xs font-semibold">{label}</span>
       </Link>
     ))}
-  </div>
+  </nav>
 );
