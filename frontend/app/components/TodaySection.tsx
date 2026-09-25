@@ -1,28 +1,63 @@
 'use client';
 
-import Image from 'next/image';
-import { useState } from 'react';
 import { TodayCard } from './TodayCard';
 import type { TodayItem } from '@/app/components/utils/types';
 
-// TODO: reemplazar por datos del backend (y poner una imagen real en /public)
+const ArrowUpRightIcon = ({
+  className = 'h-4 w-4',
+}: {
+  className?: string;
+}) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    aria-hidden="true"
+  >
+    <path d="M7 17 17 7" />
+    <path d="M7 7h10v10" />
+  </svg>
+);
+
+// TODO: reemplazar por datos del backend (y poner imágenes reales en /public)
 const MOCK_TODAY: TodayItem[] = [
   {
     id: 'visits',
-    type: 'visits',
     href: '/visits',
-    tabLabel: '1 pase vigente',
-    title: 'Visitas hoy',
-    count: 2,
     imageSrc: '/images/hub/lobby.jpg',
+    eyebrow: 'Hoy',
+    title: '2 visitas',
+    icon: ArrowUpRightIcon,
+    footer: { label: 'Pase activo', action: 'Ver pase' },
   },
   {
-    id: 'delivery',
-    type: 'delivery',
+    id: 'delivery-received',
     href: '/deliveries',
-    tabLabel: '1 paquete',
+    imageSrc: '/images/hub/plants.jpg',
+    eyebrow: 'Hoy, en casa',
+    title: 'Paquete recibido en recepción',
+    detail: 'Historial · recién',
+  },
+  {
+    id: 'reservation',
+    href: '/reservations',
+    imageSrc: '/images/hub/sum.jpg',
+    eyebrow: 'Próxima reserva',
+    title: 'SUM',
+    detail: 'Hoy · 20:30',
+  },
+  {
+    id: 'delivery-pending',
+    href: '/deliveries',
+    imageSrc: '/images/hub/reception.jpg',
+    eyebrow: 'En recepción',
     title: '1 paquete para retirar',
-    detail: 'Te lo guarda Diego Sosa en recepción',
+    detail: 'Te lo entregan cuando bajes',
+    action: { type: 'chevron' },
   },
 ];
 
@@ -31,82 +66,17 @@ interface TodaySectionProps {
 }
 
 export const TodaySection = ({ items = MOCK_TODAY }: TodaySectionProps) => {
-  const [activeId, setActiveId] = useState(items[0]?.id);
-
   if (items.length === 0) return null;
 
-  // Si el backend cambia la lista y el id activo ya no existe, cae al primero
-  const active = items.find((item) => item.id === activeId) ?? items[0];
-
   return (
-    <section aria-labelledby="today-title" className="grid gap-3">
-      <h2 id="today-title" className="text-sm font-semibold">
-        Lo de hoy
+    <section aria-labelledby="today-title" className="grid gap-3 p-5">
+      <h2 id="today-title" className="text-lg font-semibold">
+        En tu edificio
       </h2>
 
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/10">
-        {active.type === 'visits' && (
-          <>
-            <Image
-              src={active.imageSrc}
-              alt=""
-              fill
-              sizes="(max-width: 640px) 100vw, 480px"
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-black/50" />
-          </>
-        )}
-
-        <div
-          role="tabpanel"
-          id="today-panel"
-          aria-labelledby={`today-tab-${active.id}`}
-        >
-          <TodayCard item={active} />
-        </div>
-
-        <div
-          role="tablist"
-          aria-label="Lo de hoy"
-          className="relative flex gap-2 overflow-x-auto bg-black/40 px-3 py-2 backdrop-blur [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {items.map((item) => {
-            const isActive = item.id === active.id;
-
-            return (
-              <button
-                key={item.id}
-                id={`today-tab-${item.id}`}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                aria-controls="today-panel"
-                onClick={() => setActiveId(item.id)}
-                className={`flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 ${
-                  isActive
-                    ? 'bg-white/10 font-medium text-white'
-                    : 'text-neutral-400'
-                }`}
-              >
-                <span
-                  aria-hidden="true"
-                  className={`flex h-4 w-4 items-center justify-center rounded-full ${
-                    isActive ? 'bg-yellow-400/30' : 'bg-white/10'
-                  }`}
-                >
-                  <span
-                    className={`h-2 w-2 rounded-full ${
-                      isActive ? 'bg-yellow-400' : 'bg-neutral-500'
-                    }`}
-                  />
-                </span>
-                {item.tabLabel}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      {items.map((item) => (
+        <TodayCard key={item.id} item={item} />
+      ))}
     </section>
   );
 };

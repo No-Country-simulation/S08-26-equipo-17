@@ -102,7 +102,7 @@ interface NavEntry {
 }
 
 const navItems: NavEntry[] = [
-  { href: '/home', label: 'Inicio', Icon: HomeIcon },
+  { href: '/resident', label: 'Inicio', Icon: HomeIcon },
   { href: '/building', label: 'Mi edificio', Icon: BuildingIcon },
   { href: '/reservations', label: 'Reservas', Icon: CalendarIcon },
   { href: '/more', label: 'Más', Icon: MoreIcon },

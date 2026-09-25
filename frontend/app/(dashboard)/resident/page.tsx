@@ -8,7 +8,6 @@ const page = () => {
   return (
     <div className="w-full grid gap-4">
       <Hub />
-
       <TodaySection />
     </div>
   );

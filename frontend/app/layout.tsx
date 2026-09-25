@@ -21,11 +21,11 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html
       lang="en"
-      className={`${plusJakartaSans.variable} h-screen bg-background text-foreground`}
+      className={`${plusJakartaSans.variable} min-h-screen bg-background text-foreground`}
       suppressHydrationWarning
     >
-      <body className="text-foreground antialiased h-full grid place-items-center">
-        {/* <ThemeToggle /> */}
+      <body className="h-fit w-full text-foreground antialiased mb-20">
+        <ThemeToggle />
         {children}
       </body>
     </html>
