@@ -13,4 +13,8 @@ public record AuthUserResponse(
     public static AuthUserResponse from(User user) {
         return new AuthUserResponse(user.getId(), user.getName(), user.getEmail(), user.getRole(), List.of());
     }
+
+    public static AuthUserResponse from(User user, List<UUID> units) {
+        return new AuthUserResponse(user.getId(), user.getName(), user.getEmail(), user.getRole(), units != null ? units : List.of());
+    }
 }

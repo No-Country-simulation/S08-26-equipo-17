@@ -48,6 +48,7 @@ public class SecurityConfig {
                 // Health checks and API documentation are intentionally public.
                 .requestMatchers(
                     "/api/v1/health",
+                    "/actuator/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html",
                     "/v3/api-docs/**",

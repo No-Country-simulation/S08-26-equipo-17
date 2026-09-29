@@ -13,15 +13,27 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final com.condotrack.modules.resident.UserUnitRepository userUnitRepository;
 
     public AuthService(
         AuthenticationManager authenticationManager,
         UserRepository userRepository,
         JwtService jwtService
     ) {
+        this(authenticationManager, userRepository, jwtService, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public AuthService(
+        AuthenticationManager authenticationManager,
+        UserRepository userRepository,
+        JwtService jwtService,
+        com.condotrack.modules.resident.UserUnitRepository userUnitRepository
+    ) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.userUnitRepository = userUnitRepository;
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -43,6 +55,19 @@ public class AuthService {
         }
     }
 
+    public AuthUserResponse getCurrentUser(String email) {
+        User user = findUser(email);
+        java.util.List<java.util.UUID> unitIds = getLinkedUnitIds(user.getId());
+        return AuthUserResponse.from(user, unitIds);
+    }
+
+    private java.util.List<java.util.UUID> getLinkedUnitIds(java.util.UUID userId) {
+        if (userUnitRepository == null) return java.util.List.of();
+        return userUnitRepository.findByUserId(userId).stream()
+            .map(uu -> uu.getUnit().getId())
+            .toList();
+    }
+
     private User findUser(String email) {
         return userRepository.findByEmailIgnoreCase(email)
             .filter(User::isEnabled)
@@ -50,8 +75,10 @@ public class AuthService {
     }
 
     private AuthResponse issueTokens(User user) {
+        java.util.List<java.util.UUID> unitIds = getLinkedUnitIds(user.getId());
         return AuthResponse.from(
             user,
+            unitIds,
             jwtService.generateAccessToken(user),
             jwtService.generateRefreshToken(user),
             jwtService.getAccessExpirationSeconds());

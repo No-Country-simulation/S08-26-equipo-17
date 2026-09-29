@@ -27,4 +27,9 @@ public class AuthController {
     public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
         return ResponseEntity.ok(authService.refresh(request));
     }
+
+    @org.springframework.web.bind.annotation.GetMapping("/me")
+    public ResponseEntity<AuthUserResponse> me(org.springframework.security.core.Authentication authentication) {
+        return ResponseEntity.ok(authService.getCurrentUser(authentication.getName()));
+    }
 }
