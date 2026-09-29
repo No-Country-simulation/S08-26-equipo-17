@@ -63,6 +63,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/access/**", "/api/v1/packages/**")
                     .hasAnyRole("ADMIN", "CONCIERGE")
                 .requestMatchers("/api/v1/audit-logs/**").hasAnyRole("ADMIN", "CONCIERGE")
+                // Incidents: any authenticated user can POST; GET/PATCH restricted by method-level security.
+                .requestMatchers("/api/v1/incidents/**").authenticated()
                 .anyRequest().authenticated()
             );
 
