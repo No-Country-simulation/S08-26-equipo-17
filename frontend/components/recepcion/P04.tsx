@@ -7,6 +7,7 @@ import { unidadPorCodigo } from "@/lib/edificio";
 import { soloHora } from "@/lib/formato";
 import { diaEnPalabras } from "@/lib/reservas";
 import { useApp } from "@/lib/estado";
+import { api } from "@/lib/api";
 
 /** P04 · Validar acceso.
  *
@@ -66,6 +67,9 @@ export function P04({ ir, refe }: { ir: (v: VistaP, ref?: string) => void; refe?
 
   function validar() {
     if (!codigo.trim()) return;
+    api.validateQr(codigo.trim().replace(/\s+/g, "")).catch((err) => {
+      console.warn("Backend QR validation offline:", err);
+    });
     const r = evaluar(codigo, estado.visitas);
     setRes(r);
     setRegistrado(null);

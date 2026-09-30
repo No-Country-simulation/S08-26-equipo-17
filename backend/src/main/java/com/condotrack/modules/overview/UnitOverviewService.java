@@ -7,6 +7,9 @@ import com.condotrack.modules.audit.AuditLog;
 import com.condotrack.modules.audit.AuditLogRepository;
 import com.condotrack.modules.building.Unit;
 import com.condotrack.modules.building.UnitRepository;
+import com.condotrack.modules.auth.Role;
+import com.condotrack.modules.auth.User;
+import com.condotrack.modules.auth.UserRepository;
 import com.condotrack.modules.incident.IncidentRepository;
 import com.condotrack.modules.incident.IncidentStatus;
 import com.condotrack.modules.incident.IncidentTicket;
@@ -21,6 +24,8 @@ import com.condotrack.modules.reservation.ReservationRepository;
 import com.condotrack.modules.resident.UserUnit;
 import com.condotrack.modules.resident.UserUnitRepository;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +45,7 @@ public class UnitOverviewService {
     private final MoveRepository moveRepository;
     private final IncidentRepository incidentRepository;
     private final AuditLogRepository auditLogRepository;
+    private final UserRepository userRepository;
 
     public UnitOverviewService(
             UnitRepository unitRepository,
@@ -49,7 +55,8 @@ public class UnitOverviewService {
             ReservationRepository reservationRepository,
             MoveRepository moveRepository,
             IncidentRepository incidentRepository,
-            AuditLogRepository auditLogRepository) {
+            AuditLogRepository auditLogRepository,
+            UserRepository userRepository) {
         this.unitRepository = unitRepository;
         this.userUnitRepository = userUnitRepository;
         this.packageDeliveryRepository = packageDeliveryRepository;
@@ -58,9 +65,15 @@ public class UnitOverviewService {
         this.moveRepository = moveRepository;
         this.incidentRepository = incidentRepository;
         this.auditLogRepository = auditLogRepository;
+        this.userRepository = userRepository;
     }
 
     public UnitOverviewResponse getOverview(UUID unitId) {
+        User currentUser = currentUser();
+        if (currentUser.getRole().isResident() && !userUnitRepository.existsByUserIdAndUnitId(currentUser.getId(), unitId)) {
+            throw new AccessDeniedException("Morador não tem permissão para visualizar dados de outra unidade");
+        }
+
         Unit unit = unitRepository.findById(unitId)
                 .orElseThrow(() -> new ResourceNotFoundException("Unit not found: " + unitId));
 
@@ -156,5 +169,18 @@ public class UnitOverviewService {
                 openIncidents,
                 recentAuditTimeline
         );
+    }
+
+    private User currentUser() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("User not authenticated");
+        }
+        if (authentication.getPrincipal() instanceof User user) {
+            return user;
+        }
+        String email = authentication.getName();
+        return userRepository.findByEmailIgnoreCase(email)
+            .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
     }
 }

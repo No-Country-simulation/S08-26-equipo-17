@@ -19,6 +19,8 @@
 | :--- | :---: | :--- | :--- | :--- |
 | **Auth** | `POST` | `/api/v1/auth/login` | Public | Authenticates credentials, returns JWT, user info, and linked units. |
 | **Auth** | `GET` | `/api/v1/auth/me` | Authenticated | Returns currently authenticated user context. |
+| **Auth** | `POST` | `/api/v1/auth/forgot-password` | Public | Requests password reset instructions and token via email. |
+| **Auth** | `POST` | `/api/v1/auth/reset-password` | Public | Resets user password using valid reset token. |
 | **Overview** | `GET` | `/api/v1/units/{id}/overview-360` | `ADMIN`, `PORTARIA`, `MORADOR` | **Core MVP Endpoint:** Consolidated 360° overview of unit, residents, packages, visits, bookings, and tickets. |
 | **Access** | `POST` | `/api/v1/access/authorizations` | `MORADOR`, `ADMIN` | Issues guest pre-authorization and generates QR token. |
 | **Access** | `POST` | `/api/v1/access/validate-qr` | `PORTARIA`, `ADMIN` | Scans and validates guest QR token in $< 1.5$s, logging entry. |
@@ -28,12 +30,19 @@
 | **Packages** | `GET` | `/api/v1/packages/pending` | `PORTARIA`, `ADMIN` | Lists parcels awaiting resident pickup. |
 | **Packages** | `PATCH` | `/api/v1/packages/{id}/deliver` | `PORTARIA`, `ADMIN` | Marks package delivered to resident with operator signature. |
 | **Bookings** | `GET` | `/api/v1/common-areas` | Authenticated | Lists building amenities and operating rules. |
+| **Bookings** | `POST` | `/api/v1/common-areas` | `ADMIN` | Creates new common area amenity with rules and capacity. |
+| **Bookings** | `PUT` | `/api/v1/common-areas/{id}` | `ADMIN` | Updates common area rules, hours, and capacity. |
+| **Bookings** | `DELETE` | `/api/v1/common-areas/{id}` | `ADMIN` | Deactivates common area amenity. |
 | **Bookings** | `POST` | `/api/v1/reservations` | `MORADOR`, `ADMIN` | Books amenity slot; returns `409 Conflict` on overlap. |
 | **Bookings** | `DELETE` | `/api/v1/reservations/{id}` | Author / `ADMIN` | Cancels confirmed reservation. |
 | **Moves** | `POST` | `/api/v1/moves` | `MORADOR` | Requests move-in or move-out date and shift. |
 | **Moves** | `PATCH` | `/api/v1/moves/{id}/status` | `ADMIN` | Reviews and approves or rejects move schedule. |
+| **Incidents**| `POST` | `/api/v1/incidents/upload` | Authenticated | Uploads maintenance photo attachment (multipart). |
+| **Incidents**| `GET` | `/api/v1/incidents/photos/{filename}` | Authenticated | Securely downloads/streams ticket photo attachment. |
 | **Incidents**| `POST` | `/api/v1/incidents` | Authenticated | Reports building or unit maintenance issue with photo. |
-| **Incidents**| `PATCH` | `/api/v1/incidents/{id}/status` | `ADMIN` | Assigns technician and updates lifecycle status. |
+| **Incidents**| `PATCH` | `/api/v1/incidents/{id}/status` | `ADMIN` | Assigns technician, updates status, and records resolution notes. |
+| **Notifications** | `GET` | `/api/v1/notifications` | Authenticated | Lists in-app notifications for authenticated user. |
+| **Notifications** | `PATCH` | `/api/v1/notifications/{id}/read` | Authenticated | Marks in-app notification as read. |
 | **Audit** | `GET` | `/api/v1/audit-logs` | `ADMIN`, `PORTARIA` | Paged query of chronological operational events. |
 
 ---
@@ -52,6 +61,8 @@
 | :--- | :---: | :--- | :--- | :--- |
 | **Auth** | `POST` | `/api/v1/auth/login` | Público | Autentica usuario y devuelve token JWT con perfil. |
 | **Auth** | `GET` | `/api/v1/auth/me` | Autenticado | Devuelve contexto del usuario en sesión. |
+| **Auth** | `POST` | `/api/v1/auth/forgot-password` | Público | Solicita restablecimiento de contraseña vía email. |
+| **Auth** | `POST` | `/api/v1/auth/reset-password` | Público | Restablece contraseña mediante token de verificación. |
 | **Vista 360°**| `GET` | `/api/v1/units/{id}/overview-360` | `ADMIN`, `PORTARIA`, `MORADOR` | **Endpoint Clave MVP:** Dossier 360° con residentes, paquetes, visitas, reservas y reclamos. |
 | **Accesos** | `POST` | `/api/v1/access/authorizations` | `MORADOR`, `ADMIN` | Genera autorización con código QR para visitantes. |
 | **Accesos** | `POST` | `/api/v1/access/validate-qr` | `PORTARIA`, `ADMIN` | Valida código QR en $< 1.5$s y registra ingreso. |
@@ -61,12 +72,19 @@
 | **Deliveries**| `GET` | `/api/v1/packages/pending` | `PORTARIA`, `ADMIN` | Lista paquetes pendientes de retiro en portería. |
 | **Deliveries**| `PATCH` | `/api/v1/packages/{id}/deliver` | `PORTARIA`, `ADMIN` | Registra entrega física del paquete al residente. |
 | **Reservas** | `GET` | `/api/v1/common-areas` | Autenticado | Consulta áreas comunes disponibles. |
+| **Reservas** | `POST` | `/api/v1/common-areas` | `ADMIN` | Crea nueva área común con reglas y aforo. |
+| **Reservas** | `PUT` | `/api/v1/common-areas/{id}` | `ADMIN` | Modifica reglas, horarios y aforo del área común. |
+| **Reservas** | `DELETE` | `/api/v1/common-areas/{id}` | `ADMIN` | Desactiva área común del condominio. |
 | **Reservas** | `POST` | `/api/v1/reservations` | `MORADOR`, `ADMIN` | Reserva espacio común; devuelve `409 Conflict` si está ocupado. |
 | **Reservas** | `DELETE` | `/api/v1/reservations/{id}` | Autor / `ADMIN` | Cancela reserva confirmada. |
 | **Mudanzas** | `POST` | `/api/v1/moves` | `MORADOR` | Solicita turno de mudanza (mañana/tarde). |
 | **Mudanzas** | `PATCH` | `/api/v1/moves/{id}/status` | `ADMIN` | Aprueba o rechaza solicitud de mudanza con notas. |
+| **Incidentes**| `POST` | `/api/v1/incidents/upload` | Autenticado | Carga fotografía de mantenimiento (multipart). |
+| **Incidentes**| `GET` | `/api/v1/incidents/photos/{filename}` | Autenticado | Descarga segura de fotografía del ticket. |
 | **Incidentes**| `POST` | `/api/v1/incidents` | Autenticado | Abre ticket de mantenimiento con fotos y prioridad. |
-| **Incidentes**| `PATCH` | `/api/v1/incidents/{id}/status` | `ADMIN` | Asigna responsable y avanza el estado del ticket. |
+| **Incidentes**| `PATCH` | `/api/v1/incidents/{id}/status` | `ADMIN` | Asigna responsable, avanza estado y asienta notas de resolución. |
+| **Notificaciones** | `GET` | `/api/v1/notifications` | Autenticado | Lista notificaciones in-app del usuario autenticado. |
+| **Notificaciones** | `PATCH` | `/api/v1/notifications/{id}/read` | Autenticado | Marca notificación in-app como leída. |
 | **Auditoría** | `GET` | `/api/v1/audit-logs` | `ADMIN`, `PORTARIA` | Consulta paginada del historial de eventos del edificio. |
 
 ---
@@ -85,6 +103,8 @@
 | :--- | :---: | :--- | :--- | :--- |
 | **Auth** | `POST` | `/api/v1/auth/login` | Público | Autentica credenciais e retorna JWT com papéis e unidades vinculadas. |
 | **Auth** | `GET` | `/api/v1/auth/me` | Autenticado | Retorna os dados do usuário autenticado no token atual. |
+| **Auth** | `POST` | `/api/v1/auth/forgot-password` | Público | Solicita recuperação de senha por token via e-mail. |
+| **Auth** | `POST` | `/api/v1/auth/reset-password` | Público | Redefine a senha do usuário com token de validação. |
 | **Visão 360°**| `GET` | `/api/v1/units/{id}/overview-360` | `ADMIN`, `PORTARIA`, `MORADOR` | **Endpoint Chave do MVP:** Dossiê unificado 360° da unidade (moradores, encomendas, visitas, reservas, chamados). |
 | **Acessos** | `POST` | `/api/v1/access/authorizations` | `MORADOR`, `ADMIN` | Morador emite convite com QR Code e janela de validade. |
 | **Acessos** | `POST` | `/api/v1/access/validate-qr` | `PORTARIA`, `ADMIN` | Validação atômica do QR Code na portaria em $< 1.5$s com check-in. |
@@ -94,12 +114,19 @@
 | **Encomendas**| `GET` | `/api/v1/packages/pending` | `PORTARIA`, `ADMIN` | Lista de encomendas aguardando retirada na recepção. |
 | **Encomendas**| `PATCH` | `/api/v1/packages/{id}/deliver` | `PORTARIA`, `ADMIN` | Registra a baixa e entrega física do pacote ao morador. |
 | **Reservas** | `GET` | `/api/v1/common-areas` | Autenticado | Lista áreas sociais cadastradas e regras de uso. |
+| **Reservas** | `POST` | `/api/v1/common-areas` | `ADMIN` | Cadastra nova área comum com horários, aforos e regras. |
+| **Reservas** | `PUT` | `/api/v1/common-areas/{id}` | `ADMIN` | Altera dados, horários e regras da área social. |
+| **Reservas** | `DELETE` | `/api/v1/common-areas/{id}` | `ADMIN` | Desativa área social do condomínio. |
 | **Reservas** | `POST` | `/api/v1/reservations` | `MORADOR`, `ADMIN` | Solicita reserva com validação atômica contra sobreposição (`409 Conflict`). |
 | **Reservas** | `DELETE` | `/api/v1/reservations/{id}` | Autor / `ADMIN` | Cancela reserva confirmada. |
 | **Mudanças** | `POST` | `/api/v1/moves` | `MORADOR` | Agenda turno de mudança (manhã/tarde). |
 | **Mudanças** | `PATCH` | `/api/v1/moves/{id}/status` | `ADMIN` | Parecer do síndico (aprovação/rejeição) com justificativa. |
+| **Chamados** | `POST` | `/api/v1/incidents/upload` | Autenticado | Upload de anexo fotográfico de manutenção (multipart). |
+| **Chamados** | `GET` | `/api/v1/incidents/photos/{filename}` | Autenticado | Download protegido do anexo fotográfico do chamado. |
 | **Chamados** | `POST` | `/api/v1/incidents` | Autenticado | Abre chamado de manutenção com fotos, categoria e urgência. |
-| **Chamados** | `PATCH` | `/api/v1/incidents/{id}/status` | `ADMIN` | Atribui técnico e atualiza o ciclo de vida do chamado. |
+| **Chamados** | `PATCH` | `/api/v1/incidents/{id}/status` | `ADMIN` | Atribui técnico, atualiza o ciclo de vida e registra parecer final. |
+| **Notificações** | `GET` | `/api/v1/notifications` | Autenticado | Lista notificações in-app do usuário autenticado. |
+| **Notificações** | `PATCH` | `/api/v1/notifications/{id}/read` | Autenticado | Marca notificação in-app como lida. |
 | **Auditoria** | `GET` | `/api/v1/audit-logs` | `ADMIN`, `PORTARIA` | Consulta a linha do tempo cronológica de eventos operacionais. |
 
 ---

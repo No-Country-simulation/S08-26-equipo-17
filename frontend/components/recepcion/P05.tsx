@@ -10,6 +10,7 @@ import {
 import { UNIDADES, unidadPorCodigo } from "@/lib/edificio";
 import { fechaHora, hace } from "@/lib/formato";
 import { nuevoIdEntrega, useApp } from "@/lib/estado";
+import { api } from "@/lib/api";
 
 /** P05 · Entregas.
  *  Registrar: unidad, remitente, tipo, foto. Notifica al residente.
@@ -166,9 +167,13 @@ export function P05({ ir }: { ir: (v: VistaP, ref?: string) => void }) {
           texto={`${retirando.titulo} · Unidad ${retirando.unidad}. Queda registrado quién lo retiró, a qué hora y que se lo entregaste vos.`}
           confirmar="Confirmar la entrega"
           onConfirmar={() => {
+            const persona = quienRetira.trim() || "Sin identificar";
+            api.deliverPackage(retirando.id, persona).catch((err) => {
+              console.warn("Backend deliverPackage offline, actualizando localmente:", err);
+            });
             hacer({
               t: "entrega/retirar", id: retirando.id,
-              quien: quienRetira.trim() || "Sin identificar", por: RECEPCION.nombre,
+              quien: persona, por: RECEPCION.nombre,
             });
             setRetirando(null); setQuienRetira("");
           }}

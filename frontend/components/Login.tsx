@@ -16,16 +16,40 @@ export function Login({ onEntrar, onRecuperar }:
     e.preventDefault();
     const m = mail.trim().toLowerCase();
     if (!m || !pass) { setError("Completá el correo y la contraseña."); return; }
-    const c = CUENTAS.find((a) => a.mail === m && a.pass === pass);
-    if (!c) { setError("El correo o la contraseña no coinciden."); return; }
     setError(null);
     setEnviando(true);
+
+    let authRes: any = null;
     try {
-      await api.login(m, pass);
-    } catch {
-      // Silently fallback to mock profile
+      authRes = await api.login(m, pass);
+      const token = authRes?.accessToken || authRes?.token;
+      if (token) {
+        api.setToken(token);
+      }
+    } catch (err) {
+      console.warn("Backend auth unavailable or returned error:", err);
     }
-    onEntrar(c.perfil);
+
+    const c = CUENTAS.find((a) => a.mail === m && a.pass === pass);
+    if (!c && !authRes) {
+      setEnviando(false);
+      setError("El correo o la contraseña no coinciden.");
+      return;
+    }
+
+    if (c) {
+      onEntrar(c.perfil);
+    } else if (authRes?.user?.role || authRes?.role) {
+      const r = authRes?.user?.role || authRes?.role;
+      const perfil: Perfil =
+        r === "ADMIN"
+          ? "administracion"
+          : r === "CONCIERGE" || r === "PORTARIA"
+          ? "recepcion"
+          : "residente";
+      onEntrar(perfil);
+    }
+    setEnviando(false);
   }
 
   return (

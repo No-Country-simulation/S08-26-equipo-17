@@ -7,6 +7,13 @@ import java.util.UUID;
 
 public class IncidentDtos {
 
+    public record UploadPhotoResponse(
+        String photoUrl,
+        String originalFilename,
+        long size,
+        String contentType
+    ) {}
+
     public record CreateIncidentRequest(
         @NotNull UUID unitId,
         @NotBlank String title,
@@ -18,8 +25,13 @@ public class IncidentDtos {
 
     public record UpdateIncidentStatusRequest(
         @NotNull IncidentStatus status,
-        UUID assignedToUserId
-    ) {}
+        UUID assignedToUserId,
+        String resolutionNotes
+    ) {
+        public UpdateIncidentStatusRequest(IncidentStatus status, UUID assignedToUserId) {
+            this(status, assignedToUserId, null);
+        }
+    }
 
     public record IncidentResponse(
         UUID id,
@@ -36,7 +48,8 @@ public class IncidentDtos {
         String priority,
         String status,
         OffsetDateTime createdAt,
-        OffsetDateTime resolvedAt
+        OffsetDateTime resolvedAt,
+        String resolutionNotes
     ) {
         static IncidentResponse from(IncidentTicket t) {
             return new IncidentResponse(
@@ -54,7 +67,8 @@ public class IncidentDtos {
                 t.getPriority().name(),
                 t.getStatus().name(),
                 t.getCreatedAt(),
-                t.getResolvedAt()
+                t.getResolvedAt(),
+                t.getResolutionNotes()
             );
         }
     }

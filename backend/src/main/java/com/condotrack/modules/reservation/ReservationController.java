@@ -24,6 +24,34 @@ public class ReservationController {
         return reservationService.listCommonAreas();
     }
 
+    /** Returns a specific common area by ID. */
+    @GetMapping("/api/v1/common-areas/{id}")
+    public CommonAreaResponse getCommonArea(@PathVariable UUID id) {
+        return reservationService.getCommonArea(id);
+    }
+
+    /** Registers a new common area linked to the building (FR-10). */
+    @PostMapping("/api/v1/common-areas")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
+    public CommonAreaResponse createCommonArea(@Valid @RequestBody CreateCommonAreaRequest req) {
+        return reservationService.createCommonArea(req);
+    }
+
+    /** Updates data, hours, and rules of the common area (FR-10). */
+    @PutMapping("/api/v1/common-areas/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CommonAreaResponse updateCommonArea(@PathVariable UUID id, @Valid @RequestBody UpdateCommonAreaRequest req) {
+        return reservationService.updateCommonArea(id, req);
+    }
+
+    /** Soft-deletes a common area setting isActive = false (FR-10). */
+    @DeleteMapping("/api/v1/common-areas/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CommonAreaResponse deleteCommonArea(@PathVariable UUID id) {
+        return reservationService.deleteCommonArea(id);
+    }
+
     /** Returns confirmed bookings for a specific area (used to render availability calendar). */
     @GetMapping("/api/v1/common-areas/{id}/reservations")
     public List<ReservationResponse> listByArea(@PathVariable UUID id) {
@@ -33,14 +61,14 @@ public class ReservationController {
     /** Creates a reservation with atomic conflict prevention; returns 409 on overlap. */
     @PostMapping("/api/v1/reservations")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','MORADOR')")
     public ReservationResponse create(@Valid @RequestBody CreateReservationRequest req) {
         return reservationService.create(req);
     }
 
     /** Cancels a confirmed reservation. Only the author or ADMIN may cancel. */
     @DeleteMapping("/api/v1/reservations/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','MORADOR')")
     public ReservationResponse cancel(@PathVariable UUID id) {
         return reservationService.cancel(id);
     }

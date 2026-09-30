@@ -20,7 +20,7 @@ public class AuditController {
 
     /** Lists audit events, optionally filtered by unit. */
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE')")
+    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE','PORTARIA')")
     public Page<AuditService.AuditResponse> list(
             @RequestParam(required = false) UUID unitId,
             @PageableDefault(size = 20, sort = "timestamp", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {

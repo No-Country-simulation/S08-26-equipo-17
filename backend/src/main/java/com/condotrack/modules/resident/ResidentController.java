@@ -31,7 +31,7 @@ public class ResidentController {
 
     @Operation(summary = "List all residents of a unit")
     @GetMapping("/units/{unitId}/residents")
-    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE','RESIDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE','PORTARIA','RESIDENT','MORADOR')")
     public ResponseEntity<ApiResponse<List<ResidentResponse>>> listResidents(@PathVariable UUID unitId) {
         return ResponseEntity.ok(ApiResponse.ok(residentService.listResidents(unitId)));
     }
@@ -67,14 +67,14 @@ public class ResidentController {
 
     @Operation(summary = "List user profiles")
     @GetMapping("/users")
-    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE')")
+    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE','PORTARIA')")
     public ResponseEntity<ApiResponse<List<UserProfileResponse>>> listUsers() {
         return ResponseEntity.ok(ApiResponse.ok(residentService.listUsers()));
     }
 
     @Operation(summary = "Get a user profile by id")
     @GetMapping("/users/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE')")
+    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE','PORTARIA')")
     public ResponseEntity<ApiResponse<UserProfileResponse>> getUser(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.ok(residentService.getUser(id)));
     }

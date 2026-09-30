@@ -11,9 +11,10 @@ import {
 } from "@/lib/data";
 import { type Reclamo, rotuloCategoria } from "@/lib/gestiones";
 import {
-  EDIFICIOS, UNIDADES, buscarUnidades, unidadPorCodigo,
+  EDIFICIOS, UNIDADES, buscarUnidades, unidadPorCodigo, resolverUnitUuid,
   type Unidad, type Edificio,
 } from "@/lib/edificio";
+import { api, type UnitOverviewResponse } from "@/lib/api";
 import { PERMISOS, ROTULO_PERMISO, historialOrdenado, ICONO_EVENTO } from "@/lib/unidad";
 import { hace, pesos, fechaCorta, fechaHora } from "@/lib/formato";
 import { diaEnPalabras } from "@/lib/reservas";
@@ -56,12 +57,47 @@ export function ShellAdmin({
 }) {
   const { estado, hacer } = useApp();
   const caja = useRef<HTMLDivElement | null>(null);
-  const [unidadSeleccionada, setUnidadSeleccionada] = useState<string>(refe ?? "7D");
+  const [unidadSeleccionada, setUnidadSeleccionada] = useState<string>(refe ?? "101");
   const [filtroModulo, setFiltroModulo] = useState<string>("TODOS");
   const [busquedaUnidad, setBusquedaUnidad] = useState<string>("");
+  const [overviewData, setOverviewData] = useState<UnitOverviewResponse | null>(null);
+  const [cargando360, setCargando360] = useState<boolean>(false);
+  const [conectadoApi, setConectadoApi] = useState<boolean>(false);
 
   useEffect(() => { caja.current?.scrollTo(0, 0); }, [vista, refe]);
   useEffect(() => { if (refe) setUnidadSeleccionada(refe); }, [refe]);
+
+  useEffect(() => {
+    if (vista !== "a05" && vista !== "a04") return;
+    let ativo = true;
+    setCargando360(true);
+
+    const unitUuid = resolverUnitUuid(unidadSeleccionada);
+    api.getUnitOverview(unitUuid)
+      .then((data) => {
+        if (!ativo) return;
+        if (data && data.unit) {
+          setOverviewData(data);
+          setConectadoApi(true);
+        } else {
+          setOverviewData(null);
+          setConectadoApi(false);
+        }
+      })
+      .catch((err) => {
+        if (!ativo) return;
+        console.warn("Backend 360 overview offline o error:", err);
+        setOverviewData(null);
+        setConectadoApi(false);
+      })
+      .finally(() => {
+        if (ativo) setCargando360(false);
+      });
+
+    return () => {
+      ativo = false;
+    };
+  }, [vista, unidadSeleccionada]);
 
   const u: Unidad | undefined = unidadPorCodigo(unidadSeleccionada) ?? UNIDADES[0];
   const unidadesFiltradas = buscarUnidades(busquedaUnidad);
@@ -82,13 +118,52 @@ export function ShellAdmin({
     { id: "m-03", unidad: "1B", solicitante: "Hernán Costa", tipo: "IN", fecha: "2026-10-12", turno: "Mañana (09:00 - 13:00)", estado: "PENDIENTE", montacargas: false },
   ]);
 
-  const aprobarMudanza = (id: string) => {
+  const aprobarMudanza = async (id: string) => {
+    try {
+      await api.approveMove(id, "Aprobado por administración");
+    } catch (err) {
+      console.warn("Backend move review unavailable, actualizando estado local:", err);
+    }
     setMudanzas((prev) => prev.map((m) => m.id === id ? { ...m, estado: "APROBADA" } : m));
   };
 
-  const rechazarMudanza = (id: string) => {
+  const rechazarMudanza = async (id: string) => {
+    try {
+      await api.rejectMove(id, "Rechazado por administración");
+    } catch (err) {
+      console.warn("Backend move review unavailable, actualizando estado local:", err);
+    }
     setMudanzas((prev) => prev.map((m) => m.id === id ? { ...m, estado: "RECHAZADA" } : m));
   };
+
+  useEffect(() => {
+    if (vista !== "a10") return;
+    let ativo = true;
+    api.getMoves()
+      .then((data) => {
+        if (!ativo || !data || !Array.isArray(data) || data.length === 0) return;
+        const mapped = data.map((m) => ({
+          id: m.id,
+          unidad: m.unitNumber || "101",
+          solicitante: m.userName || "Residente",
+          tipo: m.moveType || "IN",
+          fecha: m.scheduledDate || "2026-10-15",
+          turno: m.shift === "MORNING" ? "Mañana (09:00 - 13:00)" : "Tarde (14:00 - 18:00)",
+          estado: m.status === "REQUESTED" ? "PENDIENTE" : m.status === "APPROVED" ? "APROBADA" : m.status === "REJECTED" ? "RECHAZADA" : m.status,
+          montacargas: true,
+        }));
+        setMudanzas((prev) => {
+          const ids = new Set(mapped.map((x) => x.id));
+          return [...mapped, ...prev.filter((p) => !ids.has(p.id))];
+        });
+      })
+      .catch((err) => {
+        console.warn("Backend moves offline, usando datos locales:", err);
+      });
+    return () => {
+      ativo = false;
+    };
+  }, [vista]);
 
   // Avanzar reclamo
   const avanzarReclamo = (recId: string) => {
@@ -261,14 +336,14 @@ export function ShellAdmin({
             </div>
           )}
 
-          {/* VISTA A05: VISIÓN 360° DE LA UNIDAD (CORE MVP US-09) */}
+          {/* VISTA A05: VISIÓN 360° DE LA UNIDAD (CORE MVP US-09 / FR-18) */}
           {(vista === "a05" || vista === "a04") && u && (
             <div>
               {/* Barra de Búsqueda y Selector de Unidades */}
               <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 20 }}>
                 <input
                   type="search"
-                  placeholder="Buscar departamento o morador (ej. 7D, 101, Osorio)..."
+                  placeholder="Buscar departamento o morador (ej. 101, 7D, Osorio, Sofia)..."
                   value={busquedaUnidad}
                   onChange={(e) => setBusquedaUnidad(e.target.value)}
                   style={{
@@ -284,16 +359,16 @@ export function ShellAdmin({
 
               {/* Selector horizontal rápido */}
               <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 12, marginBottom: 16 }}>
-                {unidadesFiltradas.slice(0, 14).map((item) => (
+                {unidadesFiltradas.slice(0, 16).map((item) => (
                   <button
                     key={item.codigo}
                     type="button"
                     onClick={() => setUnidadSeleccionada(item.codigo)}
                     style={{
                       padding: "6px 14px", borderRadius: 6,
-                      border: "1px solid " + (item.codigo === u.codigo ? "var(--amarillo)" : "var(--borde)"),
-                      background: item.codigo === u.codigo ? "var(--amarillo)" : "var(--superficie)",
-                      color: item.codigo === u.codigo ? "#111" : "inherit",
+                      border: "1px solid " + (item.codigo === unidadSeleccionada ? "var(--amarillo)" : "var(--borde)"),
+                      background: item.codigo === unidadSeleccionada ? "var(--amarillo)" : "var(--superficie)",
+                      color: item.codigo === unidadSeleccionada ? "#111" : "inherit",
                       fontWeight: 600, fontSize: 13, cursor: "pointer", whiteSpace: "nowrap"
                     }}
                   >
@@ -305,43 +380,100 @@ export function ShellAdmin({
               {/* Cabecera Dossier 360 */}
               <div className="ent-cab" style={{ background: "var(--superficie)", padding: 20, borderRadius: 12, border: "1px solid var(--borde)" }}>
                 <div>
-                  <span className="id" style={{ fontSize: 32 }}>Unidad {u.codigo}</span>
+                  <span className="id" style={{ fontSize: 32 }}>
+                    Unidad {overviewData ? overviewData.unit.numberCode : u.codigo}
+                  </span>
                   <p className="meta" style={{ fontSize: 14, marginTop: 4 }}>
-                    {EDIFICIO.nombreLargo} · Piso {u.piso} · {u.ambientes} · {u.metros} m²
+                    {overviewData ? overviewData.unit.buildingName : EDIFICIO.nombreLargo}
+                    {overviewData?.unit.block ? ` · Bloque ${overviewData.unit.block}` : ""}
+                    {` · Piso ${overviewData ? overviewData.unit.floor : u.piso} · ${u.ambientes} · ${u.metros} m²`}
                     {u.telefono && ` · Teléfono de contacto: ${u.telefono}`}
                   </p>
                 </div>
-                <div className="der" style={{ textAlign: "right" }}>
-                  <span className={"pastilla " + (u.cuenta === "al-dia" ? "gris" : "")} style={{ fontSize: 14 }}>
-                    <Icon n={u.cuenta === "al-dia" ? "check" : "reloj"} s={14} />
+                <div className="der" style={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
+                  {/* Estado da Conexão com a API em tempo real */}
+                  {cargando360 ? (
+                    <span className="pastilla" style={{ background: "rgba(59, 130, 246, 0.12)", color: "#2563eb", border: "1px solid #3b82f6", display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 600 }}>
+                      <span className="giro" style={{ width: 12, height: 12, border: "2px solid #2563eb", borderTopColor: "transparent", borderRadius: "50%", display: "inline-block" }} />
+                      Consultando API 360°…
+                    </span>
+                  ) : conectadoApi && overviewData ? (
+                    <span className="pastilla verde" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#10b981", border: "1px solid #10b981", display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 600 }}>
+                      <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }} />
+                      Conectado à API em tempo real
+                    </span>
+                  ) : (
+                    <span className="pastilla gris" style={{ background: "rgba(156, 163, 175, 0.12)", color: "var(--tx-sec)", border: "1px solid var(--borde)", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                      <Icon n="reloj" s={13} />
+                      Modo local / Respaldo offline
+                    </span>
+                  )}
+
+                  <span className={"pastilla " + (u.cuenta === "al-dia" ? "gris" : "")} style={{ fontSize: 13 }}>
+                    <Icon n={u.cuenta === "al-dia" ? "check" : "reloj"} s={13} />
                     {u.cuenta === "al-dia" ? "Cuenta al día" : `Saldo pendiente: ${pesos(u.saldo)}`}
                   </span>
-                  <div style={{ marginTop: 8, fontSize: 12, color: "var(--tx-sec)" }}>
-                    Dossier unificado 360° en tiempo real
+                  <div style={{ fontSize: 11, color: "var(--tx-sec)" }}>
+                    UUID: <code style={{ fontSize: 11, background: "rgba(0,0,0,0.06)", padding: "2px 5px", borderRadius: 4 }}>{resolverUnitUuid(unidadSeleccionada)}</code>
                   </div>
                 </div>
               </div>
 
-              {/* Grilla 360: Moradores, Paquetes, Visitas, Reservas, Reclamos */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginTop: 20 }}>
+              {/* Grilla 360: Moradores, Paquetes, Visitas, Reservas, Mudanza, Reclamos, Auditoría */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginTop: 20, opacity: cargando360 ? 0.7 : 1, transition: "opacity 0.2s" }}>
 
-                {/* 1. QUIÉNES VIVEN ACÁ */}
+                {/* 1. QUIÉNES VIVEN ACÁ (MORADORES VINCULADOS) */}
                 <section className="tarjeta">
-                  <h2><Icon n="personas" s={18} /> Moradores Vinculados <span className="cnt">{u.residentes.length}</span></h2>
+                  <h2>
+                    <Icon n="personas" s={18} /> Moradores Vinculados{" "}
+                    <span className="cnt">
+                      {overviewData ? overviewData.residents.length : u.residentes.length}
+                    </span>
+                  </h2>
                   <div className="cuerpo">
-                    {u.residentes.map((r, i) => (
-                      <div className="fila-op" key={r} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                          <span className="av">{r.split(" ").map((x) => x[0]).slice(0, 2).join("")}</span>
-                          <div>
-                            <b>{r}</b>
-                            <i>{i === 0 ? "Titular / Propietario" : "Residente / Familiar"}</i>
+                    {overviewData ? (
+                      overviewData.residents.length === 0 ? (
+                        <p className="mensaje-vacio">No hay moradores vinculados a esta unidad en la API.</p>
+                      ) : (
+                        overviewData.residents.map((r) => {
+                          const relLabel =
+                            r.relationshipType === "OWNER"
+                              ? "Propietario / Titular"
+                              : r.relationshipType === "TENANT"
+                              ? "Inquilino / Locatario"
+                              : r.relationshipType === "FAMILY_MEMBER"
+                              ? "Familiar / Conviviente"
+                              : r.relationshipType;
+                          return (
+                            <div className="fila-op" key={r.userId} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                                <span className="av">{r.name.split(" ").map((x) => x[0]).slice(0, 2).join("")}</span>
+                                <div>
+                                  <b>{r.name}</b>
+                                  <i>{relLabel}</i>
+                                </div>
+                              </div>
+                              {r.phone && <span style={{ fontSize: 12, color: "var(--tx-sec)" }}>{r.phone}</span>}
+                            </div>
+                          );
+                        })
+                      )
+                    ) : (
+                      /* Fallback local */
+                      u.residentes.map((r, i) => (
+                        <div className="fila-op" key={r} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                            <span className="av">{r.split(" ").map((x) => x[0]).slice(0, 2).join("")}</span>
+                            <div>
+                              <b>{r}</b>
+                              <i>{i === 0 ? "Titular / Propietario" : "Residente / Familiar"}</i>
+                            </div>
                           </div>
+                          {u.telefono && <span style={{ fontSize: 12, color: "var(--tx-sec)" }}>{u.telefono}</span>}
                         </div>
-                        {u.telefono && <span style={{ fontSize: 12, color: "var(--tx-sec)" }}>{u.telefono}</span>}
-                      </div>
-                    ))}
-                    {permisos.length > 0 && (
+                      ))
+                    )}
+                    {permisos.length > 0 && !overviewData && (
                       <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid var(--borde)" }}>
                         <b style={{ fontSize: 13, color: "var(--tx-sec)" }}>Autorizaciones Permanentes:</b>
                         {permisos.map((p) => (
@@ -354,149 +486,301 @@ export function ShellAdmin({
                   </div>
                 </section>
 
-                {/* 2. ENCOMIENDAS / PAQUETES */}
+                {/* 2. ENCOMIENDAS / PAQUETES PENDIENTES */}
                 <section className="tarjeta">
                   <h2>
-                    <Icon n="caja" s={18} /> Paquetes y Encomiendas
-                    <span className="cnt">{entregas.length}</span>
+                    <Icon n="caja" s={18} /> Paquetes y Encomiendas{" "}
+                    <span className="cnt">
+                      {overviewData ? overviewData.pendingPackages.length : entregas.length}
+                    </span>
                   </h2>
                   <div className="cuerpo">
-                    {entregas.length === 0 ? (
-                      <p className="mensaje-vacio">No hay paquetes registrados para esta unidad.</p>
-                    ) : (
-                      entregas.map((e) => (
-                        <div className="fila-op" key={e.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <div>
-                            <b>{e.titulo} · {e.remitente}</b>
-                            <i>Recibido: {hace(e.recibidoEl)}</i>
-                          </div>
-                          <span className={"pastilla " + (e.estado === "retirado" ? "gris" : "")}>
-                            {e.estado === "retirar" ? "Pendiente Retiro" : "Entregado"}
-                          </span>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </section>
-
-                {/* 3. ACCESOS Y VISITAS */}
-                <section className="tarjeta">
-                  <h2>
-                    <Icon n="credencial" s={18} /> Visitas y Accesos
-                    <span className="cnt">{visitas.length}</span>
-                  </h2>
-                  <div className="cuerpo">
-                    {visitas.length === 0 ? (
-                      <p className="mensaje-vacio">Sin visitas registradas.</p>
-                    ) : (
-                      visitas.map((v) => (
-                        <div className="fila-op" key={v.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <div>
-                            <b>{v.nombre} {v.documento ? `(DNI: ${v.documento})` : ""}</b>
-                            <i>Pase {v.codigo} · {v.horario} · Creado por {v.creadaPor}</i>
-                          </div>
-                          <span className={"pastilla " + (v.estado === "vigente" ? "" : "gris")}>
-                            {v.estado === "vigente" ? "Vigente" : v.estado}
-                          </span>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </section>
-
-                {/* 4. RESERVAS Y MUDANZAS */}
-                <section className="tarjeta">
-                  <h2>
-                    <Icon n="calendario" s={18} /> Reservas de Espacios
-                    <span className="cnt">{reservasUnidad.length}</span>
-                  </h2>
-                  <div className="cuerpo">
-                    {reservasUnidad.length === 0 ? (
-                      <p className="mensaje-vacio">Sin reservas activas.</p>
-                    ) : (
-                      reservasUnidad.map((r) => {
-                        const rec = RECURSOS.find((x) => x.id === r.recursoId);
-                        const esp = ESPACIOS.find((x) => x.id === rec?.espacioId);
-                        const tituloEspacio = esp ? `${esp.nombre} (${rec?.nombre})` : r.recursoId;
-                        const ini = new Date(r.inicio);
-                        const fin = new Date(r.fin);
-                        const horaStr = `${ini.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} a ${fin.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
-                        return (
-                          <div className="fila-op" key={r.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    {overviewData ? (
+                      overviewData.pendingPackages.length === 0 ? (
+                        <p className="mensaje-vacio">No hay paquetes pendientes de retiro para esta unidad.</p>
+                      ) : (
+                        overviewData.pendingPackages.map((p) => (
+                          <div className="fila-op" key={p.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <div>
-                              <b>{tituloEspacio}</b>
-                              <i>{diaEnPalabras(ini)} · {horaStr}</i>
+                              <b>{p.carrierName} · Guía {p.trackingCode}</b>
+                              <i>Recibido: {p.receivedAt ? hace(p.receivedAt) : "Reciente"}</i>
                             </div>
-                            <span className="pastilla">{r.estado === "confirmada" ? "Confirmada" : r.estado}</span>
+                            <span className="pastilla">Pendiente Retiro</span>
                           </div>
-                        );
-                      })
+                        ))
+                      )
+                    ) : (
+                      /* Fallback local */
+                      entregas.length === 0 ? (
+                        <p className="mensaje-vacio">No hay paquetes registrados para esta unidad.</p>
+                      ) : (
+                        entregas.map((e) => (
+                          <div className="fila-op" key={e.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div>
+                              <b>{e.titulo} · {e.remitente}</b>
+                              <i>Recibido: {hace(e.recibidoEl)}</i>
+                            </div>
+                            <span className={"pastilla " + (e.estado === "retirado" ? "gris" : "")}>
+                              {e.estado === "retirar" ? "Pendiente Retiro" : "Entregado"}
+                            </span>
+                          </div>
+                        ))
+                      )
                     )}
                   </div>
                 </section>
 
-                {/* 5. INCIDENTES Y MANTENIMIENTO */}
+                {/* 3. ACCESOS Y VISITAS RECIENTES */}
                 <section className="tarjeta">
                   <h2>
-                    <Icon n="alerta" s={18} /> Tickets de Mantenimiento
-                    <span className="cnt">{reclamosUnidad.length}</span>
+                    <Icon n="credencial" s={18} /> Visitas y Accesos Recientes{" "}
+                    <span className="cnt">
+                      {overviewData ? overviewData.recentAccesses.length : visitas.length}
+                    </span>
                   </h2>
                   <div className="cuerpo">
-                    {reclamosUnidad.length === 0 ? (
-                      <p className="mensaje-vacio">No hay incidentes reportados.</p>
-                    ) : (
-                      reclamosUnidad.map((rec) => (
-                        <div className="fila-op" key={rec.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <div>
-                            <b>{rotuloCategoria(rec.categoria)}</b>
-                            <i>{rec.codigo} · {rec.ubicacion} · {hace(rec.creadoEl)}</i>
-                          </div>
-                          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                            <span className={"pastilla " + (rec.estado === "resuelto" ? "gris" : "")}>
-                              {rec.estado}
+                    {overviewData ? (
+                      overviewData.recentAccesses.length === 0 ? (
+                        <p className="mensaje-vacio">Sin visitas o accesos recientes registrados en la API.</p>
+                      ) : (
+                        overviewData.recentAccesses.map((a, idx) => (
+                          <div className="fila-op" key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div>
+                              <b>{a.visitorName} {a.visitorDocument ? `(Doc: ${a.visitorDocument})` : ""}</b>
+                              <i>Sentido: {a.direction === "ENTRY" ? "Ingreso" : "Egreso"} · Controlado por: {a.checkedByOperator} · {a.timestamp ? hace(a.timestamp) : "Hoy"}</i>
+                            </div>
+                            <span className={"pastilla " + (a.direction === "ENTRY" ? "" : "gris")}>
+                              {a.direction === "ENTRY" ? "Ingreso" : "Egreso"}
                             </span>
-                            {rec.estado !== "resuelto" && (
-                              <button
-                                type="button"
-                                onClick={() => resolverReclamo(rec.id)}
-                                style={{
-                                  padding: "4px 8px", fontSize: 11, borderRadius: 4,
-                                  border: "1px solid var(--borde)", background: "var(--amarillo)",
-                                  color: "#111", cursor: "pointer", fontWeight: 600
-                                }}
-                              >
-                                Resolver
-                              </button>
-                            )}
                           </div>
-                        </div>
-                      ))
+                        ))
+                      )
+                    ) : (
+                      /* Fallback local */
+                      visitas.length === 0 ? (
+                        <p className="mensaje-vacio">Sin visitas registradas.</p>
+                      ) : (
+                        visitas.map((v) => (
+                          <div className="fila-op" key={v.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div>
+                              <b>{v.nombre} {v.documento ? `(DNI: ${v.documento})` : ""}</b>
+                              <i>Pase {v.codigo} · {v.horario} · Creado por {v.creadaPor}</i>
+                            </div>
+                            <span className={"pastilla " + (v.estado === "vigente" ? "" : "gris")}>
+                              {v.estado === "vigente" ? "Vigente" : v.estado}
+                            </span>
+                          </div>
+                        ))
+                      )
                     )}
                   </div>
                 </section>
 
-                {/* 6. TRILHA DE AUDITORÍA 360° */}
+                {/* 4. RESERVAS DE ESPACIOS */}
                 <section className="tarjeta">
                   <h2>
-                    <Icon n="reloj" s={18} /> Auditoría y Trazabilidad Inmutable
-                    <span className="cnt">{eventosUnidad.length}</span>
+                    <Icon n="calendario" s={18} /> Reservas de Espacios Comunes{" "}
+                    <span className="cnt">
+                      {overviewData ? overviewData.upcomingReservations.length : reservasUnidad.length}
+                    </span>
+                  </h2>
+                  <div className="cuerpo">
+                    {overviewData ? (
+                      overviewData.upcomingReservations.length === 0 ? (
+                        <p className="mensaje-vacio">Sin reservas activas o futuras registradas.</p>
+                      ) : (
+                        overviewData.upcomingReservations.map((r, idx) => {
+                          const ini = new Date(r.startTime);
+                          const fin = new Date(r.endTime);
+                          const horaStr = `${ini.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} a ${fin.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+                          return (
+                            <div className="fila-op" key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <div>
+                                <b>{r.commonAreaName}</b>
+                                <i>{diaEnPalabras(ini)} · {horaStr}</i>
+                              </div>
+                              <span className={"pastilla " + (r.status === "CONFIRMED" ? "" : "gris")}>
+                                {r.status === "CONFIRMED" ? "Confirmada" : r.status}
+                              </span>
+                            </div>
+                          );
+                        })
+                      )
+                    ) : (
+                      /* Fallback local */
+                      reservasUnidad.length === 0 ? (
+                        <p className="mensaje-vacio">Sin reservas activas.</p>
+                      ) : (
+                        reservasUnidad.map((r) => {
+                          const rec = RECURSOS.find((x) => x.id === r.recursoId);
+                          const esp = ESPACIOS.find((x) => x.id === rec?.espacioId);
+                          const tituloEspacio = esp ? `${esp.nombre} (${rec?.nombre})` : r.recursoId;
+                          const ini = new Date(r.inicio);
+                          const fin = new Date(r.fin);
+                          const horaStr = `${ini.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} a ${fin.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+                          return (
+                            <div className="fila-op" key={r.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <div>
+                                <b>{tituloEspacio}</b>
+                                <i>{diaEnPalabras(ini)} · {horaStr}</i>
+                              </div>
+                              <span className="pastilla">{r.estado === "confirmada" ? "Confirmada" : r.estado}</span>
+                            </div>
+                          );
+                        })
+                      )
+                    )}
+                  </div>
+                </section>
+
+                {/* 5. MUDANZA AGENDADA */}
+                <section className="tarjeta">
+                  <h2>
+                    <Icon n="calendario" s={18} /> Mudanza Agendada
+                  </h2>
+                  <div className="cuerpo">
+                    {overviewData ? (
+                      overviewData.scheduledMove ? (
+                        <div className="fila-op" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div>
+                            <b>
+                              Mudanza de {overviewData.scheduledMove.moveType === "IN" ? "Ingreso (Entrada)" : "Egreso (Salida)"}
+                            </b>
+                            <i>
+                              Fecha: {overviewData.scheduledMove.scheduledDate} · Turno: {overviewData.scheduledMove.shift === "MORNING" ? "Mañana (09:00 - 13:00)" : "Tarde (14:00 - 18:00)"}
+                            </i>
+                          </div>
+                          <span className={"pastilla " + (overviewData.scheduledMove.status === "APPROVED" ? "verde" : "")}>
+                            {overviewData.scheduledMove.status === "APPROVED" ? "Aprobada" : overviewData.scheduledMove.status === "REQUESTED" ? "Solicitada" : overviewData.scheduledMove.status}
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="mensaje-vacio">No hay mudanzas programadas para esta unidad.</p>
+                      )
+                    ) : (
+                      /* Fallback local */
+                      (() => {
+                        const m = mudanzas.find((item) => item.unidad === u.codigo);
+                        return m ? (
+                          <div className="fila-op" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div>
+                              <b>Mudanza de {m.tipo === "IN" ? "Ingreso (Entrada)" : "Egreso (Salida)"}</b>
+                              <i>Fecha: {m.fecha} · Turno: {m.turno} · Solicitante: {m.solicitante}</i>
+                            </div>
+                            <span className={"pastilla " + (m.estado === "APROBADA" ? "verde" : "")}>
+                              {m.estado}
+                            </span>
+                          </div>
+                        ) : (
+                          <p className="mensaje-vacio">No hay mudanzas programadas para esta unidad.</p>
+                        );
+                      })()
+                    )}
+                  </div>
+                </section>
+
+                {/* 6. CHAMADOS ABIERTOS / TICKETS DE MANTENIMIENTO */}
+                <section className="tarjeta">
+                  <h2>
+                    <Icon n="alerta" s={18} /> Tickets de Mantenimiento{" "}
+                    <span className="cnt">
+                      {overviewData ? overviewData.openIncidents.length : reclamosUnidad.length}
+                    </span>
+                  </h2>
+                  <div className="cuerpo">
+                    {overviewData ? (
+                      overviewData.openIncidents.length === 0 ? (
+                        <p className="mensaje-vacio">No hay incidentes abiertos para esta unidad en la API.</p>
+                      ) : (
+                        overviewData.openIncidents.map((inc) => (
+                          <div className="fila-op" key={inc.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div>
+                              <b>{inc.title}</b>
+                              <i>Prioridad: {inc.priority} · {inc.createdAt ? hace(inc.createdAt) : "Reciente"}</i>
+                            </div>
+                            <span className="pastilla">{inc.status}</span>
+                          </div>
+                        ))
+                      )
+                    ) : (
+                      /* Fallback local */
+                      reclamosUnidad.length === 0 ? (
+                        <p className="mensaje-vacio">No hay incidentes reportados.</p>
+                      ) : (
+                        reclamosUnidad.map((rec) => (
+                          <div className="fila-op" key={rec.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div>
+                              <b>{rotuloCategoria(rec.categoria)}</b>
+                              <i>{rec.codigo} · {rec.ubicacion} · {hace(rec.creadoEl)}</i>
+                            </div>
+                            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                              <span className={"pastilla " + (rec.estado === "resuelto" ? "gris" : "")}>
+                                {rec.estado}
+                              </span>
+                              {rec.estado !== "resuelto" && (
+                                <button
+                                  type="button"
+                                  onClick={() => resolverReclamo(rec.id)}
+                                  style={{
+                                    padding: "4px 8px", fontSize: 11, borderRadius: 4,
+                                    border: "1px solid var(--borde)", background: "var(--amarillo)",
+                                    color: "#111", cursor: "pointer", fontWeight: 600
+                                  }}
+                                >
+                                  Resolver
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      )
+                    )}
+                  </div>
+                </section>
+
+                {/* 7. TIMELINE CRONOLÓGICA DE AUDITORÍA 360° */}
+                <section className="tarjeta" style={{ gridColumn: "1 / -1" }}>
+                  <h2>
+                    <Icon n="reloj" s={18} /> Auditoría y Trazabilidad Inmutable 360°{" "}
+                    <span className="cnt">
+                      {overviewData ? overviewData.recentAuditTimeline.length : eventosUnidad.length}
+                    </span>
                   </h2>
                   <div className="cuerpo" style={{ maxHeight: 320, overflowY: "auto" }}>
-                    {eventosUnidad.length === 0 ? (
-                      <p className="mensaje-vacio">Sin eventos auditados.</p>
-                    ) : (
-                      <div className="linea-tiempo">
-                        {eventosUnidad.map((ev) => (
-                          <div key={ev.id} style={{ padding: "8px 0", borderBottom: "1px solid var(--borde)" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--tx-sec)" }}>
-                              <span>{ev.responsable} ({ev.rol})</span>
-                              <span>{hace(ev.cuando)}</span>
+                    {overviewData ? (
+                      overviewData.recentAuditTimeline.length === 0 ? (
+                        <p className="mensaje-vacio">Sin eventos auditados en el timeline de la unidad.</p>
+                      ) : (
+                        <div className="linea-tiempo">
+                          {overviewData.recentAuditTimeline.map((item, idx) => (
+                            <div key={idx} style={{ padding: "8px 0", borderBottom: "1px solid var(--borde)" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--tx-sec)" }}>
+                                <span><b>{item.module}</b> · Acción: <code>{item.action}</code></span>
+                                <span>{item.timestamp ? hace(item.timestamp) : "Reciente"} ({item.timestamp ? fechaHora(item.timestamp) : ""})</span>
+                              </div>
+                              <div style={{ fontWeight: 600, fontSize: 13, marginTop: 3 }}>{item.description}</div>
                             </div>
-                            <div style={{ fontWeight: 600, fontSize: 13, marginTop: 2 }}>{ev.titulo}</div>
-                            {ev.detalle && <div style={{ fontSize: 12, color: "var(--tx-ter)", marginTop: 2 }}>{ev.detalle}</div>}
-                          </div>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
+                      )
+                    ) : (
+                      /* Fallback local */
+                      eventosUnidad.length === 0 ? (
+                        <p className="mensaje-vacio">Sin eventos auditados.</p>
+                      ) : (
+                        <div className="linea-tiempo">
+                          {eventosUnidad.map((ev) => (
+                            <div key={ev.id} style={{ padding: "8px 0", borderBottom: "1px solid var(--borde)" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--tx-sec)" }}>
+                                <span>{ev.responsable} ({ev.rol})</span>
+                                <span>{hace(ev.cuando)}</span>
+                              </div>
+                              <div style={{ fontWeight: 600, fontSize: 13, marginTop: 2 }}>{ev.titulo}</div>
+                              {ev.detalle && <div style={{ fontSize: 12, color: "var(--tx-ter)", marginTop: 2 }}>{ev.detalle}</div>}
+                            </div>
+                          ))}
+                        </div>
+                      )
                     )}
                   </div>
                 </section>

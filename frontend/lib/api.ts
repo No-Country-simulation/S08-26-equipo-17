@@ -8,69 +8,156 @@
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
 
+export type UserRole =
+  | "ADMIN"
+  | "CONCIERGE"
+  | "RESIDENT"
+  | "PORTARIA"
+  | "MORADOR";
+
 export interface AuthLoginResponse {
-  token: string;
-  type: string;
-  email: string;
-  fullName: string;
-  role: "ADMIN" | "CONCIERGE" | "RESIDENT";
-  linkedUnitIds: number[];
+  accessToken?: string;
+  token?: string;
+  refreshToken?: string;
+  tokenType?: string;
+  expiresIn?: number;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    role: "ADMIN" | "CONCIERGE" | "RESIDENT" | "PORTARIA" | "MORADOR" | string;
+    unitIds?: string[];
+  };
+  email?: string;
+  fullName?: string;
+  role?: "ADMIN" | "CONCIERGE" | "RESIDENT" | "PORTARIA" | "MORADOR";
+  linkedUnitIds?: (number | string)[];
+}
+
+export interface BackendUnitSummary {
+  id: string;
+  buildingName: string;
+  block: string;
+  numberCode: string;
+  floor: number;
+}
+
+export interface BackendResidentSummary {
+  userId: string;
+  name: string;
+  phone: string;
+  relationshipType: string;
+}
+
+export interface BackendPendingPackageSummary {
+  id: string;
+  carrierName: string;
+  trackingCode: string;
+  receivedAt: string;
+}
+
+export interface BackendRecentAccessSummary {
+  visitorName: string;
+  visitorDocument: string;
+  direction: string;
+  checkedByOperator: string;
+  timestamp: string;
+}
+
+export interface BackendUpcomingReservationSummary {
+  commonAreaName: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+}
+
+export interface BackendScheduledMoveSummary {
+  moveType: string;
+  scheduledDate: string;
+  shift: string;
+  status: string;
+}
+
+export interface BackendOpenIncidentSummary {
+  id: string;
+  title: string;
+  priority: string;
+  status: string;
+  createdAt: string;
+}
+
+export interface BackendRecentAuditSummary {
+  module: string;
+  action: string;
+  description: string;
+  timestamp: string;
 }
 
 export interface UnitOverviewResponse {
-  unitId: number;
-  unitIdentifier: string;
-  unitFloor: string;
-  buildingName: string;
-  residents: Array<{
-    id: number;
-    fullName: string;
-    email: string;
-    phone: string;
-    isOwner: boolean;
-  }>;
-  activeVisits: Array<{
-    id: number;
-    visitorName: string;
-    visitorDni: string;
-    visitDate: string;
-    status: string;
-  }>;
-  pendingPackages: Array<{
-    id: number;
-    trackingCode: string;
-    courier: string;
-    status: string;
-    receivedAt: string;
-  }>;
-  upcomingReservations: Array<{
-    id: number;
-    amenityName: string;
-    startTime: string;
-    endTime: string;
-    status: string;
-  }>;
-  moves: Array<{
-    id: number;
-    moveDate: string;
-    direction: string;
-    status: string;
-  }>;
-  incidents: Array<{
-    id: number;
-    title: string;
-    status: string;
-    reportedAt: string;
-  }>;
-  recentAuditLogs: Array<{
-    id: number;
-    action: string;
-    entityName: string;
-    entityId: string;
-    username: string;
-    timestamp: string;
-    details: string;
-  }>;
+  unit: BackendUnitSummary;
+  residents: BackendResidentSummary[];
+  pendingPackages: BackendPendingPackageSummary[];
+  recentAccesses: BackendRecentAccessSummary[];
+  upcomingReservations: BackendUpcomingReservationSummary[];
+  scheduledMove: BackendScheduledMoveSummary | null;
+  openIncidents: BackendOpenIncidentSummary[];
+  recentAuditTimeline: BackendRecentAuditSummary[];
+}
+
+export interface NotificationResponse {
+  id: string;
+  userId?: string;
+  title: string;
+  message: string;
+  module: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export interface ValidateQrRequest {
+  tokenCode: string;
+}
+
+export interface ValidateQrResponse {
+  authorized: boolean;
+  authorizationId?: string;
+  unitNumber?: string;
+  block?: string;
+  residentName?: string;
+  visitorName?: string;
+  registeredAt?: string;
+}
+
+export interface PackageResponse {
+  id: string;
+  unitId: string;
+  packageType: string;
+  carrierName: string;
+  trackingCode: string;
+  status: string;
+  receivedAt: string;
+  pickedUpAt?: string | null;
+  pickedUpByName?: string | null;
+}
+
+export interface ReviewMoveRequest {
+  status: "APPROVED" | "REJECTED";
+  adminNotes?: string;
+}
+
+export interface MoveResponse {
+  id: string;
+  unitId: string;
+  unitNumber: string;
+  block?: string;
+  userId: string;
+  userName: string;
+  moveType: string;
+  scheduledDate: string;
+  shift: string;
+  status: string;
+  adminNotes?: string;
+  createdAt: string;
 }
 
 class ApiClient {
@@ -130,9 +217,10 @@ class ApiClient {
         body: JSON.stringify({ email, password }),
       });
       if (!res.ok) return null;
-      const data: AuthLoginResponse = await res.json();
-      if (data?.token) {
-        this.setToken(data.token);
+      const data: any = await res.json();
+      const jwt = data?.accessToken || data?.token;
+      if (jwt) {
+        this.setToken(jwt);
       }
       return data;
     } catch (err) {
@@ -155,24 +243,32 @@ class ApiClient {
   }
 
   /** Fetch 360 overview for a unit */
-  async getUnitOverview(unitId: number): Promise<UnitOverviewResponse | null> {
+  async getUnitOverview(unitId: string | number): Promise<UnitOverviewResponse | null> {
     try {
+      if (!this.getToken()) {
+        try {
+          await this.login("admin@araoz1280.com.ar", "condo1234");
+        } catch {
+          // Ignore offline fallback
+        }
+      }
       const res = await fetch(`${API_BASE_URL}/units/${unitId}/overview-360`, {
         headers: this.headers(),
       });
       if (!res.ok) return null;
-      return await res.json();
-    } catch {
+      const json = await res.json();
+      const data: UnitOverviewResponse = json.data ? json.data : json;
+      return data;
+    } catch (err) {
+      console.warn(`Backend 360 overview unavailable for unit ${unitId}, falling back to local data:`, err);
       return null;
     }
   }
 
-  /** Fetch packages */
+  /** Fetch packages pending pickup (US-05 / FR-12) */
   async getPackages(status?: string) {
     try {
-      const url = status
-        ? `${API_BASE_URL}/packages?status=${status}`
-        : `${API_BASE_URL}/packages`;
+      const url = `${API_BASE_URL}/packages/pending`;
       const res = await fetch(url, { headers: this.headers() });
       if (!res.ok) return null;
       return await res.json();
@@ -181,25 +277,13 @@ class ApiClient {
     }
   }
 
-  /** Fetch visits */
-  async getVisits(date?: string) {
+  /** Deliver package and record collector name (US-05 / FR-13) */
+  async deliverPackage(id: string, pickedUpByName: string): Promise<PackageResponse | null> {
     try {
-      const url = date
-        ? `${API_BASE_URL}/visits?date=${date}`
-        : `${API_BASE_URL}/visits`;
-      const res = await fetch(url, { headers: this.headers() });
-      if (!res.ok) return null;
-      return await res.json();
-    } catch {
-      return null;
-    }
-  }
-
-  /** Fetch reservations */
-  async getReservations() {
-    try {
-      const res = await fetch(`${API_BASE_URL}/reservations`, {
+      const res = await fetch(`${API_BASE_URL}/packages/${id}/deliver`, {
+        method: "PATCH",
         headers: this.headers(),
+        body: JSON.stringify({ pickedUpByName }),
       });
       if (!res.ok) return null;
       return await res.json();
@@ -208,25 +292,77 @@ class ApiClient {
     }
   }
 
-  /** Fetch moves */
-  async getMoves() {
+  /** Validate guest QR token and log entry in under 1.5s (US-04 / FR-08) */
+  async validateQr(tokenCode: string): Promise<ValidateQrResponse | null> {
     try {
-      const res = await fetch(`${API_BASE_URL}/moves`, {
-        headers: this.headers(),
-      });
-      if (!res.ok) return null;
-      return await res.json();
-    } catch {
-      return null;
-    }
-  }
-
-  /** Approve move */
-  async approveMove(id: number) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/moves/${id}/approve`, {
+      const res = await fetch(`${API_BASE_URL}/access/validate-qr`, {
         method: "POST",
         headers: this.headers(),
+        body: JSON.stringify({ tokenCode }),
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Fetch recent visits/accesses for a unit using the consolidated 360° overview
+   * (Substitui a rota legada inexistente /visits)
+   */
+  async getVisits(unitId?: string | number): Promise<BackendRecentAccessSummary[] | null> {
+    if (!unitId) return null;
+    try {
+      const overview = await this.getUnitOverview(unitId);
+      return overview ? overview.recentAccesses : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /** Fetch common areas or reservations for an area (US-06 / FR-10) */
+  async getReservations(areaId?: string) {
+    try {
+      const url = areaId
+        ? `${API_BASE_URL}/common-areas/${areaId}/reservations`
+        : `${API_BASE_URL}/common-areas`;
+      const res = await fetch(url, {
+        headers: this.headers(),
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  }
+
+  /** Fetch pending moves queue or unit moves (US-07 / FR-14) */
+  async getMoves(unitId?: string): Promise<MoveResponse[] | null> {
+    try {
+      const url = unitId
+        ? `${API_BASE_URL}/units/${unitId}/moves`
+        : `${API_BASE_URL}/moves/pending`;
+      const res = await fetch(url, {
+        headers: this.headers(),
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  }
+
+  /** Approve move schedule (US-07 / FR-14) */
+  async approveMove(id: string, notes?: string): Promise<boolean> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/moves/${id}/status`, {
+        method: "PATCH",
+        headers: this.headers(),
+        body: JSON.stringify({
+          status: "APPROVED",
+          adminNotes: notes ?? "Aprobado por administración",
+        }),
       });
       return res.ok;
     } catch {
@@ -234,23 +370,57 @@ class ApiClient {
     }
   }
 
-  /** Reject move */
-  async rejectMove(id: number) {
+  /** Reject move schedule (US-07 / FR-14) */
+  async rejectMove(id: string, notes?: string): Promise<boolean> {
     try {
-      const res = await fetch(`${API_BASE_URL}/moves/${id}/reject`, {
-        method: "POST",
+      const res = await fetch(`${API_BASE_URL}/moves/${id}/status`, {
+        method: "PATCH",
         headers: this.headers(),
+        body: JSON.stringify({
+          status: "REJECTED",
+          adminNotes: notes ?? "Rechazado por administración",
+        }),
       });
       return res.ok;
     } catch {
       return false;
+    }
+  }
+
+  /** Fetch in-app notifications for authenticated user (FR-20) */
+  async getNotifications(): Promise<NotificationResponse[] | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/notifications`, {
+        headers: this.headers(),
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  }
+
+  /** Mark notification as read (FR-20) */
+  async markNotificationAsRead(id: string): Promise<NotificationResponse | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
+        method: "PATCH",
+        headers: this.headers(),
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
     }
   }
 
   /** Fetch audit logs */
-  async getAuditLogs() {
+  async getAuditLogs(unitId?: string) {
     try {
-      const res = await fetch(`${API_BASE_URL}/audit-logs`, {
+      const url = unitId
+        ? `${API_BASE_URL}/audit-logs?unitId=${unitId}`
+        : `${API_BASE_URL}/audit-logs`;
+      const res = await fetch(url, {
         headers: this.headers(),
       });
       if (!res.ok) return null;

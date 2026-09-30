@@ -1,13 +1,20 @@
 package com.condotrack.modules.move;
 
+import jakarta.persistence.LockModeType;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface MoveRepository extends JpaRepository<MoveSchedule, UUID> {
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT m FROM MoveSchedule m WHERE m.id = :id")
+    Optional<MoveSchedule> findByIdForUpdate(@Param("id") UUID id);
 
     /** Returns true if the shift is already taken by an APPROVED move on the same date. */
     @Query("""

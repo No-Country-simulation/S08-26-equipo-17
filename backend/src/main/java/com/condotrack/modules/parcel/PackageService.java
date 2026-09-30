@@ -62,9 +62,21 @@ public class PackageService {
             "Package " + pkg.getTrackingCode() + " from " + pkg.getCarrierName() + " received by " + operator.getName(),
             "{\"trackingCode\":\"" + pkg.getTrackingCode() + "\"}");
 
-        List<String> emails = userUnitRepository.findResidentsByUnitId(unit.getId()).stream()
-            .map(UserUnit::getUser).map(User::getEmail).toList();
+        List<User> residents = userUnitRepository.findResidentsByUnitId(unit.getId()).stream()
+            .map(UserUnit::getUser)
+            .toList();
+
+        List<String> emails = residents.stream().map(User::getEmail).toList();
         notificationService.notifyPackageArrived(emails, pkg.getCarrierName(), pkg.getTrackingCode(), unit.getNumberCode());
+
+        for (User resident : residents) {
+            notificationService.sendInAppNotification(
+                resident,
+                "Nova encomenda recebida",
+                "Uma encomenda da " + pkg.getCarrierName() + " (código: " + pkg.getTrackingCode() + ") chegou na portaria.",
+                "PACKAGE"
+            );
+        }
 
         return PackageResponse.from(pkg);
     }

@@ -55,15 +55,20 @@ public class SecurityConfig {
                     "/v3/api-docs.yaml"
                 ).permitAll()
                 // Authentication endpoints must be reachable before the user has a token.
-                .requestMatchers("/api/v1/auth/login", "/api/v1/auth/refresh").permitAll()
+                .requestMatchers(
+                    "/api/v1/auth/login",
+                    "/api/v1/auth/refresh",
+                    "/api/v1/auth/forgot-password",
+                    "/api/v1/auth/reset-password"
+                ).permitAll()
                 // hasAnyRole automatically looks for authorities such as ROLE_ADMIN.
-                // ADMIN + RESIDENT can create guest passes, amenity bookings and move requests.
+                // ADMIN + RESIDENT / MORADOR can create guest passes, amenity bookings and move requests.
                 .requestMatchers("/api/v1/access/authorizations", "/api/v1/reservations/**", "/api/v1/moves/**")
-                    .hasAnyRole("ADMIN", "RESIDENT")
-                // ADMIN + CONCIERGE (front desk) validate entries and handle packages.
+                    .hasAnyRole("ADMIN", "RESIDENT", "MORADOR")
+                // ADMIN + CONCIERGE / PORTARIA (front desk) validate entries and handle packages.
                 .requestMatchers("/api/v1/access/**", "/api/v1/packages/**")
-                    .hasAnyRole("ADMIN", "CONCIERGE")
-                .requestMatchers("/api/v1/audit-logs/**").hasAnyRole("ADMIN", "CONCIERGE")
+                    .hasAnyRole("ADMIN", "CONCIERGE", "PORTARIA")
+                .requestMatchers("/api/v1/audit-logs/**").hasAnyRole("ADMIN", "CONCIERGE", "PORTARIA")
                 // Incidents: any authenticated user can POST; GET/PATCH restricted by method-level security.
                 .requestMatchers("/api/v1/incidents/**").authenticated()
                 .anyRequest().authenticated()

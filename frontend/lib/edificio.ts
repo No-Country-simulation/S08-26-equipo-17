@@ -51,14 +51,45 @@ export type Unidad = {
   cuenta: EstadoCuenta;
   saldo: number;
   cochera?: string;
+  uuid?: string;
 };
 
 const u = (
   codigo: string, piso: number, amb: string, metros: number,
-  residentes: string[], cuenta: EstadoCuenta, saldo: number, telefono?: string
-): Unidad => ({ codigo, piso, ambientes: amb, metros, residentes, cuenta, saldo, telefono });
+  residentes: string[], cuenta: EstadoCuenta, saldo: number, telefono?: string, uuid?: string
+): Unidad => ({ codigo, piso, ambientes: amb, metros, residentes, cuenta, saldo, telefono, uuid });
+
+export const UNIT_UUIDS: Record<string, string> = {
+  // Demo V3 (Southern Gardens Condominium / Block B)
+  "101": "12000000-0000-0000-0000-000000000101",
+  "102": "12000000-0000-0000-0000-000000000102",
+  "201": "12000000-0000-0000-0000-000000000201",
+  "202": "12000000-0000-0000-0000-000000000202",
+  // Demo V6 / V2 (Tower A)
+  "7D": "11000000-0000-0000-0000-000000000704",
+  "1A": "11000000-0000-0000-0000-000000000101",
+  "1B": "11000000-0000-0000-0000-000000000102",
+  "2A": "11000000-0000-0000-0000-000000000201",
+  "2B": "11000000-0000-0000-0000-000000000202",
+  "3A": "12000000-0000-0000-0000-000000000101",
+  "3B": "12000000-0000-0000-0000-000000000102",
+};
+
+export function resolverUnitUuid(codigoOuId?: string): string {
+  if (!codigoOuId) return UNIT_UUIDS["101"];
+  if (/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(codigoOuId)) {
+    return codigoOuId;
+  }
+  const cod = codigoOuId.trim().toUpperCase();
+  return UNIT_UUIDS[cod] || UNIT_UUIDS["101"];
+}
 
 export const UNIDADES: Unidad[] = [
+  u("101", 1, "3 ambientes", 70, ["Sofia Resident", "Valentina Family Member"], "al-dia", 0, "+55 01 99999 0101", "12000000-0000-0000-0000-000000000101"),
+  u("102", 1, "2 ambientes", 52, ["Martin Resident"], "al-dia", 0, "+55 01 99999 0202", "12000000-0000-0000-0000-000000000102"),
+  u("201", 2, "3 ambientes", 72, ["Pablo Owner"], "al-dia", 0, "+55 01 99999 0204", "12000000-0000-0000-0000-000000000201"),
+  u("202", 2, "2 ambientes", 48, ["Residente 202"], "al-dia", 0, undefined, "12000000-0000-0000-0000-000000000202"),
+  u("7D", 7, "3 ambientes", 74, PERSONAS.map((p) => p.nombre), "debe", 184250, "+54 9 11 5544 8812", "11000000-0000-0000-0000-000000000704"),
   u("1A", 1, "2 ambientes", 48, ["Noelia Brizuela"], "al-dia", 0, "+54 9 11 4422 1180"),
   u("1B", 1, "2 ambientes", 46, ["Hernán Costa"], "debe", 168400, "+54 9 11 5533 7712"),
   u("2A", 2, "3 ambientes", 71, ["Verónica Ruiz", "Andrés Ruiz"], "al-dia", 0, "+54 9 11 6612 0043"),
@@ -75,7 +106,6 @@ export const UNIDADES: Unidad[] = [
   u("7A", 7, "2 ambientes", 51, ["Silvia Nardi"], "al-dia", 0),
   u("7B", 7, "2 ambientes", 53, ["Pablo Sarmiento"], "al-dia", 0),
   u("7C", 7, "3 ambientes", 70, ["Ana Belén Ortiz"], "al-dia", 0),
-  u("7D", 7, "3 ambientes", 74, PERSONAS.map((p) => p.nombre), "debe", 184250, "+54 9 11 5544 8812"),
   u("8A", 8, "3 ambientes", 75, ["Ricardo Maidana"], "al-dia", 0),
   u("8D", 8, "3 ambientes", 74, ["Elsa Quiroga"], "al-dia", 0),
   u("9A", 9, "4 ambientes", 96, ["Familia Sandoval"], "al-dia", 0),

@@ -23,7 +23,7 @@ public class UnitOverviewController {
      * visits, bookings, moves, incidents, and audit timeline.
      */
     @GetMapping("/{id}/overview-360")
-    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE','RESIDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE','PORTARIA','RESIDENT','MORADOR')")
     public ResponseEntity<ApiResponse<UnitOverviewResponse>> getOverview360(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.ok(unitOverviewService.getOverview(id)));
     }
