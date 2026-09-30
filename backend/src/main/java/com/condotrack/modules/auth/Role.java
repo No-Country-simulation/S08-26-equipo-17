@@ -17,5 +17,19 @@ package com.condotrack.modules.auth;
 public enum Role {
     ADMIN,
     CONCIERGE,
-    RESIDENT
+    RESIDENT,
+    PORTARIA,
+    MORADOR;
+
+    public boolean isResident() {
+        return this == RESIDENT || this == MORADOR;
+    }
+
+    public boolean isConcierge() {
+        return this == CONCIERGE || this == PORTARIA;
+    }
+
+    public boolean isAdmin() {
+        return this == ADMIN;
+    }
 }

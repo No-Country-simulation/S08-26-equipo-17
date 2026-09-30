@@ -131,7 +131,7 @@ public class AccessService {
     private String generateToken() {
         String token;
         do {
-            token = "AUTH-QR-" + String.format("%08X", RANDOM.nextInt(0x10000000, 0xFFFFFFFF));
+            token = "AUTH-QR-" + String.format("%08X", RANDOM.nextLong(0x10000000L, 0x100000000L));
         } while (authorizationRepository.findByTokenCode(token).isPresent());
         return token;
     }

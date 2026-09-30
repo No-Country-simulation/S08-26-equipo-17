@@ -10,4 +10,8 @@ public record AuthResponse(
     public static AuthResponse from(User user, String accessToken, String refreshToken, long expiresIn) {
         return new AuthResponse(accessToken, refreshToken, "Bearer", expiresIn, AuthUserResponse.from(user));
     }
+
+    public static AuthResponse from(User user, java.util.List<java.util.UUID> units, String accessToken, String refreshToken, long expiresIn) {
+        return new AuthResponse(accessToken, refreshToken, "Bearer", expiresIn, AuthUserResponse.from(user, units));
+    }
 }

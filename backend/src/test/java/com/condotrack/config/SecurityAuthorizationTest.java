@@ -53,6 +53,8 @@ class SecurityAuthorizationTest {
     private User admin;
     private User concierge;
     private User resident;
+    private User portaria;
+    private User morador;
     private User inactive;
 
     private static User buildUser(String email, Role role, boolean active) {
@@ -77,6 +79,8 @@ class SecurityAuthorizationTest {
         admin = buildUser("admin@condotrack.com", Role.ADMIN, true);
         concierge = buildUser("concierge@condotrack.com", Role.CONCIERGE, true);
         resident = buildUser("resident@condotrack.com", Role.RESIDENT, true);
+        portaria = buildUser("portaria@condotrack.com", Role.PORTARIA, true);
+        morador = buildUser("morador@condotrack.com", Role.MORADOR, true);
         inactive = buildUser("inactive@condotrack.com", Role.RESIDENT, false);
     }
 
@@ -171,5 +175,49 @@ class SecurityAuthorizationTest {
 
         mockMvc.perform(get("/api/v1/incidents/test").header("Authorization", "Bearer " + token))
             .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("9a. PORTARIA can access front-desk/package and audit operations")
+    void portariaCanAccessConciergeOperations() throws Exception {
+        mockUser(portaria);
+        String token = jwtService.generateAccessToken(portaria);
+
+        mockMvc.perform(get("/api/v1/packages/tracking").header("Authorization", "Bearer " + token))
+            .andExpect(status().isOk());
+        mockMvc.perform(get("/api/v1/audit-logs/list").header("Authorization", "Bearer " + token))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("9b. PORTARIA cannot access resident operations (403)")
+    void portariaForbiddenOnResidentOperations() throws Exception {
+        mockUser(portaria);
+        String token = jwtService.generateAccessToken(portaria);
+
+        mockMvc.perform(get("/api/v1/access/authorizations").header("Authorization", "Bearer " + token))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("10a. MORADOR can access resident operations")
+    void moradorCanAccessResidentOperations() throws Exception {
+        mockUser(morador);
+        String token = jwtService.generateAccessToken(morador);
+
+        mockMvc.perform(get("/api/v1/access/authorizations").header("Authorization", "Bearer " + token))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("10b. MORADOR cannot access front-desk or audit operations (403)")
+    void moradorForbiddenOnConciergeOperations() throws Exception {
+        mockUser(morador);
+        String token = jwtService.generateAccessToken(morador);
+
+        mockMvc.perform(get("/api/v1/packages/tracking").header("Authorization", "Bearer " + token))
+            .andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/v1/audit-logs/list").header("Authorization", "Bearer " + token))
+            .andExpect(status().isForbidden());
     }
 }

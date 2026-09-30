@@ -1,7 +1,7 @@
 # CondoTrack — Centralized Condominium Operations & 360° Traceability Platform
 
 > **Languages / Idiomas / Idiomas:**  
-> [English](#1-english) | [Español](#2-español) | [Português (pt-BR)](#3-português-pt-br) | [Quick Start & Demo](#4-quick-start--execucao-rapida)
+> [English](#1-english) | [Español](#2-español) | [Português (pt-BR)](#3-português-pt-br) | [Quick Start & Demo](#4-quick-start--execucao-rapida) | [Decisões de Arquitetura](#-decisões-de-arquitetura-e-produção)
 
 ---
 
@@ -115,3 +115,23 @@ Todos os usuários de teste cadastrados possuem a senha: **`password123`**
 
 Projeto desenvolvido durante a **Simulação No Country — Turma S08-26 (Equipe 17)**.  
 Consulte o guia de colaboração da equipe em [**`CONTRIBUTING.md`**](./CONTRIBUTING.md).
+
+---
+
+## 📐 Decisões de Arquitetura e Produção
+
+1. **Terminação TLS/HTTPS (RNF-01):**
+   - Conforme as melhores práticas para contêineres (*12-Factor App*), a terminação TLS/HTTPS é realizada na camada de borda / proxy reverso. O projeto disponibiliza o serviço `reverse-proxy` (Nginx) no `docker-compose.yml` escutando nas portas `80` (HTTP) e `443` (HTTPS) com certificados SSL em `docker/nginx/certs/`, encaminhando o tráfego de forma segura para o backend e frontend com cabeçalhos `X-Forwarded-Proto`.
+
+2. **Privacidade e Proteção de Arquivos (RNF-03):**
+   - Nenhuma imagem ou anexo é exposto publicamente. O acesso às fotos de chamados é restrito pelo endpoint autenticado `GET /api/v1/incidents/photos/{filename}`, onde apenas operadores (`ADMIN`, `PORTARIA`) ou o morador associado à unidade do chamado têm autorização de visualização (retornando `403 Forbidden` para vizinhos e `401 Unauthorized` para anônimos).
+
+3. **Estratégia de Banco de Dados e Testes (CI/CD vs Produção):**
+   - **Ambiente de Testes (CI/CD):** 114 testes automatizados executam em menos de 9 segundos utilizando banco em memória com dialeto compatível, garantindo portabilidade sem acoplamento obrigatório a daemons externos de Docker.
+   - **Ambiente de Produção e Homologação:** A aplicação executa contra PostgreSQL 16 real via migrations Flyway versionadas (`V1` a `V9`) com triggers de integridade append-only (`trg_audit_logs_immutable`) e constraints relacionais rígidas.
+
+4. **Arquitetura da Interface (SPA Mobile-First):**
+   - O frontend utiliza uma estratégia de *Single Page Application (SPA)* otimizada em Next.js para atender ao requisito de mínima fricção operacional na portaria (RNF-06 e RNF-07), com alternância instantânea de visão e sincronização em tempo real via REST API com o backend.
+
+5. **Validação de SLA do QR Code (RNF-04):**
+   - O endpoint `/api/v1/access/validate-qr` possui SLA de resposta estritamente inferior a 1,5 segundos (média observada em testes: < 40 ms), comprovado por testes automatizados de ponta a ponta.

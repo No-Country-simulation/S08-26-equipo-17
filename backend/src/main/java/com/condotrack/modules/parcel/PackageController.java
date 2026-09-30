@@ -24,14 +24,14 @@ public class PackageController {
     /** Registers a package received by the concierge team. */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE')")
+    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE','PORTARIA')")
     public PackageResponse register(@Valid @RequestBody RegisterPackageRequest req) {
         return packageService.register(req);
     }
 
     /** Returns packages that are still waiting for resident pickup. */
     @GetMapping("/pending")
-    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE')")
+    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE','PORTARIA')")
     public Page<PackageResponse> listPending(
             @PageableDefault(size = 20, sort = "receivedAt",
                 direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
@@ -40,7 +40,7 @@ public class PackageController {
 
     /** Marks a package as delivered and stores who picked it up. */
     @PatchMapping("/{id}/deliver")
-    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE')")
+    @PreAuthorize("hasAnyRole('ADMIN','CONCIERGE','PORTARIA')")
     public PackageResponse deliver(@PathVariable UUID id, @Valid @RequestBody DeliverPackageRequest req) {
         return packageService.deliver(id, req);
     }

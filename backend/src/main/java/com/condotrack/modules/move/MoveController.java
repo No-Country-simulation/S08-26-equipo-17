@@ -27,7 +27,7 @@ public class MoveController {
 
     /** Lists all moves for a specific unit. */
     @GetMapping("/api/v1/units/{unitId}/moves")
-    @PreAuthorize("hasAnyRole('ADMIN','PORTARIA','RESIDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','PORTARIA','CONCIERGE','RESIDENT','MORADOR')")
     public List<MoveResponse> listByUnit(@PathVariable UUID unitId) {
         return moveService.listByUnit(unitId);
     }
@@ -35,7 +35,7 @@ public class MoveController {
     /** Resident requests a move-in or move-out shift. */
     @PostMapping("/api/v1/moves")
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','RESIDENT','MORADOR')")
     public MoveResponse create(@Valid @RequestBody CreateMoveRequest req) {
         return moveService.create(req);
     }

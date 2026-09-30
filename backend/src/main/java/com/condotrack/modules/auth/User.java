@@ -48,6 +48,9 @@ public class User implements UserDetails {
     @Column(name = "created_at", nullable = false, updatable = false)
     private java.time.OffsetDateTime createdAt = java.time.OffsetDateTime.now();
 
+    @jakarta.persistence.OneToMany(mappedBy = "user", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
+    private List<com.condotrack.modules.notification.UserNotification> notifications = new java.util.ArrayList<>();
+
     protected User() {
     }
 
@@ -91,9 +94,13 @@ public class User implements UserDetails {
         return active;
     }
 
+    public void updatePassword(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return CustomUserDetailsService.getAuthoritiesForRole(role);
     }
 
     @Override

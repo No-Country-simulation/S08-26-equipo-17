@@ -58,6 +58,9 @@ public class IncidentTicket {
     @Column(name = "resolved_at")
     private OffsetDateTime resolvedAt;
 
+    @Column(name = "resolution_notes", columnDefinition = "TEXT")
+    private String resolutionNotes;
+
     protected IncidentTicket() {}
 
     public IncidentTicket(Building building, Unit unit, User createdBy,
@@ -74,8 +77,15 @@ public class IncidentTicket {
     }
 
     public void updateStatus(IncidentStatus newStatus, User assignedTo) {
+        updateStatus(newStatus, assignedTo, null);
+    }
+
+    public void updateStatus(IncidentStatus newStatus, User assignedTo, String resolutionNotes) {
         this.status = newStatus;
         if (assignedTo != null) this.assignedTo = assignedTo;
+        if (resolutionNotes != null && !resolutionNotes.isBlank()) {
+            this.resolutionNotes = resolutionNotes;
+        }
         if (newStatus == IncidentStatus.RESOLVED || newStatus == IncidentStatus.CLOSED) {
             this.resolvedAt = OffsetDateTime.now();
         }
@@ -94,4 +104,6 @@ public class IncidentTicket {
     public IncidentStatus getStatus() { return status; }
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public OffsetDateTime getResolvedAt() { return resolvedAt; }
+    public String getResolutionNotes() { return resolutionNotes; }
+    public void setResolutionNotes(String resolutionNotes) { this.resolutionNotes = resolutionNotes; }
 }
