@@ -29,14 +29,10 @@ export function G11({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
     <div className="vista" id="g11">
       <TopBar volverA="r08" ir={ir} />
 
-      <div className="cabecera-ent">
-        <span className="et">Entrega</span>
-        <h1>{e.remitente}</h1>
-      </div>
+      {/* G11 · la card de seguimiento es la cabecera: lleva el título */}
+      <PanelEntrega e={e} conTitulo />
 
-      <PanelEntrega e={e} />
-
-      <FinLista texto="Fin del historial de la entrega" />
+      <FinLista texto="Nada más para mostrar" />
     </div>
   );
 }

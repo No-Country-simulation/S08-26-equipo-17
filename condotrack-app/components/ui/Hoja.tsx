@@ -23,7 +23,7 @@ const UMBRAL = 96;          // px de arrastre para que cierre
 
 export function Hoja({
   titulo, texto, confirmar, onConfirmar, onCancelar, peligro, children,
-  cerrarRotulo = "Cancelar", sinAcciones = false, alto,
+  cerrarRotulo = "Cancelar", sinAcciones = false, alto, bloqueado = false,
 }: {
   titulo: string;
   texto?: string;
@@ -37,6 +37,8 @@ export function Hoja({
   sinAcciones?: boolean;
   /** "alta" cuando el contenido es largo y conviene ocupar casi todo. */
   alto?: "auto" | "alta";
+  /** Confirmar queda deshabilitado mientras falte un dato obligatorio. */
+  bloqueado?: boolean;
 }) {
   const caja = useRef<HTMLDivElement | null>(null);
   /* La hoja se dibuja en el marco de la pantalla, no adentro de la vista.
@@ -89,8 +91,11 @@ export function Hoja({
     return () => { if (fondo) fondo.style.overflow = antes; };
   }, []);
 
-  /* Foco: entra al primer control y vuelve al que lo abrió. */
+  /* Foco: entra al primer control y vuelve al que lo abrió. Espera al
+     marco: en el primer render la hoja todavía no existe (se dibuja por
+     portal recién cuando se encontró .device) y el foco quedaba afuera. */
   useEffect(() => {
+    if (!marco) return;
     const previo = document.activeElement as HTMLElement | null;
     const primero = caja.current?.querySelector<HTMLElement>(
       "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
@@ -115,7 +120,7 @@ export function Hoja({
       t.forEach((x) => window.clearTimeout(x));
       previo?.focus?.();
     };
-  }, [cerrar]);
+  }, [cerrar, marco]);
 
   /* Arrastre hacia abajo. Sólo desde el agarre y la cabecera: si tomara
      toda la hoja, no se podría scrollear su contenido. */
@@ -179,7 +184,7 @@ export function Hoja({
           <div className="hoja-acciones">
             {confirmar && onConfirmar && (
               <button className={"entrar" + (peligro ? " peligro" : "")} type="button"
-                onClick={confirmarYCerrar}>
+                onClick={confirmarYCerrar} disabled={bloqueado}>
                 {confirmar}
               </button>
             )}

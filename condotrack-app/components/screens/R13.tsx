@@ -5,7 +5,7 @@ import { Ficha, Dato } from "../ui/Panel";
 import { FinLista } from "../ui/FinLista";
 import { Error as ErrorEstado } from "../ui/Estados";
 import { ESPACIOS, RECURSOS, type Vista } from "@/lib/data";
-import { cupoDelDia, diaCon, dias, diaCorto, numDia, esHoy, turnosDelDia } from "@/lib/reservas";
+import { diaCon, dias, diaCorto, numDia, esHoy, turnosDelDia, turnos } from "@/lib/reservas";
 import { useApp } from "@/lib/estado";
 
 /** R13 · Espacio común, detalle.
@@ -49,17 +49,26 @@ export function R13({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
         <Dato k="Turnos por día" v={String(turnosDelDia(e, diaCon(0)))} />
       </Ficha>
 
+      {/* v04 · A2 · la disponibilidad de la semana en un riel de vidrio:
+          cada día dice cuántos turnos quedan (con una barra de lo tomado) y
+          lleva a reservar. "Cerró" cuando el día ya terminó, no "sin lugar". */}
       <h2 className="sec">Disponibilidad</h2>
-      <div className="dispo">
+      <div className="dispo" role="list" aria-label={"Disponibilidad de " + e.nombre + " esta semana"}>
         {proximos.map((d, n) => {
-          const cupo = cupoDelDia(e, d, estado.reservas);
+          const ts = turnos(e, d, estado.reservas).filter((t) => t.bloqueo !== "pasada");
+          const cupo = ts.filter((t) => !t.bloqueo).length;
           const total = turnosDelDia(e, d);
+          const cerro = ts.length === 0;
+          const texto = cerro ? "Cerró" : cupo === 0 ? "Completo" : cupo === 1 ? "1 libre" : `${cupo} libres`;
           return (
-            <div key={n} className={"dia-d" + (cupo === 0 ? " sin" : "")}>
-              <i>{esHoy(d) ? "hoy" : diaCorto(d)}</i>
+            <button key={n} type="button" role="listitem" onClick={() => ir("r05", e.id)}
+              className={"dia-d" + (cupo === 0 ? " sin" : cupo <= 2 ? " poco" : "")}
+              aria-label={`${esHoy(d) ? "Hoy" : diaCorto(d)} ${numDia(d)}: ${texto}. Reservar`}>
+              <i>{esHoy(d) ? "Hoy" : diaCorto(d)}</i>
               <b>{numDia(d)}</b>
-              <span>{cupo === 0 ? "sin lugar" : `${cupo}/${total}`}</span>
-            </div>
+              <span className="dia-d-barra" aria-hidden="true"><em style={{ width: `${Math.round((1 - cupo / Math.max(1, total)) * 100)}%` }} /></span>
+              <span className="dia-d-tx">{texto}</span>
+            </button>
           );
         })}
       </div>

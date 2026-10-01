@@ -1,0 +1,1192 @@
+CONDOTRACK — R1.6 FINAL VISUAL CLOSE — SINGLE HANDOFF
+Fecha: 23/09/2026
+
+INSTRUCCIÓN DE ARRANQUE PARA CODEX
+1. Trabajar únicamente en E:\- DISEÑO WEB\CondoTrack\_github-sync\condotrack-app
+2. Branch: UxUi
+3. Antes de tocar código, leer AGENTS.md completo.
+4. NO modificar E:\- DISEÑO WEB\CondoTrack\condotrack-app, frontend/ ni backend/.
+5. NO commit ni push hasta aprobación de Felipe.
+6. R1.6 es cierre visual de RECEPCIÓN, no rediseño funcional ni reconstrucción desde cero.
+7. Conservar lógica, datos, routing y responsive existentes salvo que el handoff indique corrección concreta.
+
+IMPORTANTE SOBRE REFERENCIAS
+Este TXT contiene la matriz y las reglas. Las imágenes aprobadas U01–U11 y el target de Home deben estar disponibles para inspección visual. No sustituirlas por referencias nuevas.
+
+================================================================
+DOCUMENTO 00 — APPROVED REFERENCE MATRIX
+================================================================
+# CondoTrack — R1.6 FINAL VISUAL CLOSE
+## 00_APPROVED_REFERENCE_MATRIX_R16_FINAL.md
+
+**Status:** LOCKED / AUTHORITATIVE FOR R1.6  
+**Scope:** Reception visual close only. Administration comes later.  
+**Do not replace, broaden or reinterpret the approved reference set without Felipe's explicit approval.**
+
+## 0. Mandatory reading order before any code edit
+
+1. `AGENTS.md` in the canonical repository root.
+2. `docs/00_APPROVED_REFERENCE_MATRIX_R16_FINAL.md`.
+3. `CondoTrack_R16_FINAL_Approved_References.pdf` and the individual files under `references/`.
+4. `docs/02_UX_RESEARCH_GUARDRAILS.md`.
+5. `docs/03_MOTION_AND_SENSOR_SPEC.md`.
+6. `docs/01_CODEX_R16_FINAL_PASS_PROMPT.md`.
+
+The PDF does **not** replace the three executable markdown specifications. If any required file is missing, stop before editing and report exactly what is missing.
+
+## 1. Repository lock
+
+Canonical repo:
+`E:\- DISEÑO WEB\CondoTrack\_github-sync\condotrack-app`
+
+Branch:
+`UxUi`
+
+Do **not** modify:
+- `E:\- DISEÑO WEB\CondoTrack\condotrack-app`
+- `frontend/`
+- `backend/`
+
+No commit and no push until explicit approval.
+
+Primary review URL:
+`http://localhost:3001/?perfil=recepcion&p=app&v=p01&limpio=1&tema=claro`
+
+Desktop priority viewport: **1440 x 900**.
+
+## 2. Product / visual system lock
+
+Typography: **Satoshi**.
+
+Core colors:
+- Yellow: `#F5E500`
+- Charcoal: `#111614`
+- Warm background: `#F4F5F1`
+- Surface: `#FFFFFF`
+- Secondary text: `#515A56`
+
+Visual character:
+- premium
+- editorial
+- architectural
+- operationally legible
+- contemporary
+- restrained
+
+Hard negatives:
+- no generic SaaS dashboard language
+- no universal white rounded-card grid
+- no decorative glass everywhere
+- no yellow active navigation
+- no random architecture photography
+- no new reference family
+- no ornamental permanent animation
+- no economic data in Reception unless operationally required
+
+Yellow is an accent and state/action signal. Active navigation is by **charcoal/contrast**, not yellow. Red/green are semantic only.
+
+The header must use the correct **MASTER CondoTrack logo already present in the project assets**. Do not redraw, regenerate or approximate the logo.
+
+## 3. Approved reference set
+
+### U01 — `U01_planner_clock_calendar.png`
+**Role:** materiality + temporal UI.
+
+Take:
+- restrained glass
+- recessed/raised surfaces
+- clock prominence
+- calendar hierarchy
+- soft controls
+- breathing room
+- low color density
+
+Apply to:
+- Home command center materiality
+- Agenda
+- contextual time/date panels
+
+Do not copy:
+- literal content
+- device chrome
+- decorative effects without operational purpose
+
+### U02 — `U02_volvo_modular_dashboard.png`
+**Role:** primary Home composition reference.
+
+Take:
+- floating/airy header
+- dominant central surface
+- symmetrical left/right rails
+- simple controls
+- modular lower information zones
+- strong hierarchy without admin-dashboard density
+
+Apply to:
+- Home Recepción only as the main compositional reference
+
+Critical lock:
+- 3 left rail controls + 3 right rail controls
+- both rails same scale, height, rhythm and language
+- contextual interaction opens a complete panel, not a tiny tooltip
+- Home remains a command center, not a table
+
+### U03 — `U03_sleep_editorial_dashboard.png`
+**Role:** large-format editorial impact.
+
+Take:
+- scale
+- large negative space
+- strong typography
+- restrained data surfaces
+
+Apply to:
+- Administration later
+- only very selectively in large Reception surfaces
+
+Do not:
+- turn all Reception into editorial storytelling
+
+### U04 — `U04_glass_photography_cards.png`
+**Role:** glass/depth behavior and image/material contrast.
+
+Take:
+- layered depth
+- controlled translucency
+- readable glass over a meaningful background
+- subtle borders/elevation
+
+Apply to:
+- Home glass surfaces
+- contextual panels where the background contributes to hierarchy
+
+Do not:
+- put glass on every form/list/table
+- use random photography
+
+### U05 — `U05_management_modular_dashboard.png`
+**Role:** component family / modular widgets.
+
+Take:
+- card/widget proportions
+- hierarchy between primary and secondary modules
+- strong but restrained contrast
+- compact controls
+- coherent module family
+
+Apply to:
+- Home lower modules
+- Entregas
+- Unidades
+- Incidencias
+- general component refinement
+
+Do not:
+- introduce a separate visual family
+- create dense KPI admin grids
+
+### U06 — `U06_security_dashboard.png`
+**Role:** operational status UI.
+
+Take:
+- immediate state reading
+- severity/status distinction
+- clear primary action
+- scan/verify/security hierarchy
+- strong contrast where operationally necessary
+
+Apply to:
+- Accesos
+- Incidencias
+- operational status panels
+
+Do not:
+- turn errors/success into generic colored cards
+
+### U07 — `U07_timepiece_editorial_grid.png`
+**Role:** Swiss grid + timepiece hierarchy.
+
+Take:
+- grid discipline
+- divisors
+- typographic hierarchy
+- clock treatment
+- list/table structure
+
+Apply to:
+- Home clock
+- Unidades list
+- Activity/bitácora
+- structured operational lists
+
+Do not:
+- over-minimize text until it becomes hard to scan
+
+### U08 — `U08_timeline_calendar_modal.png`
+**Role:** calendar + temporal detail + contextual disclosure.
+
+Take:
+- calendar and timeline coexisting
+- clear next-event emphasis
+- contextual modal/panel behavior
+- date hierarchy
+
+Apply to:
+- Agenda
+
+### U09 — `U09_timeline_journey.png`
+**Role:** chronological progression.
+
+Take:
+- strong time axis
+- grouping
+- milestone/event hierarchy
+- progressive disclosure
+
+Apply to:
+- Agenda
+- Actividad
+- histories inside modules
+
+### U10 — `U10_workflow_timeline.png`
+**Role:** workflow / event progression.
+
+Take:
+- event sequence
+- state progression
+- current step emphasis
+- disclosure without noise
+
+Apply to:
+- Actividad
+- Access verification flow
+- Incidencias history
+
+### U11 — `U11_mobile_search_bottom_nav.png`
+**Role:** secondary responsive/search reference.
+
+Take:
+- compact control behavior
+- search reveal economy
+- mobile spatial reorganization
+
+Apply to:
+- responsive search behavior only
+
+Do not:
+- import its navigation system wholesale into desktop Reception
+
+## 4. Context image, not a new reference
+
+`context/CondoTrack_HOME_Recepcion_Target_R14.png`
+
+Use only as a record of the latest approved Home direction / target. It does not override U02 Volvo or the matrix above. If it conflicts with explicit written locks, the written locks win.
+
+## 5. Screen-by-screen reference map
+
+| Surface | Primary references | Secondary references | Non-negotiable outcome |
+|---|---|---|---|
+| Home | U02 Volvo | U01, U04, U05, U07 | Command center, symmetric rails, large clock, lower modules, abstract CondoTrack background |
+| Search | U11 | U02 | Compact control expands left, keyboard navigation, Escape closes, no stuck input |
+| Agenda | U01, U08 | U09, U10, U07 | Real mini-calendar + day timeline + next event prominence |
+| Accesos | U06 | U10, U05 | Verify pass -> identity/state -> register entry; scanner prominent |
+| Entregas | U05 | U06 | Clear Recibido/Avisado/Retirado hierarchy; compact side drawer |
+| Unidades | U07, U05 | U09 | Search + floor filters + legible list-detail + progressive disclosure |
+| Incidencias | U06 | U05, U10 | Immediate severity/state/title/context reading; compact side form |
+| Actividad | U09, U10 | U07 | True chronological log with timestamps, filters, groups and disclosure |
+| Profile | U05 | — | Real dropdown with profile, role switch when applicable, sign out |
+| Dark mode | same approved system | U04 for depth | Real token system; no mechanical inversion |
+
+## 6. Reception content/role locks
+
+### Agenda
+Must include operational event types such as:
+- visitas
+- proveedores
+- reservas
+- tareas
+- **mudanzas aprobadas**
+
+Reception does **not** create or approve moves. It only sees/operates already approved moves.
+
+Example:
+`14:00 · MUDANZA · Mudanza de salida · Unidad 8A · Aprobada · ascensor de servicio`
+
+### Entregas
+Allowed states:
+- Recibido
+- Avisado
+- Retirado
+
+Action copy depends on context:
+- Registrar retiro
+- Confirmar entrega
+
+### Accesos
+Flow:
+1. verificar pase
+2. mostrar identidad/estado
+3. registrar ingreso
+
+Required status language:
+- AUTORIZADO
+- VENCIDO
+- NO ENCONTRADO
+
+### Unidades
+Do not expose non-operational finance or unnecessary property data such as:
+- deuda
+- cuenta corriente
+- m²
+
+### Activity
+Home contains only a preview. Full Activity is the real bitácora.
+
+## 7. Acceptance lens
+
+R1.6 is successful when Reception feels like one coherent CondoTrack product with stronger composition, materiality, hierarchy and motion **without changing the functional architecture that R1.5 already got mostly right**.
+
+================================================================
+DOCUMENTO 02 — UX RESEARCH GUARDRAILS
+================================================================
+# CondoTrack — R1.6 FINAL VISUAL CLOSE
+## 02_UX_RESEARCH_GUARDRAILS.md
+
+**Scope:** UX constraints for the Reception visual-close pass.  
+**Purpose:** improve visual quality without breaking operational clarity or inventing new product behavior.
+
+## 1. Core principle
+
+This pass is not a product rewrite. Preserve existing data, routing and working flows unless a documented R1.6 requirement explicitly corrects them.
+
+Visual refinement must improve:
+- status visibility
+- recognition over recall
+- scan speed
+- consistency
+- error prevention/recovery
+- user control
+- accessibility
+- responsive continuity
+
+Do not use UX heuristics as an excuse to flatten CondoTrack into generic SaaS UI.
+
+## 2. Operational hierarchy
+
+Reception is a fast operational role. On every screen, the user should be able to identify within seconds:
+1. where they are;
+2. what is happening now;
+3. the most important state;
+4. the next valid action;
+5. how to recover/cancel/close.
+
+Prefer one clear primary action per operational context.
+
+## 3. State visibility
+
+Never communicate state by color alone.
+
+Use combinations of:
+- explicit label
+- icon where useful
+- textual status
+- position/hierarchy
+- semantic color
+
+Critical examples:
+- Accesos: AUTORIZADO / VENCIDO / NO ENCONTRADO must be unmistakable before the action is taken.
+- Entregas: Recibido / Avisado / Retirado must not rely only on hue.
+- Incidencias: severity and workflow state are separate concepts and must be separately readable.
+
+## 4. Recognition before recall
+
+Keep relevant context visible when it reduces memory load:
+- unit number
+- person/visitor name
+- event time
+- current status
+- associated access/pass
+- incident location/context
+
+Use progressive disclosure for secondary detail instead of hiding primary context behind multiple clicks.
+
+## 5. Lists and list-detail behavior
+
+For Unidades, Incidencias and Activity:
+- preserve list context when detail opens;
+- selected row/item must remain identifiable;
+- desktop detail should use a side panel/drawer or dedicated detail region, not a giant mobile bottom sheet;
+- back/close must return to the same scroll/filter state where feasible;
+- headers and columns must have stronger hierarchy than body rows;
+- long detail belongs behind disclosure, not in every row.
+
+## 6. Search behavior
+
+The global Reception search is a compact control, not a permanently exposed dashboard input.
+
+On activation:
+- expand horizontally **toward the left**;
+- reorganize surrounding space smoothly rather than overlap unpredictably;
+- autofocus the input;
+- show the query clearly;
+- present useful grouped results;
+- support keyboard navigation with Up/Down;
+- Enter opens the focused result;
+- Escape closes and restores the compact control;
+- focus returns to the trigger after close when appropriate.
+
+Do not:
+- open a full-screen search modal on desktop without need;
+- trap keyboard focus incorrectly;
+- leave the expanded input visually stuck;
+- hide the close/escape path.
+
+## 7. Forms and drawers
+
+Desktop operational forms should be compact side drawers/panels with clear ownership of the action.
+
+Requirements:
+- visible title and context
+- concise labels
+- validation close to the field
+- primary action visible without excessive scrolling
+- cancel/close path
+- preserve entered data if an accidental non-destructive close can reasonably be recovered
+- do not use a huge mobile-style sheet on 1440 x 900
+
+## 8. Error prevention and recovery
+
+Before destructive or state-changing actions:
+- make the object and action explicit;
+- disable impossible actions with an explanation where useful;
+- avoid ambiguous double-primary buttons.
+
+After action:
+- show immediate state confirmation;
+- preserve a recovery path where the product supports it;
+- avoid success states that obscure the next operational task.
+
+For access verification:
+- scanning/verifying does not itself equal registering an entry;
+- show verified identity/state before `Registrar ingreso`.
+
+## 9. Role and permission correctness
+
+Reception must not be shown controls that imply authority it does not have.
+
+### Mudanzas
+Reception can:
+- see an approved move
+- inspect operational details
+- act on the building-day workflow if already supported
+
+Reception cannot:
+- approve a move
+- reject a move
+- create an approval decision
+
+### Unidades
+Hide finance and non-operational property detail unless explicitly required by an existing working Reception flow.
+
+## 10. Navigation consistency
+
+Active desktop navigation is indicated through **charcoal/contrast**, not yellow.
+
+Keep:
+- stable destination naming
+- stable icon language
+- stable order where already functional
+- no duplicate navigation patterns inside the same shell
+
+Contextual rails on Home are actions/contexts, not a second global navigation system.
+
+## 11. Profile control
+
+The `DS` profile control must open a real dropdown containing:
+- Perfil
+- Cambiar perfil/rol when supported and applicable
+- Cerrar sesión
+
+The menu must:
+- have keyboard focus management
+- close with Escape
+- close on outside click
+- expose a clear focused/selected state
+
+## 12. Accessibility
+
+### Contrast
+Meet WCAG AA for normal operational text and controls.
+
+Pay special attention to:
+- small secondary labels
+- placeholder text
+- glass surfaces
+- dark mode borders
+- disabled controls
+- status text
+
+### Focus
+Every interactive element must expose a visible keyboard focus state in both themes.
+
+### Targets
+Use comfortable targets. As a working minimum:
+- touch-oriented controls: ~44 x 44 px
+- dense desktop controls: do not reduce below a comfortably clickable ~36-40 px target without a strong reason
+
+### Motion
+Respect `prefers-reduced-motion` per `03_MOTION_AND_SENSOR_SPEC.md`.
+
+## 13. Responsive guardrails
+
+Desktop 1440 x 900 is the priority review surface, but R1.6 must not regress responsive behavior.
+
+When reducing width:
+- preserve action priority;
+- collapse secondary information before primary state/action;
+- maintain readable hit targets;
+- do not simply scale the entire desktop layout down;
+- rails/panels may stack or transform, but must preserve the same information model.
+
+## 14. Dark mode guardrails
+
+Dark mode requires explicit tokens for:
+- background
+- surface
+- elevated surface
+- text primary
+- text secondary
+- border
+- glass
+- elevation/shadow
+- hover
+- focus
+- statuses
+
+Do not mechanically invert light-mode values.
+
+Dark mode should preserve:
+- hierarchy
+- semantic status meaning
+- readable glass
+- restrained yellow accent
+- distinct surface depths
+
+## 15. Copy and density
+
+Use concise operational Spanish.
+
+Avoid:
+- paragraphs inside operational cards
+- redundant helper copy
+- AI-sounding summaries
+- decorative labels that do not change a decision
+
+Prefer:
+- short labels
+- explicit status
+- time/unit/person context
+- one next action
+
+## 16. QA checklist before declaring Reception visually closed
+
+- Home still behaves as command center, not admin dashboard.
+- Search works with mouse and keyboard and closes with Escape.
+- Agenda exposes a real temporal model, not a generic event list.
+- Mudanzas are shown only as approved operational events.
+- Access verification and entry registration remain separate steps.
+- Entregas use only the locked states and correct contextual action.
+- Unidades do not expose irrelevant finance/property detail.
+- Incidencias separate severity from workflow state.
+- Activity is chronological and timestamped with progressive disclosure.
+- Profile dropdown is real and keyboard-usable.
+- Dark mode uses real tokens and preserves hierarchy.
+- Responsive does not regress.
+- No new visual-reference family has been introduced.
+
+================================================================
+DOCUMENTO 03 — MOTION AND SENSOR SPEC
+================================================================
+# CondoTrack — R1.6 FINAL VISUAL CLOSE
+## 03_MOTION_AND_SENSOR_SPEC.md
+
+**Status:** REQUIRED FOR R1.6  
+**Principle:** motion communicates change, hierarchy and continuity. It is not ambient decoration.
+
+## 1. Motion rules
+
+Use motion for:
+- search reveal
+- navigation/context changes
+- stacked/reveal cards
+- contextual panels
+- status changes
+- access verification results
+- newly arrived operational events
+
+Do not use:
+- infinite blinking
+- looping glow
+- floating decorative elements
+- permanent breathing cards
+- animation on every hover simply because it is interactive
+
+Hover transitions may exist, but they do not satisfy the R1.6 motion requirement by themselves.
+
+## 2. Timing system
+
+Use these as implementation ranges, not as a request for a new animation framework:
+
+- micro feedback: **120-160 ms**
+- standard UI state: **180-240 ms**
+- search expansion/reflow: **220-280 ms**
+- contextual panel enter/exit: **240-320 ms**
+- larger stacked reveal: **280-360 ms** total, with restrained stagger
+
+Preferred easing:
+- enter/reveal: smooth deceleration / ease-out
+- exit: faster ease-in
+- spatial reorganization: spring-like only if subtle and stable; no bouncy consumer-app feel
+
+Avoid durations above ~450 ms for routine reception work.
+
+## 3. Search reveal
+
+Collapsed state:
+- compact search trigger in the header
+
+On activation:
+1. trigger expands horizontally toward the **left**;
+2. adjacent header space reorganizes smoothly;
+3. text field becomes explicit and focused;
+4. results surface enters after or during the final portion of the expansion;
+5. keyboard focus is visible.
+
+Close:
+- Escape or explicit close reverses the spatial change;
+- do not fade the search away while leaving a layout gap;
+- return focus to the trigger when appropriate.
+
+Reduced motion:
+- no width animation if it causes discomfort;
+- switch state nearly instantly with a short opacity transition at most.
+
+## 4. Contextual panels
+
+For Home rail actions and other detail drawers:
+- panel should feel spatially connected to the triggering control;
+- enter with subtle translate + opacity or masked reveal;
+- background content should not jump;
+- focus moves into the panel when it is modal/interactive;
+- close restores context.
+
+No giant desktop bottom-sheet motion.
+
+## 5. Stacked / reveal cards
+
+Use only where hierarchy benefits from sequence.
+
+Pattern:
+- primary card appears first;
+- secondary cards can follow with **40-70 ms** restrained stagger;
+- do not stagger long lists item-by-item;
+- max visible staged group should remain small (roughly 3-4 meaningful elements).
+
+## 6. Navigation motion
+
+Active navigation uses charcoal/contrast, not yellow.
+
+When changing destinations:
+- active indicator can slide/morph subtly between items;
+- labels/icons should not jump in size;
+- motion should reinforce destination continuity rather than behave like a carousel.
+
+## 7. Status transitions
+
+Status changes should have a clear beginning and end.
+
+Examples:
+- pass checking -> AUTORIZADO
+- pass checking -> VENCIDO
+- pass checking -> NO ENCONTRADO
+- delivery Recibido -> Avisado -> Retirado
+- incident status change
+
+Recommended pattern:
+- existing status leaves with short opacity/scale reduction;
+- new status enters with short opacity/scale increase;
+- action controls update after or together with the state, not before;
+- keep layout shift minimal.
+
+Do not turn success/error into a giant generic green/red card.
+
+## 8. Access-specific motion
+
+### Checking state
+May use:
+- compact progress indication
+- scan line/ring only while an actual check is in progress
+
+### Authorized
+- concise positive reveal
+- identity and validity become primary
+- `Registrar ingreso` appears/enables after verification
+
+### Expired / Not found
+- concise state change
+- recovery next step remains visible
+- no shaking the entire screen
+
+## 9. Sensor de novedad
+
+Purpose: make a newly arrived operational event noticeable without becoming noisy.
+
+Eligible event classes:
+- visita
+- mudanza aprobada
+- paquete/entrega
+- incidencia
+- other meaningful operational event already represented in the product
+
+### Trigger behavior
+When an eligible new event first becomes new/unseen:
+- the relevant control/module performs **exactly 2 soft pulses**;
+- pulse is a restrained yellow halo/gradient/ring using `#F5E500`;
+- total attention animation should finish in roughly **1.4-1.8 s**;
+- after the two pulses, stop permanently for that event state.
+
+Then retain a static indicator such as:
+- dot
+- count
+- thin ring
+- small badge
+
+No infinite animation.
+
+### Implementation behavior
+The novelty pulse should be tied to event novelty, not component mount.
+
+Do not replay the pulse:
+- every render
+- every route return
+- every hover
+- every poll when the underlying event has not changed
+
+Use the existing state/data architecture where possible. Do not invent a real-time backend for this pass.
+
+A minimal local/mock state flag such as `isNew`, `unseen`, or an unseen count is acceptable if it fits the existing prototype architecture and does not break current mock data.
+
+## 10. Smooth scrolling
+
+Use smooth scrolling only where spatial continuity helps:
+- navigating within a long Activity/Agenda region
+- bringing an opened contextual section into view
+- restoring known context
+
+Do not force global cinematic smooth-scroll behavior over the whole app.
+
+Respect reduced motion and browser/user expectations.
+
+## 11. `prefers-reduced-motion`
+
+When reduced motion is requested:
+- disable novelty pulses;
+- remove non-essential translate/scale motion;
+- use near-instant state changes or very short opacity changes;
+- avoid smooth scrolling;
+- retain all state meaning with static labels/icons/indicators.
+
+No information may depend on animation being seen.
+
+## 12. Motion acceptance tests
+
+R1.6 passes motion QA when:
+- search visibly reorganizes the header instead of merely appearing;
+- rail/context panels have a spatially coherent enter/exit;
+- access result changes are visible and concise;
+- at least the implemented novelty sensor demonstrates two finite pulses and then a static state;
+- no infinite blink/glow exists;
+- reduced-motion mode remains fully usable;
+- animations do not cause layout instability or delay operational work.
+
+================================================================
+DOCUMENTO 01 — CODEX R1.6 FINAL PASS PROMPT
+================================================================
+# CondoTrack — R1.6 FINAL VISUAL CLOSE
+## 01_CODEX_R16_FINAL_PASS_PROMPT.md
+
+You are continuing an existing CondoTrack implementation. This is a **visual-close pass for RECEPCIÓN**, not a redesign and not a new architecture.
+
+## A. Hard repository constraints
+
+Canonical repository:
+`E:\- DISEÑO WEB\CondoTrack\_github-sync\condotrack-app`
+
+Required branch:
+`UxUi`
+
+Do NOT modify:
+- `E:\- DISEÑO WEB\CondoTrack\condotrack-app`
+- `frontend/`
+- `backend/`
+
+Before doing anything else, read `AGENTS.md` in the canonical repo root and obey it.
+
+Do not commit. Do not push. Wait for Felipe's explicit approval.
+
+## B. Mandatory pack verification — BEFORE editing
+
+The R1.6 pack is invalid if any of these are missing:
+
+- `docs/00_APPROVED_REFERENCE_MATRIX_R16_FINAL.md`
+- `docs/02_UX_RESEARCH_GUARDRAILS.md`
+- `docs/03_MOTION_AND_SENSOR_SPEC.md`
+- `docs/01_CODEX_R16_FINAL_PASS_PROMPT.md`
+- `CondoTrack_R16_FINAL_Approved_References.pdf`
+- the approved individual images under `references/`
+
+The PDF is visual reference material. It does **not** replace the three required markdown specifications.
+
+Read in this order:
+1. `AGENTS.md`
+2. `docs/00_APPROVED_REFERENCE_MATRIX_R16_FINAL.md`
+3. `CondoTrack_R16_FINAL_Approved_References.pdf`
+4. all approved images under `references/`
+5. `docs/02_UX_RESEARCH_GUARDRAILS.md`
+6. `docs/03_MOTION_AND_SENSOR_SPEC.md`
+7. this prompt again
+
+If anything is missing, stop **before editing code** and report the missing file(s).
+
+Do not search for replacement visual references. Do not add a new reference family.
+
+## C. Current state and target
+
+R1.5 is already functionally close and includes:
+- Home Recepción
+- Accesos
+- Agenda
+- Entregas
+- Unidades
+- Incidencias
+- Actividad / bitácora
+- search
+- contextual panels
+- responsive behavior
+
+Preserve working logic, data, routing and responsive behavior unless an explicit R1.6 requirement below requires a correction.
+
+Primary review URL:
+`http://localhost:3001/?perfil=recepcion&p=app&v=p01&limpio=1&tema=claro`
+
+Priority viewport:
+**1440 x 900 desktop**.
+
+Do not rebuild the functional architecture from scratch.
+
+## D. Visual system
+
+Typography: **Satoshi**.
+
+Palette:
+- `#F5E500` yellow
+- `#111614` charcoal
+- `#F4F5F1` warm background
+- `#FFFFFF` surface
+- `#515A56` secondary text
+
+Direction:
+- premium
+- editorial
+- architectural
+- operationally legible
+- restrained
+
+Avoid:
+- generic SaaS
+- universal white rounded-card grids
+- excessive glass
+- random stock/architecture imagery
+- decorative yellow everywhere
+- yellow active navigation
+- tiny low-contrast text
+
+Red/green only for semantic state.
+
+Use the correct MASTER CondoTrack logo already present in the project assets. The logo currently shown in the header is incorrect. Do not redraw or regenerate the logo.
+
+## E. Required implementation order
+
+### E0 — Baseline / safety
+Before editing:
+- confirm current branch is `UxUi`;
+- inspect `git status`;
+- identify the exact files/components involved;
+- run the current app and inspect the primary Reception URL at 1440 x 900;
+- do not discard unrelated working-tree changes.
+
+### E1 — Global foundations first
+Refine the shared system that causes repeated visual debt:
+- overall scale slightly smaller / more controlled
+- typography hierarchy and small-text contrast
+- glass/depth tokens
+- borders/elevation
+- focus styles
+- hover/focus/pressed states
+- real dark-mode tokens
+- correct logo usage
+- search shell
+- profile dropdown behavior
+- motion primitives compatible with reduced motion
+
+Prefer existing components/tokens/CSS architecture. Do not create duplicate component families just to style the same pattern differently.
+
+### E2 — Home Recepción
+Primary composition reference: **U02 Volvo modular dashboard**.
+Materiality support: U01 + U04.
+Modularity support: U05.
+Clock/grid support: U07.
+
+Required Home direction:
+- airy/floating header
+- central hero/command center
+- large clock
+- 3 left rail controls
+- 3 right rail controls
+- rails are **symmetrical** in scale, height, rhythm and visual language
+- rail interaction opens a complete contextual panel
+- lower modules:
+  - Próximo acceso
+  - Hoy
+  - Entregas
+- abstract, light, simple CondoTrack background
+- no random reception/tree/building image
+- glass only where that background materially supports it
+- contextual quick actions
+
+Home must not become:
+- a table
+- a dense admin dashboard
+- a KPI grid
+
+### E3 — Search
+Current search behavior is wrong.
+
+Implement a compact header control that:
+- expands horizontally **toward the left**;
+- smoothly reorganizes the header space;
+- clearly exposes text entry;
+- shows results;
+- supports keyboard navigation;
+- closes with Escape;
+- restores the compact state cleanly;
+- does not look like a stuck input pasted on top of the dashboard.
+
+Use `03_MOTION_AND_SENSOR_SPEC.md`.
+
+### E4 — Agenda
+This needs a major visual improvement.
+
+Do not leave it as a generic event list.
+
+Target:
+- real mini-calendar
+- day timeline
+- clearly guided hours
+- prominent next event
+- visitas
+- proveedores
+- reservas
+- tareas
+- **MUDANZAS APROBADAS**
+- strong temporal hierarchy
+
+Primary references: U01 + U08. Secondary: U09/U10/U07.
+
+Example content:
+`14:00 · MUDANZA · Mudanza de salida · Unidad 8A · Aprobada · ascensor de servicio`
+
+Reception does not create or approve the move. It only sees/operates an already approved move.
+
+### E5 — Accesos
+Primary reference: U06 Security Dashboard.
+Workflow support: U10.
+
+Flow must remain explicit:
+1. verificar pase
+2. mostrar identidad/estado
+3. registrar ingreso
+
+Required states:
+- AUTORIZADO
+- VENCIDO
+- NO ENCONTRADO
+
+Requirements:
+- `Escanear` is visible and important;
+- status treatment is immediate and operational;
+- avoid generic success/error cards;
+- use functional motion for checking/result transitions;
+- novelty/status animation must not loop infinitely.
+
+### E6 — Entregas
+States:
+- Recibido
+- Avisado
+- Retirado
+
+Action depends on context:
+- Registrar retiro
+- Confirmar entrega
+
+Improve:
+- contrast
+- hierarchy
+- compact drawer/form
+- desktop behavior
+
+Do not use a giant mobile-style sheet on desktop.
+
+### E7 — Unidades
+Reception should not expose non-operational finance/property data such as:
+- deuda
+- cuenta corriente
+- m²
+
+Improve:
+- search contrast
+- quick floor filters
+- legible list
+- stronger header/column hierarchy
+- real list-detail behavior
+- progressive disclosure
+
+Primary references: U07 + U05.
+
+### E8 — Incidencias
+Primary: U06. Secondary: U05/U10.
+
+Improve:
+- contrast
+- separate severity / workflow state / title / context
+- immediate operational scanning
+- compact side form
+- history/disclosure where useful
+
+### E9 — Actividad / bitácora
+Build a real operational log:
+- chronological order
+- timestamps
+- filters
+- timeline
+- grouping where useful
+- progressive disclosure
+
+Primary references: U09/U10. Grid support: U07.
+
+Home only contains a preview.
+
+### E10 — Profile
+`DS` opens a real dropdown containing:
+- Perfil
+- Cambiar perfil/rol if supported/applicable
+- Cerrar sesión
+
+Support keyboard focus, Escape and outside click.
+
+### E11 — Dark mode
+Current dark mode is not correct.
+
+Implement real theme tokens for:
+- background
+- surface
+- elevated surface
+- text primary/secondary
+- border
+- glass
+- elevation
+- hover
+- focus
+- statuses
+
+Do not mechanically invert the light theme.
+
+### E12 — Motion + novelty sensor
+Implement real functional motion from `03_MOTION_AND_SENSOR_SPEC.md`.
+
+Required categories:
+- search reveal
+- stacked/reveal cards where useful
+- navigation/context changes
+- status changes
+- contextual panels
+- access authorized/error/not-found
+- new operational events
+
+Novelty sensor:
+When a new event appears (visit, approved move, package, incident or meaningful operational event), the relevant control can perform **2 soft yellow halo/gradient pulses**, then stop and keep a static dot/count/ring.
+
+No infinite blink.
+Respect `prefers-reduced-motion`.
+
+Do not invent real-time backend architecture for this visual pass.
+
+### E13 — Responsive and polish
+After desktop 1440 x 900 is visually closed:
+- verify responsive layouts still work;
+- adapt rails/panels without changing the information model;
+- remove awkward overflow;
+- verify drawers and search at narrower widths;
+- verify light and dark themes.
+
+## F. Required QA
+
+At minimum, verify:
+- Home at 1440 x 900
+- each Reception destination
+- search keyboard behavior
+- Escape close behavior
+- profile dropdown
+- light theme
+- dark theme
+- responsive/narrower layout
+- reduced motion
+
+Check accessibility:
+- WCAG AA contrast for operational text/controls
+- visible focus states
+- comfortable targets
+- no state conveyed by color alone
+
+Check UX role correctness:
+- no move approval/creation in Reception
+- no irrelevant financial data in Unidades
+- access verification separate from entry registration
+
+## G. Change discipline
+
+Do not:
+- rewrite the application architecture
+- replace existing working mock data without reason
+- create a second design system
+- introduce a new visual reference
+- change Admin in this pass except unavoidable shared-component fixes that preserve its behavior
+- commit
+- push
+
+If a shared-component change affects Resident/Admin, note it in the final report and verify it does not visibly regress those roles.
+
+## H. Final report — no commit/push
+
+When the pass is complete, report:
+1. files changed;
+2. what changed by surface;
+3. what shared tokens/components changed;
+4. dark-mode status;
+5. motion/reduced-motion status;
+6. responsive status;
+7. tests/manual checks performed;
+8. any remaining visual debt or blockers;
+9. confirmation that no commit/push was performed.
+
+Then stop and wait for Felipe's approval.

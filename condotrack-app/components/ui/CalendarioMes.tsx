@@ -25,6 +25,12 @@ import { mesDe, mesLargo, mismoDia, numDia, mesCorto, esHoy, type Celda } from "
 export type PuntoDia = "lleno" | "poco" | "sin";
 export type EstadoDia = {
   punto: PuntoDia;
+  /** SYS-CALENDAR-STATE-001 · "propia": hay una reserva tuya ese día. */
+  marca?: "propia";
+  /** Parte del día ya reservada (0–1): se dibuja como una barra corta. */
+  ocupacion?: number;
+  /** No queda ningún turno: el número va tachado. */
+  completo?: boolean;
   deshabilitado?: boolean;
   /** Lo que lee un lector de pantalla además de la fecha. */
   detalle?: string;
@@ -123,7 +129,8 @@ export function CalendarioMes({
             const est = estadoDe(c);
             const sel = dia ? mismoDia(c.fecha, dia) : false;
             const clase = "cal-dia" + (c.delMes ? "" : " fuera") + (sel ? " sel" : "")
-              + (esHoy(c.fecha) ? " hoy" : "");
+              + (esHoy(c.fecha) ? " hoy" : "") + (est.punto === "poco" ? " poco" : "")
+              + (est.marca === "propia" ? " propia" : "") + (est.completo ? " completo" : "");
             return (
               <button key={i} type="button" role="gridcell" className={clase}
                 disabled={est.deshabilitado}
@@ -134,6 +141,10 @@ export function CalendarioMes({
                 <b>{numDia(c.fecha)}</b>
                 <span className={"pto" + (est.punto === "poco" ? " poco" : est.punto === "sin" ? " sin" : "")}
                   aria-hidden="true" />
+                {est.ocupacion !== undefined && est.ocupacion > 0 && !est.completo && (
+                  <i className="ocup" aria-hidden="true"
+                    style={{ "--o": Math.min(1, est.ocupacion).toFixed(3) } as React.CSSProperties} />
+                )}
               </button>
             );
           })}

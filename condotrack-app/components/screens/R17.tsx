@@ -1,8 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { TopBar } from "../ui/TopBar";
-import { Icon, type NombreIcono } from "../ui/Icon";
-import { Hoja } from "../ui/Hoja";
+import { type NombreIcono } from "../ui/Icon";
 import { Linea, type Hito } from "../ui/Linea";
 import { Vacio } from "../ui/Vacio";
 import { FinLista } from "../ui/FinLista";
@@ -58,7 +57,6 @@ function porDia(eventos: { id: string; cuando: string }[]) {
 export function R17({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   const { estado } = useApp();
   const [f, setF] = useState<Filtro>("todo");
-  const [abreFiltro, setAbreFiltro] = useState(false);
 
   const todos = useMemo(() => historialOrdenado(estado.eventos), [estado.eventos]);
   const lista = f === "todo" ? todos : todos.filter((e) => GRUPO[f].includes(e.tipo));
@@ -75,27 +73,28 @@ export function R17({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   }));
   const porId = new Map(hitos.map((h) => [h.id, h]));
   const grupos = porDia(lista);
-  const rotuloFiltro = FILTROS.find((x) => x.id === f)?.rotulo ?? "Todo";
+  const cuantosDe = (id: Filtro) => (id === "todo" ? todos.length : todos.filter((e) => GRUPO[id].includes(e.tipo)).length);
+  /* El evento más reciente lleva la marca amarilla: es "lo último que pasó". */
+  if (hitos[0]) hitos[0] = { ...hitos[0], destacado: true };
 
   return (
-    <div className="vista" id="r17">
+    <div className="vista" id="r17" data-filtro={f}>
       <TopBar volverA="r02" ir={ir} />
       <div className="tit">
         <h1>Historial de la unidad</h1>
       </div>
 
-      {/* El filtro era una tira de cinco pastillas amarillas peleando con
-          el contenido. Cinco opciones entran en una hoja; lo que queda
-          arriba es una línea que dice qué estás mirando y cuánto hay. */}
-      <button className="selector" type="button" onClick={() => setAbreFiltro(true)}
-        aria-haspopup="dialog">
-        <span className="d">
-          <span className="k">Mostrando</span>
-          <b>{f === "todo" ? "Todos los movimientos" : rotuloFiltro}</b>
-        </span>
-        <span className="n">{lista.length}</span>
-        <span className="flech"><Icon n="chevron" s={16} w={2.2} /></span>
-      </button>
+      {/* H01-01 · cinco opciones entran a la vista: filtros compactos con
+          su conteo, elegidos con un toque (antes abrían una hoja "¿Qué
+          querés ver?" para algo que se resuelve en una fila). */}
+      <div className="hist-filtros" role="radiogroup" aria-label="Filtrar el historial">
+        {FILTROS.map((o) => (
+          <button key={o.id} type="button" role="radio" aria-checked={o.id === f}
+            onClick={() => setF(o.id)}>
+            {o.rotulo}<span className="n">{cuantosDe(o.id)}</span>
+          </button>
+        ))}
+      </div>
 
       {lista.length === 0 ? (
         <Vacio icono="lista" titulo="Sin movimientos" />
@@ -115,29 +114,7 @@ export function R17({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       )}
 
 
-      {abreFiltro && (
-        <Hoja titulo="Qué querés ver" onCancelar={() => setAbreFiltro(false)}
-          cerrarRotulo="Cerrar" sinAcciones>
-          <div className="opciones-hoja" role="radiogroup" aria-label="Filtro del historial">
-            {FILTROS.map((o) => {
-              const cuantos = o.id === "todo"
-                ? todos.length
-                : todos.filter((e) => GRUPO[o.id].includes(e.tipo)).length;
-              return (
-                <button key={o.id} type="button" role="radio" aria-checked={o.id === f}
-                  onClick={() => { setF(o.id); setAbreFiltro(false); }}>
-                  <span className="d">
-                    <b>{o.rotulo}</b>
-                    <i>{cuantos === 1 ? "1 movimiento" : `${cuantos} movimientos`}</i>
-                  </span>
-                  {o.id === f && <Icon n="check" s={16} w={2.4} />}
-                </button>
-              );
-            })}
-          </div>
-          <div style={{ height: 14 }} />
-        </Hoja>
-      )}
+
     </div>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+import { EspacioCard } from "../ui/EspacioCard";
 import { useState } from "react";
 import { Icon } from "../ui/Icon";
 import { Hoja } from "../ui/Hoja";
@@ -6,8 +7,7 @@ import { ZonaContexto } from "../ui/ZonaContexto";
 import { FinLista } from "../ui/FinLista";
 import { SubNav } from "../ui/SubNav";
 import { EDIFICIO, RECEPCION, ADMINISTRACION, ESPACIOS, PESTANAS_EDIFICIO, type Vista } from "@/lib/data";
-import { SIN_FOTO, cupoDelDia, diaCon, diaEnPalabras, proximoLibre } from "@/lib/reservas";
-import { useApp } from "@/lib/estado";
+import { SIN_FOTO } from "@/lib/reservas";
 
 /** G15 · Mi edificio.
  *  Antes era R02. R02 pasó a ser Mi unidad, que es lo que dice el mapeo de
@@ -15,8 +15,6 @@ import { useApp } from "@/lib/estado";
  *  patrón genérico de detalle de contexto. Ver 04_MAPEO_IDS_A_PATRONES. */
 
 export function G15({ ir }: { ir: (v: Vista, ref?: string) => void }) {
-  const { estado } = useApp();
-  const hoy = diaCon(0);
   return (
     <div className="vista" id="g15">
       {/* La foto del edificio ya es la zona de arriba: la card con la misma
@@ -43,36 +41,18 @@ export function G15({ ir }: { ir: (v: Vista, ref?: string) => void }) {
           lleva al espacio, "Reservar" abre el calendario con ese espacio
           elegido. En Reservas no se repiten. */}
       <h2 className="sec">Espacios</h2>
-      <div className="dos">
-        {ESPACIOS.map((e) => {
-          const cupo = cupoDelDia(e, hoy, estado.reservas);
-          const proximo = cupo > 0 ? null : proximoLibre(e, hoy, estado.reservas);
-          const cupoProx = proximo ? cupoDelDia(e, proximo, estado.reservas) : 0;
-          const cuantos = (n: number) => (n === 1 ? "1 horario" : n + " horarios");
-          const dia = proximo ? diaEnPalabras(proximo) : "";
-          const texto = cupo > 0 ? `Hoy · ${cuantos(cupo)}`
-            : proximo ? `${dia.charAt(0).toUpperCase() + dia.slice(1)} · ${cuantos(cupoProx)}` : "Sin horarios";
-          const sinFoto = SIN_FOTO.has(e.id);
-          return (
-            <div className={"esp " + (sinFoto ? "mat-carbon sin-foto" : "mat-foto")} key={e.id}>
-              {!sinFoto && <img src={e.img} alt="" />}
-              {sinFoto && <span className="ic-grande" aria-hidden="true"><Icon n="rayo" s={30} /></span>}
-              <button className="esp-ver" type="button" onClick={() => ir("r13", e.id)}
-                aria-label={"Ver " + e.nombre} />
-              <span className="sobre">
-                <span className="tx"><b>{e.nombre}</b><i>{texto}</i></span>
-              </span>
-              <button className="esp-reservar" type="button" onClick={() => ir("r05", e.id)}>
-                Reservar
-              </button>
-            </div>
-          );
-        })}
+      {/* G15-01/02 · cada espacio: la foto, el nombre y "Reservar", al
+          centro. La fecha y la cantidad de horarios viven en el calendario. */}
+      <div className="dos esp-grilla">
+        {ESPACIOS.map((e) => (
+          <EspacioCard key={e.id} espacio={e} sinFoto={SIN_FOTO.has(e.id)}
+            accion="Reservar" onAccion={() => ir("r05", e.id)} onVer={() => ir("r13", e.id)} />
+        ))}
       </div>
 
       <h3 className="grupo">Documentos y reglas</h3>
       <div className="menu">
-        <button type="button" onClick={() => ir("r19")}>
+        <button type="button" onClick={() => ir("r19", "reglamento")}>
           <span className="d"><b>Reglamento de convivencia</b><i>Horarios, espacios, accesos y expensas</i></span>
           <span className="flech"><Icon n="chevron" s={16} w={2.1} /></span>
         </button>

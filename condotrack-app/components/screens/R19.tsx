@@ -8,7 +8,11 @@ import type { Vista } from "@/lib/data";
 import { FAQ, REGLAMENTO } from "@/lib/gestiones";
 
 /** R19 · Preguntas frecuentes y reglamento.
- *  Van juntos porque se leen juntos: la pregunta manda al artículo. */
+ *  Van juntos porque se leen juntos: la pregunta manda al artículo.
+ *
+ *  Ronda 2 · mismo lenguaje que Preferencias: grupos con su título y cada
+ *  pregunta (o cada norma) en su propia fila sobre el fondo de la página,
+ *  no adentro de una card blanca. */
 
 type Filtro = "faq" | "reglamento";
 const FILTROS = [
@@ -29,8 +33,9 @@ function Pregunta({ p, r }: { p: string; r: string }) {
   );
 }
 
-export function R19({ ir }: { ir: (v: Vista, ref?: string) => void }) {
-  const [f, setF] = useState<Filtro>("faq");
+export function R19({ ir, refe }: { ir: (v: Vista, ref?: string) => void; refe?: string }) {
+  const [f, setF] = useState<Filtro>(refe === "reglamento" ? "reglamento" : "faq");
+  const temas = FAQ.reduce<string[]>((a, q) => (a.includes(q.tema) ? a : [...a, q.tema]), []);
 
   return (
     <div className="vista" id="r19">
@@ -43,17 +48,22 @@ export function R19({ ir }: { ir: (v: Vista, ref?: string) => void }) {
 
       {f === "faq" ? (
         <>
-          <div className="faq">
-            {FAQ.map((q) => <Pregunta key={q.p} p={q.p} r={q.r} />)}
-          </div>
-          <FinLista texto="No hay más preguntas" />
+          {temas.map((t) => (
+            <section key={t} className="faq-grupo">
+              <h3 className="grupo">{t}</h3>
+              <div className="faq-filas">
+                {FAQ.filter((q) => q.tema === t).map((q) => <Pregunta key={q.p} p={q.p} r={q.r} />)}
+              </div>
+            </section>
+          ))}
+          <FinLista texto="Nada más para mostrar" />
         </>
       ) : (
         <>
           {REGLAMENTO.map((s) => (
-            <section className="regla-s" key={s.titulo}>
-              <h2>{s.titulo}</h2>
-              <ul>
+            <section className="faq-grupo" key={s.titulo}>
+              <h3 className="grupo">{s.titulo}</h3>
+              <ul className="regla-filas">
                 {s.puntos.map((p) => <li key={p}>{p}</li>)}
               </ul>
             </section>

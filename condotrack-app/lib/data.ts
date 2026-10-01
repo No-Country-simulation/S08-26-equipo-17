@@ -179,7 +179,7 @@ export const ESPACIOS: Espacio[] = [
     descripcion: "Parrilla de la terraza con mesada, bacha y mesa para diez.",
     capacidad: "Hasta 10 personas",
     reglas: ["Carbón y utensilios a cargo del residente", "Se apaga a las 00:00"] },
-  { id: "lavanderia", nombre: "Lavandería", img: "/img/esp_cowork.jpg", mini: "/img/mini_cowork.jpg", piso: "Subsuelo",
+  { id: "lavanderia", nombre: "Lavandería", img: "/img/esp_lavanderia.jpg", mini: "/img/mini_lavanderia.jpg", piso: "Subsuelo",
     tipoReserva: "recurso", bloqueMin: 60, aperturaMin: H(7), cierreMin: H(22),
     descripcion: "Cuatro lavarropas y dos secarropas de uso comunitario. Se reserva la máquina, no la sala.",
     capacidad: "6 máquinas",
@@ -261,6 +261,41 @@ export const RESERVAS: Reserva[] = [
   { id: "rs10", recursoId: "sum-sala", unidad: "11C",
     inicio: iso(-5, H(18)), fin: iso(-5, H(20)),
     estado: "cancelada", creadaPor: "Unidad 11C", creadaEl: iso(-10, H(13)) },
+  /* Ronda 2 · el calendario de Reservar tiene que mostrar qué está
+     reservado: días con algunos turnos tomados y días completos. */
+  { id: "rs11", recursoId: "sum-sala", unidad: "6B",
+    inicio: iso(4, H(10)), fin: iso(4, H(24)),
+    estado: "confirmada", creadaPor: "Unidad 6B", creadaEl: iso(-6, H(12)) },
+  { id: "rs12", recursoId: "sum-sala", unidad: "8A",
+    inicio: iso(3, H(12)), fin: iso(3, H(14)),
+    estado: "confirmada", creadaPor: "Unidad 8A", creadaEl: iso(-2, H(15)) },
+  { id: "rs13", recursoId: "sum-sala", unidad: "4C",
+    inicio: iso(6, H(12)), fin: iso(6, H(14)),
+    estado: "confirmada", creadaPor: "Unidad 4C", creadaEl: iso(-1, H(9)) },
+  { id: "rs14", recursoId: "sum-sala", unidad: "10B",
+    inicio: iso(9, H(16)), fin: iso(9, H(24)),
+    estado: "confirmada", creadaPor: "Unidad 10B", creadaEl: iso(-4, H(18)) },
+  { id: "rs15", recursoId: "sum-sala", unidad: "1A",
+    inicio: iso(10, H(10)), fin: iso(10, H(24)),
+    estado: "confirmada", creadaPor: "Unidad 1A", creadaEl: iso(-8, H(11)) },
+  { id: "rs16", recursoId: "cowork-sala", unidad: "3A",
+    inicio: iso(1, H(9)), fin: iso(1, H(12)),
+    estado: "confirmada", creadaPor: "Unidad 3A", creadaEl: iso(-1, H(18)) },
+  { id: "rs17", recursoId: "cowork-sala", unidad: "12C",
+    inicio: iso(5, H(8)), fin: iso(5, H(20)),
+    estado: "confirmada", creadaPor: "Unidad 12C", creadaEl: iso(-3, H(10)) },
+  { id: "rs18", recursoId: "cowork-sala", unidad: "5A",
+    inicio: iso(7, H(14)), fin: iso(7, H(17)),
+    estado: "confirmada", creadaPor: "Unidad 5A", creadaEl: iso(-2, H(16)) },
+  { id: "rs19", recursoId: "parrilla-1", unidad: "7B",
+    inicio: iso(3, H(12)), fin: iso(3, H(24)),
+    estado: "confirmada", creadaPor: "Unidad 7B", creadaEl: iso(-9, H(20)) },
+  { id: "rs20", recursoId: "parrilla-1", unidad: "2C",
+    inicio: iso(4, H(21)), fin: iso(4, H(24)),
+    estado: "confirmada", creadaPor: "Unidad 2C", creadaEl: iso(-3, H(21)) },
+  { id: "rs21", recursoId: "parrilla-1", unidad: "9A",
+    inicio: iso(10, H(12)), fin: iso(10, H(18)),
+    estado: "confirmada", creadaPor: "Unidad 9A", creadaEl: iso(-5, H(19)) },
 ];
 
 export const espacioDe = (recursoId: string) => {
@@ -274,7 +309,9 @@ export type Aviso = {
   id: string;
   icono: "caja" | "check" | "calendario" | "alerta" | "lista" | "documento" | "reloj";
   titulo: string; cuando: string; desc: string;
-  estado: "sinleer" | "leida" | "archivada"; va?: Vista;
+  /* DEC-002: Archivadas se retiró de la interfaz. El estado de un aviso es
+     personal y sólo distingue leído de no leído; no hay archivo. */
+  estado: "sinleer" | "leida"; va?: Vista;
 };
 /** Los avisos de expensa no están acá: los arma lib/expensas a partir de
  *  la fecha de vencimiento real, así el "está por vencer" no miente. */
@@ -283,7 +320,7 @@ export const AVISOS: Aviso[] = [
   { id: "n2", icono: "check",      titulo: "Visita autorizada",       cuando: "Hace 2 h",    desc: "Martín López · pase activo hoy",             estado: "leida",   va: "r06" },
   { id: "n3", icono: "calendario", titulo: "Reserva confirmada",      cuando: "Ayer",        desc: "SUM · hoy, 20:30–22:30",                     estado: "leida",   va: "r18" },
   { id: "n4", icono: "alerta",     titulo: "Reclamo actualizado",     cuando: "Ayer",        desc: "Ascensor Torre A · asignado a Ascensores Milano", estado: "leida", va: "r09" },
-  { id: "n5", icono: "lista",      titulo: "Comunicado del edificio", cuando: "10 sep",      desc: "Corte de agua programado para el sábado",    estado: "archivada" },
+  { id: "n5", icono: "lista",      titulo: "Comunicado del edificio", cuando: "10 sep",      desc: "Corte de agua programado para el sábado",    estado: "leida",   va: "r14" },
 ];
 
 /* ── Entregas (R08 · G11 · P05) ──────────────────────────────────── */
@@ -300,6 +337,7 @@ export type Entrega = {
   tipo: TipoEntrega;
   remitente: string;
   estado: "retirar" | "retirado";
+  avisadoEl?: string; // Aviso emitido por el registro local de recepción.
   recibidoEl: string;
   recibidoPor: string;
   foto?: string;
@@ -415,7 +453,7 @@ export const PENDIENTES: Record<Exclude<Perfil, "residente">, {
 /* ── Vistas de recepción (P) y de administración (A) ─────────────────
    IDs de 04_MAPEO_IDS_A_PATRONES.md. */
 
-export type VistaP = "p01" | "p02" | "p03" | "p04" | "p05" | "p07" | "p08";
+export type VistaP = "p01" | "p02" | "p03" | "p04" | "p05" | "p07" | "p08" | "p09";
 
 export const ROTULOS_P: Record<VistaP, string> = {
   p01: "P01 Inicio de recepción",
@@ -425,6 +463,7 @@ export const ROTULOS_P: Record<VistaP, string> = {
   p05: "P05 Entregas",
   p07: "P07 Incidencias",
   p08: "P08 Agenda operativa",
+  p09: "P09 Actividad",
 };
 
 export type VistaA =

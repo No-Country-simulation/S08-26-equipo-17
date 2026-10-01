@@ -1,0 +1,72 @@
+[
+  {
+    "view": "p01",
+    "theme": "claro",
+    "failures": []
+  },
+  {
+    "view": "p02",
+    "theme": "claro",
+    "failures": []
+  },
+  {
+    "view": "p04",
+    "theme": "claro",
+    "failures": []
+  },
+  {
+    "view": "p05",
+    "theme": "claro",
+    "failures": []
+  },
+  {
+    "view": "p07",
+    "theme": "claro",
+    "failures": []
+  },
+  {
+    "view": "p08",
+    "theme": "claro",
+    "failures": []
+  },
+  {
+    "view": "p09",
+    "theme": "claro",
+    "failures": []
+  },
+  {
+    "view": "p01",
+    "theme": "oscuro",
+    "failures": []
+  },
+  {
+    "view": "p02",
+    "theme": "oscuro",
+    "failures": []
+  },
+  {
+    "view": "p04",
+    "theme": "oscuro",
+    "failures": []
+  },
+  {
+    "view": "p05",
+    "theme": "oscuro",
+    "failures": []
+  },
+  {
+    "view": "p07",
+    "theme": "oscuro",
+    "failures": []
+  },
+  {
+    "view": "p08",
+    "theme": "oscuro",
+    "failures": []
+  },
+  {
+    "view": "p09",
+    "theme": "oscuro",
+    "failures": []
+  }
+]

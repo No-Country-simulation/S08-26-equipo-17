@@ -5,8 +5,7 @@ import { TopBar } from "../ui/TopBar";
 import { SubNav } from "../ui/SubNav";
 import { Vacio } from "../ui/Vacio";
 import { Hoja } from "../ui/Hoja";
-import { PanelReclamo } from "../paneles/PanelReclamo";
-import { Aviso } from "../ui/Estados";
+import { PanelReclamo, ExitoReclamo } from "../paneles/PanelReclamo";
 import { FinLista } from "../ui/FinLista";
 import type { Vista } from "@/lib/data";
 import { PASOS_RECLAMO, ROTULO_RECLAMO, rotuloCategoria, type EstadoReclamo } from "@/lib/gestiones";
@@ -47,6 +46,17 @@ export function R09({ ir }: { ir: (v: Vista, ref?: string) => void }) {
     estado.reclamos.filter((r) => ESTADOS_DE[x].includes(r.estado)).length;
   const lista = estado.reclamos.filter((r) => ESTADOS_DE[f].includes(r.estado));
 
+  /* Ronda 3 · creado el reclamo, el éxito es la pantalla (misma lógica que
+     "Visita autorizada"), no un aviso arriba de la lista. */
+  if (nuevo) {
+    return (
+      <div className="vista" id="r09">
+        <TopBar volverA="mas" ir={ir} onVolver={() => setNuevo(null)} />
+        <ExitoReclamo codigo={nuevo} ir={ir} alterna="Volver a reclamos" onAlterna={() => setNuevo(null)} />
+      </div>
+    );
+  }
+
   return (
     <div className="vista" id="r09">
       <TopBar volverA="mas" ir={ir} />
@@ -57,12 +67,6 @@ export function R09({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       <button className="entrar" type="button" onClick={() => setAbre(true)} style={{ marginTop: 18 }}>
         <Icon n="mas" s={20} w={2.4} />Hacer un reclamo
       </button>
-
-      {nuevo && (
-        <Aviso icono="check">
-          Reclamo {nuevo} creado.
-        </Aviso>
-      )}
 
       <SubNav etiqueta="Estado de los reclamos"
         opciones={FILTROS.map((o) => ({ ...o, contador: cuantos(o.id) }))}

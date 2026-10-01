@@ -3,12 +3,14 @@ import { useState } from "react";
 import { Icon } from "../ui/Icon";
 import { TopBar } from "../ui/TopBar";
 import { Texto, Elegir, Adjuntar, PieForm } from "../ui/Formulario";
-import { Confirmacion } from "../ui/Estados";
+import { ExitoProtagonista } from "../ui/Estados";
+import { Importe } from "../ui/Importe";
 import type { Vista } from "@/lib/data";
 import {
   EXPENSAS, ROTULO_MEDIO, expensaDelMes, type MedioPago,
 } from "@/lib/expensas";
 import { pesos, periodoLargo } from "@/lib/formato";
+import { useNavegacion } from "@/lib/navegacion";
 import { nuevoIdPago, useApp } from "@/lib/estado";
 
 /** F03 · Informar un pago.
@@ -47,6 +49,7 @@ export function F03({ ir }: { ir: (v: Vista, ref?: string) => void }) {
     : undefined;
   const hayError = Boolean(errImporte || errFecha);
 
+  const nav = useNavegacion();
   function confirmar() {
     setTocado(true);
     if (hayError) return;
@@ -68,17 +71,28 @@ export function F03({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   }
 
   if (hecho) {
+    /* RES-FIN-01 · el pago ya quedó informado: salir de acá nunca vuelve al
+       formulario. Volver (arriba o abajo) lleva al Inicio con el estado
+       nuevo; el estado de cuenta se abre en lugar de este éxito. */
+    const alInicio = () => (nav?.volverHasta ? nav.volverHasta("r01") : ir("r01"));
     return (
       <div className="vista" id="f03">
-        <TopBar volverA="r20" ir={ir} />
-        <Confirmacion
+        <TopBar volverA="r01" ir={ir} onVolver={alInicio} />
+        {/* Ronda 3 · la misma lógica que "Visita autorizada" */}
+        <ExitoProtagonista
           titulo="Pago informado"
-          principal={`${pesos(n)} · ${periodoLargo(periodo)}`}
-          secundario={ROTULO_MEDIO[medio]}
+          resumen={<><b><Importe valor={n} /></b> · {periodoLargo(periodo)}</>}
+          detalle={
+            <dl className="exito-datos">
+              <div><dt>Medio</dt><dd>{ROTULO_MEDIO[medio]}</dd></div>
+              <div><dt>Estado</dt><dd>A confirmar</dd></div>
+            </dl>
+          }
+          nota="Administración lo confirma cuando concilia el pago."
           accion="Ver el estado de cuenta"
-          onAccion={() => ir("r23")}
-          alterna="Volver a la expensa"
-          onAlterna={() => ir("r20")}
+          onAccion={() => (nav?.reemplazar ? nav.reemplazar("r23") : ir("r23"))}
+          alterna="Volver al inicio"
+          onAlterna={alInicio}
         />
       </div>
     );

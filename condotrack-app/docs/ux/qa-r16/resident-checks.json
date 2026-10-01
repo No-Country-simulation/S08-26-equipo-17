@@ -1,0 +1,532 @@
+[
+  {
+    "view": "r01",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Aráoz 1280 · Unidad 7D",
+    "width": 390
+  },
+  {
+    "view": "r02",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Aráoz 1280 · 7D",
+    "width": 390
+  },
+  {
+    "view": "r03",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Notificaciones",
+    "width": 390
+  },
+  {
+    "view": "mas",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Más",
+    "width": 390
+  },
+  {
+    "view": "r05",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Reservá tu espacio",
+    "width": 390
+  },
+  {
+    "view": "r06",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Mis visitas",
+    "width": 390
+  },
+  {
+    "view": "r07",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Pase de acceso",
+    "width": 390
+  },
+  {
+    "view": "r08",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Entregas",
+    "width": 390
+  },
+  {
+    "view": "r09",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Reclamos",
+    "width": 390
+  },
+  {
+    "view": "g10",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "width": 390
+  },
+  {
+    "view": "g11",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "width": 390
+  },
+  {
+    "view": "g15",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Aráoz 1280",
+    "width": 390
+  },
+  {
+    "view": "r13",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "width": 390
+  },
+  {
+    "view": "r14",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Aráoz 1280",
+    "width": 390
+  },
+  {
+    "view": "r15",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Preferencias",
+    "width": 390
+  },
+  {
+    "view": "r16",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "width": 390
+  },
+  {
+    "view": "r17",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Historial de la unidad",
+    "width": 390
+  },
+  {
+    "view": "r18",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Mis reservas",
+    "width": 390
+  },
+  {
+    "view": "r19",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Preguntas frecuentes",
+    "width": 390
+  },
+  {
+    "view": "r20",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "$ 184.250",
+    "width": 390
+  },
+  {
+    "view": "r21",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Gastos del consorcio",
+    "width": 390
+  },
+  {
+    "view": "r22",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Medios de pago",
+    "width": 390
+  },
+  {
+    "view": "r23",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "width": 390
+  },
+  {
+    "view": "r24",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Votaciones",
+    "width": 390
+  },
+  {
+    "view": "f01",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Autorizar una visita",
+    "width": 390
+  },
+  {
+    "view": "f02",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Hacer un reclamo",
+    "width": 390
+  },
+  {
+    "view": "f03",
+    "theme": "claro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Informar un pago",
+    "width": 390
+  },
+  {
+    "view": "r01",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Aráoz 1280 · Unidad 7D",
+    "width": 390
+  },
+  {
+    "view": "r02",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Aráoz 1280 · 7D",
+    "width": 390
+  },
+  {
+    "view": "r03",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Notificaciones",
+    "width": 390
+  },
+  {
+    "view": "mas",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Más",
+    "width": 390
+  },
+  {
+    "view": "r05",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Reservá tu espacio",
+    "width": 390
+  },
+  {
+    "view": "r06",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Mis visitas",
+    "width": 390
+  },
+  {
+    "view": "r07",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Pase de acceso",
+    "width": 390
+  },
+  {
+    "view": "r08",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Entregas",
+    "width": 390
+  },
+  {
+    "view": "r09",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Reclamos",
+    "width": 390
+  },
+  {
+    "view": "g10",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "width": 390
+  },
+  {
+    "view": "g11",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "width": 390
+  },
+  {
+    "view": "g15",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Aráoz 1280",
+    "width": 390
+  },
+  {
+    "view": "r13",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "width": 390
+  },
+  {
+    "view": "r14",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Aráoz 1280",
+    "width": 390
+  },
+  {
+    "view": "r15",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Preferencias",
+    "width": 390
+  },
+  {
+    "view": "r16",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "width": 390
+  },
+  {
+    "view": "r17",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Historial de la unidad",
+    "width": 390
+  },
+  {
+    "view": "r18",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Mis reservas",
+    "width": 390
+  },
+  {
+    "view": "r19",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Preguntas frecuentes",
+    "width": 390
+  },
+  {
+    "view": "r20",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "$ 184.250",
+    "width": 390
+  },
+  {
+    "view": "r21",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Gastos del consorcio",
+    "width": 390
+  },
+  {
+    "view": "r22",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Medios de pago",
+    "width": 390
+  },
+  {
+    "view": "r23",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "width": 390
+  },
+  {
+    "view": "r24",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Votaciones",
+    "width": 390
+  },
+  {
+    "view": "f01",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Autorizar una visita",
+    "width": 390
+  },
+  {
+    "view": "f02",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Hacer un reclamo",
+    "width": 390
+  },
+  {
+    "view": "f03",
+    "theme": "oscuro",
+    "broken": 0,
+    "font": "Satoshi, \"Noto Sans CJK JP\", \"Liberation Sans\", system-ui, sans-serif",
+    "overflow": false,
+    "recTokens": "",
+    "title": "Informar un pago",
+    "width": 390
+  }
+]

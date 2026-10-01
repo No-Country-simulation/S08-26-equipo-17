@@ -47,16 +47,19 @@ export function SinPermiso({
 /** Confirmación de una operación. Dice qué pasó, qué queda registrado y
  *  cuál es el paso siguiente: sin eso es un cartel de felicitaciones. */
 export function Confirmacion({
-  titulo, principal, secundario, registro, accion, onAccion, alterna, onAlterna, pieza,
+  titulo, principal, secundario, registro, accion, onAccion, alterna, onAlterna, pieza, compacta,
 }: {
   titulo: string; principal: string; secundario?: string; registro?: string;
   accion: string; onAccion: () => void; alterna?: string; onAlterna?: () => void;
   /** Lo que se emitió: el pase, el ticket de la reserva. Va en lugar del
    *  texto, cuando hay algo para mostrar y no sólo para decir. */
   pieza?: ReactNode;
+  /** Sin el alto de pantalla completa: el resultado arriba y la acción
+   *  siguiente a mano (RES-030). */
+  compacta?: boolean;
 }) {
   return (
-    <div className="listo" role="status" aria-live="polite">
+    <div className={"listo" + (compacta ? " compacta" : "")} role="status" aria-live="polite">
       <span className="tilde"><Icon n="check" s={26} w={2.6} /></span>
       <h1>{titulo}</h1>
       {pieza ?? <p>{principal}</p>}
@@ -85,6 +88,42 @@ export function Aviso({
         <Icon n={icono} s={18} w={2} />
       </span>
       <p>{children}</p>
+    </div>
+  );
+}
+
+/** Éxito con el estado como protagonista (F01-S01…S04, referencia de
+ *  jerarquía `REF_success_hierarchy`): el tilde grande al centro con aire,
+ *  el título fuerte, el detalle más callado y las acciones juntas al pie del
+ *  contenido. Entra una sola vez (escala y tilde que se dibuja); con
+ *  movimiento reducido aparece terminado. Lo usa Autorizar visita; las otras
+ *  confirmaciones (Reclamo creado, Pago informado) no cambian. */
+export function ExitoProtagonista({
+  titulo, resumen, detalle, nota, accion, onAccion, alterna, onAlterna,
+}: {
+  titulo: string; resumen: ReactNode; detalle?: ReactNode; nota?: string;
+  accion: string; onAccion: () => void; alterna?: string; onAlterna?: () => void;
+}) {
+  return (
+    <div className="exito" role="status" aria-live="polite">
+      <div className="exito-cuerpo">
+        <span className="exito-tilde" aria-hidden="true">
+          <svg viewBox="0 0 52 52" width="52" height="52">
+            <path d="M15 27.5 22.5 35 38 18.5" fill="none" stroke="currentColor" strokeWidth="4.2"
+              strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+        <h1>{titulo}</h1>
+        <p className="exito-resumen">{resumen}</p>
+        {detalle && <div className="exito-detalle">{detalle}</div>}
+        {nota && <p className="exito-nota"><Icon n="info" s={15} w={2} />{nota}</p>}
+      </div>
+      <div className="exito-acciones">
+        <button className="entrar exito-cta" type="button" onClick={onAccion}>{accion}</button>
+        {alterna && onAlterna && (
+          <button className="btn-ter" type="button" onClick={onAlterna}>{alterna}</button>
+        )}
+      </div>
     </div>
   );
 }

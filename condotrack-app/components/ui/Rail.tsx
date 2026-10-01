@@ -1,5 +1,5 @@
 "use client";
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 /** Rail horizontal: se arrastra con el dedo y también con el mouse.
  *
@@ -10,11 +10,28 @@ import { useRef, type ReactNode } from "react";
 export function Rail({
   className = "", etiqueta, rol, children,
 }: { className?: string; etiqueta?: string; rol?: string; children: ReactNode }) {
+  /* La rueda: React registra onWheel como pasivo, así que el scroll vertical
+     de la página se frena en un listener nativo, sólo cuando el riel lo
+     consume. */
+  const caja = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = caja.current;
+    if (!el) return;
+    const al = (e: WheelEvent) => {
+      if (e.ctrlKey || Math.abs(e.deltaX) >= Math.abs(e.deltaY) || el.scrollWidth <= el.clientWidth) return;
+      const alInicio = el.scrollLeft <= 0, alFinal = el.scrollLeft >= el.scrollWidth - el.clientWidth - 1;
+      if ((e.deltaY < 0 && alInicio) || (e.deltaY > 0 && alFinal)) return;
+      e.preventDefault();
+    };
+    el.addEventListener("wheel", al, { passive: false });
+    return () => el.removeEventListener("wheel", al);
+  }, []);
   const gesto = useRef<{ x: number; scroll: number; activo: boolean } | null>(null);
   const arrastro = useRef(false);
 
   return (
     <div
+      ref={caja}
       className={"rail " + className}
       role={rol}
       aria-label={etiqueta}
@@ -43,6 +60,17 @@ export function Rail({
         }
       }}
       onPointerCancel={() => { gesto.current = null; }}
+      /* RES-R05-01 · la rueda del mouse también recorre el riel: un giro
+         vertical se traduce a horizontal mientras quede riel para ese lado
+         (en los extremos la página sigue scrolleando). El trackpad y el
+         dedo ya mueven el riel de costado solos. */
+      onWheel={(e) => {
+        const el = e.currentTarget;
+        if (e.ctrlKey || Math.abs(e.deltaX) >= Math.abs(e.deltaY) || el.scrollWidth <= el.clientWidth) return;
+        const alInicio = el.scrollLeft <= 0, alFinal = el.scrollLeft >= el.scrollWidth - el.clientWidth - 1;
+        if ((e.deltaY < 0 && alInicio) || (e.deltaY > 0 && alFinal)) return;
+        el.scrollBy({ left: e.deltaY, behavior: "smooth" });
+      }}
       onClickCapture={(e) => {
         if (arrastro.current) { e.preventDefault(); e.stopPropagation(); arrastro.current = false; }
       }}

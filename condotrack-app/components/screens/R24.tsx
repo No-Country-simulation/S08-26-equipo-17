@@ -14,6 +14,10 @@ import { useApp } from "@/lib/estado";
 /** R24 · Votaciones del consorcio.
  *  ID nuevo: el módulo no figura en 04_MAPEO_IDS_A_PATRONES.md. Ver D-008. */
 
+/* Ronda 2 · la card abierta ya no es carbón (en oscuro se perdía entre
+   las demás): es la superficie clara con la marca amarilla. El estado es
+   texto, no una pastilla que parece botón. La cerrada dice sólo el
+   resultado y tu voto; las barras quedan para la que se está votando. */
 function Tarjeta({
   v, miVoto, onVotar,
 }: { v: Votacion; miVoto?: string; onVotar: (opcionId: string) => void }) {
@@ -21,54 +25,58 @@ function Tarjeta({
   const faltan = diasHasta(v.cierra);
   const abierta = v.estado === "abierta";
   const alcanzado = total >= v.quorum;
+  const votosDeOp = (id: string) => (v.opciones.find((o) => o.id === id)?.votos ?? 0) + (miVoto === id && !v.miVoto ? 1 : 0);
+  const pctDe = (id: string) => (total ? (votosDeOp(id) / total) * 100 : 0);
+  const ganadora = [...v.opciones].sort((a, b) => votosDeOp(b.id) - votosDeOp(a.id))[0];
+  const tuya = v.opciones.find((o) => o.id === miVoto);
 
   return (
-    <article className={"votacion" + (abierta ? "" : " fin")}>
-      <div className="arr">
-        <span className={"pastilla" + (abierta ? "" : " gris")}>
-          <Icon n={abierta ? "reloj" : v.estado === "cerrada" ? "check" : "calendario"} s={12} w={2.2} />
-          {abierta ? "Abierta" : v.estado === "cerrada" ? "Cerrada" : "Próxima"}
-        </span>
-        <span className="cuando">
+    <article className={"vot " + v.estado}>
+      <p className="vot-estado">
+        <span className="vot-marca" aria-hidden="true" />
+        <b>{abierta ? "Abierta" : v.estado === "cerrada" ? "Cerrada" : "Próxima"}</b>
+        <span>
           {abierta
-            ? faltan <= 0 ? "Cierra hoy" : `Cierra en ${faltan} días`
-            : v.estado === "proxima" ? `Abre el ${fechaCorta(v.abre)}` : `Cerró el ${fechaCorta(v.cierra)}`}
+            ? faltan <= 0 ? "cierra hoy" : `cierra en ${faltan} días`
+            : v.estado === "proxima" ? `abre el ${fechaCorta(v.abre)}` : `cerró el ${fechaCorta(v.cierra)}`}
         </span>
-      </div>
-
-      <h3>{v.titulo}</h3>
-      <p className="cuerpo-txt">{v.descripcion}</p>
-
-      <div className="opciones-voto">
-        {v.opciones.map((o) => {
-          const votos = o.votos + (miVoto === o.id && !v.miVoto ? 1 : 0);
-          const pct = total ? (votos / total) * 100 : 0;
-          const elegida = miVoto === o.id;
-          const muestra = v.estado !== "proxima";
-          return (
-            <button key={o.id} type="button"
-              className={(elegida ? "on " : "") + (o.id === "si" ? "op-si" : o.id === "no" ? "op-no" : "")}
-              disabled={!abierta || Boolean(miVoto)}
-              aria-pressed={elegida}
-              onClick={() => onVotar(o.id)}>
-              {muestra && <span className="barra" style={{ width: `${pct}%` }} aria-hidden="true" />}
-              <span className="tx">
-                {elegida && <Icon n="check" s={16} w={2.6} />}
-                {o.texto}
-              </span>
-              {muestra && <span className="pc">{votos} · {porciento(pct)}</span>}
-            </button>
-          );
-        })}
-      </div>
-
-      <p className="quorum">
-        {total} de {v.padron} unidades votaron ·{" "}
-        {alcanzado ? "quórum alcanzado" : `faltan ${v.quorum - total} para el quórum`}
       </p>
 
-      {abierta && !miVoto && <p className="quorum av">Todavía no votaste.</p>}
-      {miVoto && abierta && <p className="quorum av">Tu voto quedó registrado. No se puede cambiar.</p>}
+      <h3>{v.titulo}</h3>
+      {v.estado !== "cerrada" && <p className="vot-txt">{v.descripcion}</p>}
+
+      {abierta && (
+        <div className="vot-ops" role="group" aria-label={"Opciones de " + v.titulo}>
+          {v.opciones.map((o) => {
+            const elegida = miVoto === o.id;
+            const pct = pctDe(o.id);
+            return (
+              <button key={o.id} type="button" className={elegida ? "on" : undefined}
+                disabled={Boolean(miVoto)} aria-pressed={elegida}
+                onClick={() => onVotar(o.id)}>
+                <span className="barra" style={{ width: `${pct}%` }} aria-hidden="true" />
+                <span className="tx">{elegida && <Icon n="check" s={16} w={2.6} />}{o.texto}</span>
+                <span className="pc">{elegida ? "Tu voto" : porciento(pct)}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {v.estado === "cerrada" && (
+        <dl className="vot-res">
+          <div><dt>Resultado</dt><dd>{ganadora.texto} · {porciento(pctDe(ganadora.id))}</dd></div>
+          {tuya && <div><dt>Tu voto</dt><dd>{tuya.texto}</dd></div>}
+        </dl>
+      )}
+
+      {v.estado !== "proxima" && (
+        <p className="vot-pie">
+          {total} de {v.padron} unidades votaron · {alcanzado ? "quórum alcanzado" : `faltan ${v.quorum - total} para el quórum`}
+        </p>
+      )}
+      {abierta && !miVoto && <p className="vot-pie fuerte">Tocá una opción para votar.</p>}
+      {abierta && miVoto && <p className="vot-pie fuerte">Tu voto quedó registrado.</p>}
     </article>
   );
 }
@@ -94,7 +102,7 @@ export function R24({ ir }: { ir: (v: Vista, ref?: string) => void }) {
             <Tarjeta key={v.id} v={v} miVoto={estado.votos[v.id]}
               onVotar={(opcionId) => setPendiente({ v, opcionId })} />
           ))}
-          <FinLista texto="No hay más votaciones" />
+          <FinLista texto="Nada más para mostrar" />
         </>
       )}
 

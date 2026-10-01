@@ -145,6 +145,12 @@ export type Incidencia = {
   cuando: string;
   reportadaPor: string;
   derivadaA?: string;
+  /** Persona que lleva el caso (la asigna administración). Distinto del
+   *  proveedor al que se derivó y de quien lo reportó. */
+  responsable?: string;
+  /** Movimientos del caso después del reporte: derivación, asignación,
+   *  cambio de estado. Cada uno con autor y rol. */
+  acciones?: { cuando: string; texto: string; autor: string; rol: string }[];
 };
 
 export const ROTULO_GRAVEDAD: Record<Gravedad, string> = {

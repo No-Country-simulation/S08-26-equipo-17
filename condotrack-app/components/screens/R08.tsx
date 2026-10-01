@@ -1,20 +1,20 @@
 "use client";
-import { useState } from "react";
-import { Icon } from "../ui/Icon";
-import { Hoja } from "../ui/Hoja";
-import { PanelEntrega } from "../paneles/PanelEntrega";
+import { CardEntrega } from "../paneles/PanelEntrega";
 import { TopBar } from "../ui/TopBar";
 import { Vacio } from "../ui/Vacio";
 import { FinLista } from "../ui/FinLista";
-import { Aviso } from "../ui/Estados";
 import { RESIDENTE, type Vista } from "@/lib/data";
-import { fechaHora } from "@/lib/formato";
 import { useApp } from "@/lib/estado";
 
+/** R08 · Entregas.
+ *
+ *  Ronda 2 · el mismo lenguaje que el seguimiento (G11): cada entrega es la
+ *  card de seguimiento en chico —de quién, qué día, el estado y el
+ *  recorrido— y tocarla abre esa misma card en grande. Antes eran filas de
+ *  texto que abrían una hoja con otro diseño: dos partes distintas para lo
+ *  mismo. La que está para retirar va en carbón; las retiradas, apagadas. */
 export function R08({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   const { estado } = useApp();
-  const [abierta, setAbierta] = useState<string | null>(null);
-  const entrega = estado.entregas.find((x) => x.id === abierta);
   const lista = estado.entregas
     .filter((e) => e.unidad === RESIDENTE.unidad)
     .sort((a, b) => b.recibidoEl.localeCompare(a.recibidoEl));
@@ -28,40 +28,11 @@ export function R08({ ir }: { ir: (v: Vista, ref?: string) => void }) {
         <Vacio icono="caja" titulo="Sin entregas" />
       ) : (
         <>
-          {lista.map((e) => {
-            const paraRetirar = e.estado === "retirar";
-            return (
-              <button className="entrega" type="button" key={e.id} onClick={() => setAbierta(e.id)}>
-                <span className={"ic" + (paraRetirar ? " am" : "")}><Icon n="caja" s={20} w={1.8} /></span>
-                <span className="d">
-                  <b>{e.titulo}</b>
-                  <span className="m">
-                    {paraRetirar
-                      ? `Recibido por ${e.recibidoPor} · ${fechaHora(e.recibidoEl)}`
-                      : `Retirado por ${e.retiradoPor} · ${fechaHora(e.retiradoEl!)}`}
-                  </span>
-                  <span className={"pastilla" + (paraRetirar ? "" : " gris")} style={{ marginTop: 10 }}>
-                    <Icon n={paraRetirar ? "reloj" : "check"} s={13} w={2.4} />
-                    {paraRetirar ? "Para retirar" : "Retirado"}
-                  </span>
-                </span>
-                <span className="flech"><Icon n="chevron" s={16} w={2.1} /></span>
-              </button>
-            );
-          })}
-          <FinLista texto="No hay más entregas" />
+          <div className="ent-lista">
+            {lista.map((e) => <CardEntrega key={e.id} e={e} onAbrir={() => ir("g11", e.id)} />)}
+          </div>
+          <FinLista texto="Nada más para mostrar" />
         </>
-      )}
-
-
-      {/* El detalle de una entrega no necesita una pantalla: son cuatro
-          datos y un historial de dos líneas. */}
-      {entrega && (
-        <Hoja titulo={entrega.titulo} onCancelar={() => setAbierta(null)}
-          cerrarRotulo="Cerrar" sinAcciones>
-          <PanelEntrega e={entrega} />
-          <div style={{ height: 20 }} />
-        </Hoja>
       )}
     </div>
   );

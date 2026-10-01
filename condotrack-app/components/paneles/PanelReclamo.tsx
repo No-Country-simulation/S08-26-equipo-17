@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { Icon } from "../ui/Icon";
 import { Elegir, Area, Adjuntar, PieForm } from "../ui/Formulario";
-import { RESIDENTE } from "@/lib/data";
-import { CATEGORIAS, UBICACIONES, type CategoriaReclamo } from "@/lib/gestiones";
+import { RESIDENTE, type Vista } from "@/lib/data";
+import { CATEGORIAS, UBICACIONES, rotuloCategoria, type CategoriaReclamo } from "@/lib/gestiones";
+import { ExitoProtagonista } from "../ui/Estados";
 import { nuevoCodigoReclamo, nuevoIdReclamo, useApp } from "@/lib/estado";
 
 /** El formulario de reclamo, sin pantalla alrededor.
@@ -85,5 +86,34 @@ export function PanelReclamo({
         rotuloCancelar={rotuloCancelar}
       />
     </>
+  );
+}
+
+/** Éxito de "Hacer un reclamo" (ronda 3): la misma composición que "Visita
+ *  autorizada". Lo usan la hoja de Reclamos (R09) y el enlace directo (F02). */
+export function ExitoReclamo({ codigo, ir, alterna, onAlterna }: {
+  codigo: string;
+  ir: (v: Vista, ref?: string) => void;
+  alterna: string;
+  onAlterna: () => void;
+}) {
+  const { estado } = useApp();
+  const r = estado.reclamos.find((x) => x.codigo === codigo);
+  return (
+    <ExitoProtagonista
+      titulo="Reclamo creado"
+      resumen={<><b>{codigo}</b>{r ? <> · {rotuloCategoria(r.categoria)}</> : null}</>}
+      detalle={r ? (
+        <dl className="exito-datos">
+          <div><dt>Dónde</dt><dd>{r.ubicacion}</dd></div>
+          <div><dt>Estado</dt><dd>Abierto</dd></div>
+        </dl>
+      ) : undefined}
+      nota="Administración ya lo ve en su panel."
+      accion="Seguir el reclamo"
+      onAccion={() => (r ? ir("g10", r.id) : ir("r09"))}
+      alterna={alterna}
+      onAlterna={onAlterna}
+    />
   );
 }

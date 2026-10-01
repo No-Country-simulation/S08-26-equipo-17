@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { TopBar } from "../ui/TopBar";
 import { PanelReclamo } from "../paneles/PanelReclamo";
-import { Confirmacion } from "../ui/Estados";
+import { ExitoReclamo } from "../paneles/PanelReclamo";
 import { type Vista } from "@/lib/data";
 
 /** F02 · Nuevo reclamo.
@@ -17,15 +17,7 @@ export function F02({ ir }: { ir: (v: Vista, ref?: string) => void }) {
     return (
       <div className="vista" id="f02">
         <TopBar volverA="r09" ir={ir} />
-        <Confirmacion
-          titulo="Reclamo creado"
-          principal={hecho}
-          secundario="Administración lo ve ahora en su panel"
-          accion="Seguir el reclamo"
-          onAccion={() => ir("r09")}
-          alterna="Volver a Más"
-          onAlterna={() => ir("mas")}
-        />
+        <ExitoReclamo codigo={hecho} ir={ir} alterna="Volver a Más" onAlterna={() => ir("mas")} />
       </div>
     );
   }

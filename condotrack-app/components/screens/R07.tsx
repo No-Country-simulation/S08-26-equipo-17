@@ -42,9 +42,31 @@ const semillaDe = (codigo: string) =>
 export function R07({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: string }) {
   const { estado, hacer } = useApp();
   const [revocar, setRevocar] = useState(false);
+  const [comp, setComp] = useState<"listo" | "enviando" | "compartido" | "cancelado" | "copiado" | "error">("listo");
 
   const vigentes = estado.visitas.filter((v) => v.estado === "vigente" || v.estado === "programada");
   const v = estado.visitas.find((x) => x.id === refe) ?? vigentes[0];
+
+  const texto = v ? `Pase de acceso · ${v.nombre} · ${v.dia ?? diaEnPalabras(new Date(v.fecha))} · ${v.horario} · Código ${v.codigo}` : "";
+  async function copiarPase() {
+    try {
+      if (!navigator.clipboard) throw new Error("sin portapapeles");
+      await navigator.clipboard.writeText(texto);
+      setComp("copiado");
+    } catch { setComp("error"); }
+  }
+  async function compartir() {
+    if (comp === "enviando") return;
+    setComp("enviando");
+    if (typeof navigator.share !== "function") { await copiarPase(); return; }
+    try {
+      await navigator.share({ title: "Pase de acceso", text: texto });
+      setComp("compartido");
+    } catch (e) {
+      if ((e as DOMException)?.name === "AbortError") setComp("cancelado");
+      else await copiarPase();
+    }
+  }
 
   if (!v) {
     return (
@@ -65,10 +87,15 @@ export function R07({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
       <div className="tit"><h1>Pase de acceso</h1></div>
 
       <div className="pase">
-        <div className="et">Visita autorizada</div>
-        <h2>{v.nombre}</h2>
-        <div className="meta">
-          {v.dia ? `${v.dia} · ${v.horario}` : `${diaEnPalabras(new Date(v.fecha))} · ${v.horario}`}
+        {/* RES-026 · la foto del edificio va en la cabecera, detrás del
+            nombre; el QR queda sobre blanco, sin imagen debajo. */}
+        <div className="pase-cab">
+          <img className="pase-foto" src="/img/hero_lobby.jpg" alt="" aria-hidden="true" />
+          <div className="et">Visita autorizada</div>
+          <h2>{v.nombre}</h2>
+          <div className="meta">
+            {v.dia ? `${v.dia} · ${v.horario}` : `${diaEnPalabras(new Date(v.fecha))} · ${v.horario}`}
+          </div>
         </div>
 
         <div className="qr">
@@ -90,7 +117,20 @@ export function R07({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
       </div>
 
       <div className="pase-acciones">
-        <button className="entrar" type="button"><Icon n="flechaDiag" s={20} />Compartir</button>
+        <button className="entrar" type="button" onClick={compartir} aria-busy={comp === "enviando" || undefined}>
+          <Icon n="flechaDiag" s={20} />Compartir
+        </button>
+        {/* RES-027 · cada resultado dice lo que pasó: compartido, cancelado,
+            copiado como alternativa o error. Cancelar no es éxito. */}
+        {/* R07-01 · el mensaje existe sólo cuando hay algo que decir; antes el
+            estado se escribía como clase "listo" y heredaba el alto de la
+            pantalla de éxito, dejando un hueco de 64 px vacío. */}
+        <p className="comp-estado" data-estado={comp} role="status" hidden={comp === "listo" || comp === "enviando"}>
+          {comp === "compartido" && "Pase compartido."}
+          {comp === "cancelado" && "No se compartió. El pase sigue activo."}
+          {comp === "copiado" && "Este dispositivo no comparte directo: copiamos el pase para que lo pegues."}
+          {comp === "error" && `No se pudo compartir ni copiar. Pasale el código: ${v.codigo}.`}
+        </p>
         <button className="btn-ter peligro" type="button" onClick={() => setRevocar(true)}>Dar de baja</button>
       </div>
 
@@ -116,7 +156,9 @@ export function R07({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
       {revocar && (
         <Hoja
           titulo={`Dar de baja el pase de ${v.nombre}`}
-          texto="El código deja de servir enseguida."
+          texto={v.recurrente
+            ? "Es un pase que se repite: se dan de baja todas las visitas de la serie. El código deja de servir enseguida y el historial queda."
+            : "El código deja de servir enseguida. El historial de la visita queda."}
           confirmar="Dar de baja"
           peligro
           onConfirmar={() => { hacer({ t: "visita/cancelar", id: v.id }); setRevocar(false); ir("r06"); }}

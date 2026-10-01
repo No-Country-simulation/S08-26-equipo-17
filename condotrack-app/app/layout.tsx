@@ -1,9 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./sistema.css";
+import "./recepcion.css";
+import "./admin.css";
 
 export const metadata: Metadata = {
   title: "CondoTrack · Prototipo",
-  description: "Prototipo navegable del bloque residente de CondoTrack.",
+  description: "Prototipo navegable de CondoTrack: residente, recepción y administración.",
   icons: {
     icon: "/brand/CT_APPICON_V2.png",
     apple: "/brand/CT_APPLE_TOUCH_V2.png",

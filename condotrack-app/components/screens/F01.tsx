@@ -1,10 +1,11 @@
 "use client";
+import { franjaEnPalabras } from "@/lib/formato";
 import { useMemo, useRef, useState } from "react";
 import { TopBar } from "../ui/TopBar";
 import { Icon } from "../ui/Icon";
 import { Texto, Area, Segmentos, Interruptor, PieForm } from "../ui/Formulario";
 import { Panel } from "../ui/Panel";
-import { Confirmacion } from "../ui/Estados";
+import { ExitoProtagonista } from "../ui/Estados";
 import {
   FRANJAS_VISITA, RESIDENTE, ROTULO_TIPO_VISITA,
   type TipoVisita, type Vista,
@@ -72,7 +73,7 @@ export function F01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
     e.currentTarget.style.scrollSnapType = "";
   }
   const [enviando, setEnviando] = useState(false);
-  const [hecho, setHecho] = useState<{ codigo: string; cuando: string } | null>(null);
+  const [hecho, setHecho] = useState<{ codigo: string; cuando: string; id: string } | null>(null);
 
   const dia = listaDias[diaN];
   const franja = FRANJAS_VISITA.find((f) => f.id === franjaId)!;
@@ -97,11 +98,12 @@ export function F01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
     const cuando = `${esHoy(dia) ? "Hoy" : `${diaCorto(dia)} ${numDia(dia)} ${mesCorto(dia)}`} · ${franja.horario}`;
 
     /* La demora representa la emisión del pase del lado del servidor. */
+    const idNueva = nuevoIdVisita();
     window.setTimeout(() => {
       hacer({
         t: "visita/crear",
         visita: {
-          id: nuevoIdVisita(),
+          id: idNueva,
           nombre: nombre.trim(),
           documento: documento.trim() || undefined,
           tipo,
@@ -119,7 +121,7 @@ export function F01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
         },
       });
       setEnviando(false);
-      setHecho({ codigo, cuando });
+      setHecho({ codigo, cuando, id: idNueva });
     }, 700);
   }
 
@@ -127,12 +129,19 @@ export function F01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
     return (
       <div className="vista" id="f01">
         <TopBar volverA="r06" ir={ir} />
-        <Confirmacion
+        <ExitoProtagonista
           titulo="Visita autorizada"
-          principal={nombre.trim()}
-          secundario={`${hecho.cuando} · pase ${hecho.codigo}`}
+          resumen={<><b>{nombre.trim()}</b> · {hecho.cuando.split(" · ")[0]}</>}
+          detalle={
+            <dl className="exito-datos">
+              <div><dt>Horario</dt><dd>{franjaEnPalabras(franja.horario)}</dd></div>
+              {recurrente && <div><dt>Se repite</dt><dd>Todos los {dia.toLocaleDateString("es-AR", { weekday: "long" })}</dd></div>}
+              <div><dt>Pase</dt><dd className="mono">{hecho.codigo}</dd></div>
+            </dl>
+          }
+          nota="Recepción ya tiene el pase: lo valida cuando llegue."
           accion="Ver el pase"
-          onAccion={() => ir("r07")}
+          onAccion={() => ir("r07", hecho.id)}
           alterna="Autorizar otra visita"
           onAlterna={() => {
             setHecho(null); setNombre(""); setDocumento(""); setNota("");
@@ -173,7 +182,7 @@ export function F01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
 
       <Segmentos etiqueta="Horario" valor={franjaId} onCambio={setFranjaId}
         opciones={FRANJAS_VISITA.map((f) => ({ id: f.id, rotulo: f.rotulo }))}
-        ayuda={franja.horario} />
+        ayuda={franjaEnPalabras(franja.horario)} />
 
       <div className="mas-datos">
         <Panel key={masAbierto ? "abierto" : "cerrado"} abiertoPorDefecto={masAbierto}
@@ -187,6 +196,14 @@ export function F01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
           <div style={{ marginTop: 14 }}>
             <Interruptor etiqueta="Se repite todas las semanas"
               valor={recurrente} onCambio={setRecurrente} />
+            {/* RES-029 · la recurrencia se resume: qué día, qué franja y qué
+                pasa con la baja. No se asume diaria por ser proveedor. */}
+            {recurrente && (
+              <p className="ay recurrencia">
+                Todos los {dia.toLocaleDateString("es-AR", { weekday: "long" })} · {franjaEnPalabras(franja.horario).toLowerCase()}.
+                Dar de baja el pase corta toda la serie.
+              </p>
+            )}
           </div>
           <Area etiqueta="Nota para recepción" valor={nota} onCambio={setNota} opcional
             placeholder="Viene con herramientas." filas={3} />

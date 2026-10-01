@@ -1,4 +1,5 @@
 "use client";
+import { Tostada } from "./sistema/Tostada";
 import { useEffect, useRef } from "react";
 import { PillNav } from "./ui/PillNav";
 import { R01 } from "./screens/R01";
@@ -42,6 +43,8 @@ const AMBITO: Partial<Record<Vista, string>> = {
   r07: "acceso", f01: "acceso",
 };
 
+const SCROLL = new Map<string, number>();
+
 export function ShellResidente({
   vista, refe, ir, onSalir, direccion = "adelante",
 }: {
@@ -53,8 +56,28 @@ export function ShellResidente({
 }) {
   const caja = useRef<HTMLDivElement | null>(null);
 
-  // cada cambio de vista arranca arriba
-  useEffect(() => { caja.current?.querySelector(".vista")?.scrollTo(0, 0); }, [vista, refe]);
+  /* Cada vista nueva arranca arriba; volver restaura donde estabas
+     (RES-007 · "Back restaura scroll"). El scroll se anota mientras
+     ocurre, por vista y ref, y sólo se recupera al ir hacia atrás. */
+  const clave = vista + "|" + (refe ?? "");
+  const claveActual = useRef(clave);
+  claveActual.current = clave;
+  useEffect(() => {
+    const el = caja.current;
+    if (!el) return;
+    const anotar = (e: Event) => {
+      const t = e.target as HTMLElement;
+      if (t.classList?.contains("vista")) SCROLL.set(claveActual.current, t.scrollTop);
+    };
+    el.addEventListener("scroll", anotar, true);
+    return () => el.removeEventListener("scroll", anotar, true);
+  }, []);
+  useEffect(() => {
+    const v = caja.current?.querySelector(".vista");
+    const y = direccion === "atras" ? SCROLL.get(clave) ?? 0 : 0;
+    v?.scrollTo(0, y);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vista, refe]);
 
   return (
     <section className="screen residente" aria-label="CondoTrack residente" ref={caja}
@@ -72,8 +95,8 @@ export function ShellResidente({
       {vista === "r15" && <R15 ir={ir} onSalir={onSalir} />}
       {vista === "r16" && <R16 ir={ir} refe={refe} />}
       {vista === "r17" && <R17 ir={ir} />}
-      {vista === "r18" && <R18 ir={ir} />}
-      {vista === "r19" && <R19 ir={ir} />}
+      {vista === "r18" && <R18 ir={ir} refe={refe} />}
+      {vista === "r19" && <R19 ir={ir} refe={refe} />}
       {vista === "r20" && <R20 ir={ir} refe={refe} />}
       {vista === "r21" && <R21 ir={ir} />}
       {vista === "r22" && <R22 ir={ir} />}
@@ -86,6 +109,7 @@ export function ShellResidente({
       {vista === "f02" && <F02 ir={ir} />}
       {vista === "f03" && <F03 ir={ir} />}
       {vista === "mas" && <Mas ir={ir} onSalir={onSalir} />}
+      <Tostada clase="movil" />
       <PillNav actual={vista} ir={ir} />
     </section>
   );

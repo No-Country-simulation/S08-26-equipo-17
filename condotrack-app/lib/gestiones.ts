@@ -206,18 +206,18 @@ export const ROTULO_DOC: Record<Documento["tipo"], string> = {
 
 /* ── preguntas frecuentes y reglamento (R19) ─────────────────────── */
 
-export const FAQ: { p: string; r: string }[] = [
-  { p: "¿Cómo autorizo una visita?",
+export const FAQ: { p: string; r: string; tema: string }[] = [
+  { p: "¿Cómo autorizo una visita?", tema: "Visitas y accesos",
     r: "Desde Inicio o desde Mi unidad, tocá Autorizar visita. Cargás el nombre, el día y la franja horaria, y el pase queda disponible al instante. Recepción lo ve en su pantalla sin que tengas que avisar." },
-  { p: "¿Qué pasa si mi visita llega antes del horario?",
+  { p: "¿Qué pasa si mi visita llega antes del horario?", tema: "Visitas y accesos",
     r: "El pase se activa 30 minutos antes de la franja que pusiste. Si llega antes, recepción te llama para confirmar el ingreso." },
-  { p: "¿Puedo cancelar una reserva?",
+  { p: "¿Puedo cancelar una reserva?", tema: "Reservas",
     r: "Sí, hasta 30 minutos antes de que empiece, desde Mis reservas. Después de esa hora el turno queda tomado." },
-  { p: "¿Quién puede entrar sin que yo autorice cada vez?",
+  { p: "¿Quién puede entrar sin que yo autorice cada vez?", tema: "Visitas y accesos",
     r: "Solamente las personas con permiso permanente. Están listadas en Mi unidad y las podés dar de baja cuando quieras: la baja es inmediata y queda registrada." },
-  { p: "¿Cuándo vencen las expensas?",
+  { p: "¿Cuándo vencen las expensas?", tema: "Expensas",
     r: "El día 20 de cada mes. Si pagás por transferencia, informá el pago desde la app para que administración lo concilie más rápido." },
-  { p: "¿Qué hago si no estoy para recibir un paquete?",
+  { p: "¿Qué hago si no estoy para recibir un paquete?", tema: "Entregas",
     r: "Recepción lo recibe y lo guarda. Te llega un aviso y lo retirás cuando puedas: queda registrado quién lo dejó, quién lo retiró y a qué hora." },
 ];
 

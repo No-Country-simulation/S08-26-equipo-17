@@ -1,0 +1,102 @@
+{
+  "mobile": [
+    {
+      "broken": 0,
+      "overflow": false,
+      "route": "?perfil=recepcion&p=app&v=p01&limpio=1&tema=claro",
+      "w": 390,
+      "wide": []
+    },
+    {
+      "broken": 0,
+      "overflow": false,
+      "route": "?perfil=recepcion&p=app&v=p02&limpio=1&tema=claro",
+      "w": 390,
+      "wide": []
+    },
+    {
+      "broken": 0,
+      "overflow": false,
+      "route": "?perfil=recepcion&p=app&v=p03&limpio=1&tema=claro",
+      "w": 390,
+      "wide": []
+    },
+    {
+      "broken": 0,
+      "overflow": false,
+      "route": "?perfil=recepcion&p=app&v=p04&limpio=1&tema=claro",
+      "w": 390,
+      "wide": []
+    },
+    {
+      "broken": 0,
+      "overflow": false,
+      "route": "?perfil=recepcion&p=app&v=p05&limpio=1&tema=claro",
+      "w": 390,
+      "wide": []
+    },
+    {
+      "broken": 0,
+      "overflow": false,
+      "route": "?perfil=recepcion&p=app&v=p07&limpio=1&tema=claro",
+      "w": 390,
+      "wide": []
+    },
+    {
+      "broken": 0,
+      "overflow": false,
+      "route": "?perfil=recepcion&p=app&v=p08&limpio=1&tema=claro",
+      "w": 390,
+      "wide": []
+    },
+    {
+      "broken": 0,
+      "overflow": false,
+      "route": "?perfil=recepcion&p=app&v=p09&limpio=1&tema=claro",
+      "w": 390,
+      "wide": []
+    }
+  ],
+  "tablet": [
+    {
+      "overflow": false,
+      "url": "?perfil=recepcion&p=app&v=p01&limpio=1&tema=claro",
+      "w": 1024
+    },
+    {
+      "overflow": false,
+      "url": "?perfil=recepcion&p=app&v=p02&limpio=1&tema=claro",
+      "w": 1024
+    },
+    {
+      "overflow": false,
+      "url": "?perfil=recepcion&p=app&v=p03&limpio=1&tema=claro",
+      "w": 1024
+    },
+    {
+      "overflow": false,
+      "url": "?perfil=recepcion&p=app&v=p04&limpio=1&tema=claro",
+      "w": 1024
+    },
+    {
+      "overflow": false,
+      "url": "?perfil=recepcion&p=app&v=p05&limpio=1&tema=claro",
+      "w": 1024
+    },
+    {
+      "overflow": false,
+      "url": "?perfil=recepcion&p=app&v=p07&limpio=1&tema=claro",
+      "w": 1024
+    },
+    {
+      "overflow": false,
+      "url": "?perfil=recepcion&p=app&v=p08&limpio=1&tema=claro",
+      "w": 1024
+    },
+    {
+      "overflow": false,
+      "url": "?perfil=recepcion&p=app&v=p09&limpio=1&tema=claro",
+      "w": 1024
+    }
+  ]
+}

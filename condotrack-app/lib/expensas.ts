@@ -13,7 +13,7 @@ import {
   correrPeriodo, diasHasta, periodoActual, periodoLargo, pesos,
   vencimientoEnPalabras,
 } from "./formato";
-import { RESIDENTE, type Aviso } from "./data";
+import { AVISOS, RESIDENTE, type Aviso } from "./data";
 
 /* ── tipos ───────────────────────────────────────────────────────── */
 
@@ -90,8 +90,33 @@ export const EXPENSAS: Expensa[] = [
   { id: "x5", unidad: RESIDENTE.unidad, periodo: P(-5), total: 151000, vencimiento: vence(P(-5)), estado: "pagada", pagadaEl: pagoEl(P(-5), 12), medioPago: "Transferencia" },
 ];
 
-export const expensaDelMes = () => EXPENSAS[0];
-export const expensaDe = (periodo: string) => EXPENSAS.find((e) => e.periodo === periodo);
+/** El estado de una expensa se deriva, no se escribe a mano. "Pagada" es
+ *  un hecho registrado; "vencida" es una expensa sin pagar cuya fecha de
+ *  vencimiento ya pasó. Una sola regla para Inicio, Expensas, Movimientos y
+ *  los avisos: antes el aviso decía "venció" por fecha mientras el Inicio
+ *  seguía leyendo el "pendiente" guardado en el dato. */
+export function estadoDe(e: Pick<Expensa, "estado" | "vencimiento">): EstadoExpensa {
+  if (e.estado === "pagada") return "pagada";
+  return diasHasta(e.vencimiento) < 0 ? "vencida" : "pendiente";
+}
+/** Un pago que administración confirmó salda la expensa de su período
+ *  (RES-022 · QA-11): informar solo no alcanza, confirmar sí. */
+type PagoMin = Pick<PagoInformado, "periodo" | "estado">;
+const conEstado = (e: Expensa, pagos: PagoMin[] = []): Expensa =>
+  pagos.some((p) => p.periodo === e.periodo && p.estado === "confirmado")
+    ? { ...e, estado: "pagada" }
+    : { ...e, estado: estadoDe(e) };
+
+/** Las expensas de la unidad con su estado al día de hoy. */
+export const expensasDeLaUnidad = (pagos: PagoMin[] = []) => EXPENSAS.map((e) => conEstado(e, pagos));
+export const expensaDelMes = (pagos: PagoMin[] = []) => conEstado(EXPENSAS[0], pagos);
+export const expensaDe = (periodo: string, pagos: PagoMin[] = []) => {
+  const e = EXPENSAS.find((x) => x.periodo === periodo);
+  return e && conEstado(e, pagos);
+};
+/** El pago informado del período que todavía espera decisión. */
+export const pagoPendienteDe = (periodo: string, pagos: PagoInformado[]) =>
+  pagos.find((p) => p.periodo === periodo && p.estado === "informado");
 
 /** Saldo de la unidad: lo que no está pagado. */
 export const saldoUnidad = () =>
@@ -275,27 +300,28 @@ export const archivoMedios = () => "CondoTrack_MediosDePago_Araoz1280.pdf";
    mano: si el aviso dijera "vence en 6 días" un mes después, el
    prototipo estaría mintiendo. */
 
-export function avisosExpensa(pagada = false): Aviso[] {
+export function avisosExpensa(pagada = false, ocultar = false): Aviso[] {
   const e = expensaDelMes();
+  const monto = ocultar ? "$ ••••••" : pesos(e.total);
   const faltan = diasHasta(e.vencimiento);
   const lista: Aviso[] = [
     {
       id: "nx1", icono: "documento",
       titulo: "Expensa del mes disponible",
       cuando: "Hace 3 h",
-      desc: `${periodoLargo(e.periodo)} · ${pesos(e.total)} · ya podés ver la rendición`,
+      desc: `${periodoLargo(e.periodo)} · ${monto} · ya podés ver la rendición`,
       estado: "leida", va: "r20",
     },
   ];
 
   if (pagada || e.estado === "pagada") return lista;
 
-  if (faltan < 0) {
+  if (e.estado === "vencida") {
     lista.unshift({
       id: "nx2", icono: "alerta",
       titulo: "La expensa venció",
       cuando: "Hoy",
-      desc: `${vencimientoEnPalabras(e.vencimiento)} · ${pesos(e.total)}`,
+      desc: `${vencimientoEnPalabras(e.vencimiento)} · ${monto}`,
       estado: "sinleer", va: "r20",
     });
   } else if (faltan <= 7) {
@@ -303,10 +329,19 @@ export function avisosExpensa(pagada = false): Aviso[] {
       id: "nx2", icono: "reloj",
       titulo: "La expensa está por vencer",
       cuando: "Hoy",
-      desc: `${vencimientoEnPalabras(e.vencimiento)} · ${pesos(e.total)}`,
+      desc: `${vencimientoEnPalabras(e.vencimiento)} · ${monto}`,
       estado: "sinleer", va: "r20",
     });
   }
 
   return lista;
+}
+
+
+/** Los avisos del residente con su lectura aplicada: "marcar todo" o
+ *  abiertos uno por uno. Notificaciones y el contador de Más leen esto
+ *  mismo, así el número y la lista nunca dicen cosas distintas. */
+export function avisosConLectura(todosLeidos: boolean, abiertos: string[], pagada = false, ocultar = false): Aviso[] {
+  return [...avisosExpensa(pagada, ocultar), ...AVISOS].map((a) =>
+    a.estado === "sinleer" && (todosLeidos || abiertos.includes(a.id)) ? { ...a, estado: "leida" as const } : a);
 }

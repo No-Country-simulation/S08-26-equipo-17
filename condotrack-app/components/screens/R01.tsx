@@ -1,4 +1,5 @@
 "use client";
+import { Importe, OjoImporte } from "../ui/Importe";
 import { useState } from "react";
 import { Icon, type NombreIcono } from "../ui/Icon";
 import { BotonGlass } from "../ui/BotonGlass";
@@ -6,7 +7,7 @@ import { WidgetPrincipal, type EstadoWidget } from "../ui/WidgetPrincipal";
 import { PilaVivas, type Viva } from "../ui/PilaVivas";
 import { HojaPagar } from "../paneles/HojaPagar";
 import { EDIFICIO, RESIDENTE, type Vista } from "@/lib/data";
-import { expensaDelMes } from "@/lib/expensas";
+import { pagoPendienteDe, expensaDelMes } from "@/lib/expensas";
 import { pesos, diaMes, hace } from "@/lib/formato";
 import { useApp } from "@/lib/estado";
 import { proximas, cuandoCorto, espacioDe } from "@/lib/reservas";
@@ -36,7 +37,10 @@ const dos = (n: number) => String(n).padStart(2, "0");
 
 export function R01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   const { estado } = useApp();
-  const exp = expensaDelMes();
+  const exp = expensaDelMes(estado.pagos);
+  /* RES-022 · un pago informado todavía no es un pago: queda "a confirmar"
+     hasta que administración decide, y no se ofrece pagar de nuevo. */
+  const informado = pagoPendienteDe(exp.periodo, estado.pagos);
   /* Pagar es una acción: abre la hoja acá, no manda a otra pantalla. */
   const [pagar, setPagar] = useState(false);
 
@@ -61,11 +65,21 @@ export function R01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       id: "expensa",
       rotulo: "Expensas",
       volanta: "",
-      titular: pesos(exp.total),
-      detalle: pagada ? "Pagada" : "Vence " + diaMes(exp.vencimiento),
+      titular: <Importe valor={exp.total} />,
+      accesorio: <OjoImporte claro />,
+      /* RES-HOME-02 · una sola línea de metadata: el estado con su fecha en
+         la pastilla. El amarillo queda para Pagar, nada más. */
+      /* v05 · sin la pastilla roja de "Vencida": la fecha queda como un
+         dato callado debajo de la cifra */
+      detalle: pagada ? "Pagada" : !informado && exp.estado === "vencida" ? `Venció el ${diaMes(exp.vencimiento)}` : undefined,
+      /* DEC-003: "Pendiente" es el estado real de la expensa y se queda
+         mientras lo sea. Nunca se cambia por "Pagada"; pagar es una acción
+         aparte, la de abajo. Vencida además marca severidad. */
       pastilla: pagada ? undefined
-        : { texto: exp.estado === "vencida" ? "Vencida" : "Pendiente" },
-      primaria: pagada ? undefined : { rotulo: "Pagar", onIr: () => setPagar(true) },
+        : informado ? { texto: "Pago informado · a confirmar", tono: "curso" as const }
+        : exp.estado === "vencida" ? undefined
+          : { texto: `Vence el ${diaMes(exp.vencimiento)}`, apagada: true },
+      primaria: pagada || informado ? undefined : { rotulo: "Pagar", onIr: () => setPagar(true), acento: true },
       enlaces: [
         { rotulo: "Composición", icono: "torta", onIr: () => ir("r21") },
         { rotulo: "Movimientos", icono: "lista", onIr: () => ir("r23") },
@@ -91,7 +105,7 @@ export function R01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       id: "entregas",
       rotulo: "Entregas",
       volanta: paraRetirar.length === 0 ? "Entregas" : "Entrega pendiente",
-      titular: paraRetirar.length === 0 ? "Nada pendiente"
+      titular: paraRetirar.length === 0 ? "Todo en orden"
         : paraRetirar.length === 1 ? "1 paquete" : paraRetirar.length + " paquetes",
       titularTexto: true,
       detalle: paraRetirar.length === 0 ? undefined : paraRetirar[0].titulo,
@@ -108,13 +122,17 @@ export function R01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       titularTexto: true,
       detalle: proxima ? cuandoCorto(proxima) : undefined,
       primaria: proxima
-        ? { rotulo: "Ver reserva", icono: "calendario", onIr: () => ir("r18") }
+        ? { rotulo: "Ver reserva", icono: "calendario", onIr: () => ir("r18", proxima.id) }
         : { rotulo: "Reservar", icono: "calendario", onIr: () => ir("r05") },
       enlaces: proxima ? [{ rotulo: "Reservar otro", onIr: () => ir("r05") }] : undefined,
     },
   ];
 
-  /* ── la pila: objetos del día, y nada más (D-09) ─────────────────── */
+  /* ── la pila: objetos del día, y nada más (D-09) ─────────────────────
+     Las cuatro cards son la misma card: la foto (abre la lista de lo suyo)
+     y encima un panel de vidrio con lo que importa —quién/qué, el estado y
+     la acción concreta en amarillo ("Ver pase", "Ver entrega"…). v04 · A1:
+     menos aire vacío y la acción donde se lee. */
   const VIVAS: Viva[] = [];
 
   if (visitasHoy.length > 0 || vigentes.length > 0) {
@@ -122,26 +140,14 @@ export function R01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       id: "visitas",
       rotulo: "Visitas de hoy",
       nodo: (
-        <div className="viva visitas">
-          <div className="osc">
-            <img src="/img/visitas_fondo.jpg" alt="" />
-            <div className="c">
-              <div className="et">Hoy</div>
-              <div className="n">{visitasHoy.length === 1 ? "1 visita" : visitasHoy.length + " visitas"}</div>
-            </div>
-            <span className="ir">
-              <BotonGlass etiqueta="Ver mis visitas" tono="claro" onClick={() => ir("r06")} />
-            </span>
-          </div>
-          {vigentes.length > 0 && (
-            <button className="pase-fila amarilla" type="button"
-              onClick={() => ir("r07", vigentes[0].id)}>
-              <Icon n="qr" s={17} />
-              <b>{vigentes.length === 1 ? "Pase activo" : vigentes.length + " pases activos"}</b>
-              <span className="ver-pase">Ver pase<Icon n="chevron" s={14} /></span>
-            </button>
-          )}
-        </div>
+        <CardViva et="Hoy" img="/img/visitas_fondo.jpg"
+          titulo={visitasHoy.length === 1 ? "1 visita" : visitasHoy.length + " visitas"}
+          detalle={visitasHoy[0] ? visitasHoy.map((v) => v.nombre.split(" ")[0]).join(" · ") : undefined}
+          estado={vigentes.length === 0 ? undefined : { texto: vigentes.length === 1 ? "Pase activo" : vigentes.length + " pases activos", tono: "ok" }}
+          onFoto={() => ir("r06")} etiqueta="Ver mis visitas"
+          accion={vigentes.length > 0
+            ? { icono: "qr", ver: "Ver pase", onIr: () => ir("r07", vigentes[0].id) }
+            : { icono: "personaMas", ver: "Autorizar", onIr: () => ir("f01") }} />
       ),
     });
   }
@@ -150,17 +156,11 @@ export function R01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
     id: "estado",
     rotulo: "Historial",
     nodo: (
-      <button className="viva hero mat-foto" type="button" onClick={() => ir("r17")}
-        aria-label="Ver el historial de la unidad">
-        <img src="/img/hero_araoz.jpg" alt="" />
-        <span className="et">Hoy, en casa</span>
-        <span className="sobre">
-          <span className="tx">
-            <h2>{ultimo ? ultimo.titulo : "Sin movimientos"}</h2>
-            <p>{ultimo ? "Historial · " + hace(ultimo.cuando) : "Historial"}</p>
-          </span>
-        </span>
-      </button>
+      <CardViva et="Hoy, en casa" img="/img/hero_araoz.jpg"
+        titulo={ultimo ? ultimo.titulo : "Todo en orden"}
+        detalle={ultimo ? hace(ultimo.cuando) : undefined}
+        onFoto={() => ir("r17")} etiqueta="Ver el historial de la unidad"
+        accion={{ icono: "lista", ver: "Historial", onIr: () => ir("r17") }} />
     ),
   });
 
@@ -169,16 +169,10 @@ export function R01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       id: "reserva",
       rotulo: "Próxima reserva",
       nodo: (
-        <button className="viva mat-foto" type="button" onClick={() => ir("r18")}>
-          <img src={espacio.img} alt="" />
-          <span className="et">Próxima reserva</span>
-          <span className="sobre">
-            <span className="tx">
-              <b>{espacio.nombre}</b>
-              <i>{cuandoCorto(proxima)}</i>
-            </span>
-          </span>
-        </button>
+        <CardViva et="Próxima reserva" img={espacio.img}
+          titulo={espacio.nombre} detalle={cuandoCorto(proxima)} estado={{ texto: "Confirmada", tono: "ok" }}
+          onFoto={() => ir("r18")} etiqueta="Ver mis reservas"
+          accion={{ icono: "calendario", ver: "Ver reserva", onIr: () => ir("r18", proxima.id) }} />
       ),
     });
   }
@@ -188,26 +182,22 @@ export function R01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       id: "entrega",
       rotulo: "Entrega pendiente",
       nodo: (
-        <button className="viva paquete mat-foto" type="button" onClick={() => ir("g11", paraRetirar[0].id)}>
-          <img src="/img/hero_lobby.jpg" alt="" aria-hidden="true" />
-          <span className="et">En recepción</span>
-          <span className="sobre">
-            <span className="tx">
-              <b>{paraRetirar.length === 1
-                ? "1 paquete para retirar"
-                : paraRetirar.length + " paquetes para retirar"}</b>
-              <i>Te lo entregan cuando bajes</i>
-            </span>
-            <span className="flech"><Icon n="chevron" s={16} /></span>
-          </span>
-        </button>
+        /* v04 · A1: el remitente manda; el estado y la acción, a la vista */
+        <CardViva et="En recepción" img="/img/hero_lobby.jpg"
+          titulo={paraRetirar.length === 1 ? paraRetirar[0].remitente : paraRetirar.length + " entregas para retirar"}
+          detalle={paraRetirar.length === 1
+            ? `${TIPO_ENTREGA[paraRetirar[0].tipo]} · ${hace(paraRetirar[0].recibidoEl)}`
+            : paraRetirar.map((e) => e.remitente).join(" · ")}
+          estado={{ texto: "Para retirar", tono: "atencion" }}
+          onFoto={() => ir("r08")} etiqueta="Ver mis entregas"
+          accion={{ icono: "caja", ver: "Ver entrega", onIr: () => ir("g11", paraRetirar[0].id) }} />
       ),
     });
   }
 
-  return (
-    <div className="vista inicio" id="r01">
-      {/* EL CAMPO — contexto, estado y accesos en una sola superficie */}
+  /* EL CAMPO — contexto, estado y accesos en una sola superficie. Va
+     trabado junto con el mazo mientras se reparte (PilaVivas). */
+  const campo = (
       <section className="home-campo" aria-label="Tu unidad hoy">
         {/* la fachada va atrás del campo, no en lugar del campo */}
         <img className="campo-foto" src="/img/fachada.jpg" alt="" aria-hidden="true" />
@@ -222,7 +212,7 @@ export function R01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
           </button>
         </header>
 
-        <WidgetPrincipal estados={ESTADOS} etiqueta="Estado de tu unidad" />
+        <WidgetPrincipal estados={ESTADOS} etiqueta="Estado de tu unidad" memoria="r01" />
 
         <nav className="home-acciones" aria-label="Accesos rápidos">
           {ACCIONES.map((a) => (
@@ -234,14 +224,55 @@ export function R01({ ir }: { ir: (v: Vista, ref?: string) => void }) {
           ))}
         </nav>
       </section>
+  );
 
-      {/* LO DE HOY */}
-      <PilaVivas items={VIVAS} titulo="En tu edificio" etiqueta="Lo que está pasando hoy en tu unidad" />
+  return (
+    <div className="vista inicio" id="r01">
+      {/* EL CAMPO arriba y LO DE HOY abajo, en una sola escena */}
+      <PilaVivas items={VIVAS} arriba={campo} titulo="En tu edificio" etiqueta="Lo que está pasando hoy en tu unidad" />
 
       {pagar && (
         <HojaPagar onCerrar={() => setPagar(false)}
           onInformar={() => { setPagar(false); ir("f03"); }} />
       )}
+    </div>
+  );
+}
+
+const TIPO_ENTREGA: Record<string, string> = { paquete: "Paquete", sobre: "Sobre", delivery: "Delivery", otro: "Entrega" };
+
+/** Una card de "En tu edificio". La foto es un botón (lleva a la lista de
+ *  lo suyo) y la acción puntual es otro, dentro del panel de vidrio: dos
+ *  botones hermanos, nunca uno adentro del otro (el texto del panel deja
+ *  pasar el toque a la foto). */
+function CardViva({ et, titulo, detalle, estado, img, onFoto, etiqueta, accion }: {
+  et: string;
+  titulo: string;
+  detalle?: string;
+  /** semáforo: ok = verde, atencion = amarillo */
+  estado?: { texto: string; tono: "ok" | "atencion" };
+  img: string;
+  onFoto: () => void;
+  etiqueta: string;
+  accion: { icono: NombreIcono; ver: string; onIr: () => void };
+}) {
+  return (
+    <div className="viva vc">
+      <button type="button" className="vc-foto" onClick={onFoto} aria-label={etiqueta}>
+        <img src={img} alt="" />
+        <span className="vc-et">{et}</span>
+        <span className="vc-ir"><BotonGlass etiqueta={etiqueta} tono="claro" decorativo /></span>
+      </button>
+      <div className="vc-vidrio">
+        <span className="vc-tx">
+          {estado && <em className="vc-estado" data-tono={estado.tono}>{estado.texto}</em>}
+          <b>{titulo}</b>
+          {detalle && <i>{detalle}</i>}
+        </span>
+        <button type="button" className="vc-accion" onClick={accion.onIr}>
+          <Icon n={accion.icono} s={16} />{accion.ver}
+        </button>
+      </div>
     </div>
   );
 }

@@ -17,9 +17,17 @@ const FILTROS = [
   { id: "historial" as const, rotulo: "Historial" },
 ];
 const CIERRE: Record<Filtro, string> = {
-  hoy: "No hay más visitas para hoy",
-  proximas: "No hay más visitas programadas",
-  historial: "No hay más visitas",
+  hoy: "Nada más para hoy",
+  proximas: "Nada más para mostrar",
+  historial: "Nada más para mostrar",
+};
+
+const iniciales = (n: string) => n.split(" ").filter(Boolean).slice(0, 2).map((x) => x[0]).join("").toUpperCase();
+const faltanDias = (f: Date) => {
+  const h = new Date();
+  const d = Math.round((new Date(f.getFullYear(), f.getMonth(), f.getDate()).getTime()
+    - new Date(h.getFullYear(), h.getMonth(), h.getDate()).getTime()) / 86400000);
+  return d <= 0 ? "Hoy" : d === 1 ? "Mañana" : `En ${d} días`;
 };
 
 /** Una visita, según en qué momento está (ronda visual 01, §10).
@@ -28,8 +36,9 @@ const CIERRE: Record<Filtro, string> = {
  *  momento se ve antes de leer:
  *    · vigente — la foto, el nombre grande y la franja amarilla del pase.
  *      Es lo que mostrás parado en la puerta: el pase es protagonista;
- *    · próxima — una superficie clara con la fecha como bloque;
- *    · pasada — una fila compacta que dice qué pasó. Es historial. */
+ *    · próxima — un ticket: la fecha en amarillo como talón, el corte y
+ *      la visita con cuánto falta (ronda 2: "algo visual interesante");
+ *    · pasada — una card apagada con las iniciales y qué pasó. */
 export function Tarjeta({ v, ir }: { v: Visita; ir: (x: Vista, ref?: string) => void }) {
   const cuando = v.dia ? `${v.dia} · ${v.horario}` : `${diaEnPalabras(new Date(v.fecha))} · ${v.horario}`;
 
@@ -60,17 +69,21 @@ export function Tarjeta({ v, ir }: { v: Visita; ir: (x: Vista, ref?: string) => 
   if (v.estado === "programada") {
     const f = new Date(v.fecha);
     return (
-      <button className="visita proxima" type="button" onClick={() => ir("r16", v.id)}
-        aria-label={"Ver la autorización de " + v.nombre}>
-        <span className="fecha" aria-hidden="true">
-          <b>{numDia(f)}</b>
+      <button className="vis-ticket" type="button" onClick={() => ir("r16", v.id)}
+        aria-label={`Ver la autorización de ${v.nombre}, ${diaEnPalabras(f)}, ${v.horario}`}>
+        <span className="vt-talon" aria-hidden="true">
           <i>{diaCorto(f)}</i>
+          <b>{numDia(f)}</b>
+          <i>{f.toLocaleDateString("es-AR", { month: "short" }).replace(".", "")}</i>
         </span>
-        <span className="d">
+        <span className="vt-corte" aria-hidden="true" />
+        <span className="vt-cuerpo">
+          <span className="vt-falta">{faltanDias(f)}</span>
           <b>{v.nombre}</b>
           <i>{ROTULO_TIPO_VISITA[v.tipo]} · {v.horario}</i>
+          <span className="vt-pase"><Icon n="qr" s={14} />Pase listo · se activa 30 min antes</span>
         </span>
-        <span className="pastilla gris"><Icon n="reloj" s={12} />Programada</span>
+        <span className="vt-flech" aria-hidden="true"><Icon n="chevron" s={16} /></span>
       </button>
     );
   }
@@ -79,14 +92,14 @@ export function Tarjeta({ v, ir }: { v: Visita; ir: (x: Vista, ref?: string) => 
     : v.ingresoEl ? "Ingresó " + soloHora(v.ingresoEl)
     : "No ingresó";
   return (
-    <button className="visita pasada" type="button" onClick={() => ir("r16", v.id)}
-      aria-label={"Ver la autorización de " + v.nombre}>
-      <span className="d">
+    <button className="vis-pasada" type="button" onClick={() => ir("r16", v.id)}
+      aria-label={`Ver la autorización de ${v.nombre}. ${resultado}`}>
+      <span className="vp-ini" aria-hidden="true">{iniciales(v.nombre)}</span>
+      <span className="vp-d">
         <b>{v.nombre}</b>
         <i>{cuando}</i>
       </span>
-      <span className="res">{resultado}</span>
-      <Icon n="chevron" s={16} />
+      <span className={"vp-res" + (v.ingresoEl && v.estado !== "cancelada" ? " ok" : "")}>{resultado}</span>
     </button>
   );
 }
@@ -116,7 +129,9 @@ export function R06({ ir }: { ir: (v: Vista, ref?: string) => void }) {
         <Vacio icono="personaMas" titulo="Sin visitas" />
       ) : (
         <>
-          {lista.map((v) => <Tarjeta key={v.id} v={v} ir={ir} />)}
+          <div className="vis-lista">
+            {lista.map((v) => <Tarjeta key={v.id} v={v} ir={ir} />)}
+          </div>
           <FinLista texto={CIERRE[f]} />
         </>
       )}

@@ -4,12 +4,13 @@ export type NombreIcono =
   | "campana" | "volver" | "flechaDer" | "flechaDiag" | "chevron" | "mas"
   | "personaMas" | "persona" | "personas" | "chat" | "calendario" | "caja"
   | "credencial" | "reloj" | "pin" | "qr" | "check" | "casa" | "puntos"
-  | "ojo" | "info" | "alerta" | "documento" | "lista" | "engranaje" | "salir"
+  | "ojo" | "buscar" | "info" | "alerta" | "documento" | "lista" | "engranaje" | "salir"
   | "sol" | "luna" | "sobre" | "candado"
   | "rayo" | "herramienta" | "obra" | "escudo" | "banco" | "maletin" | "chispa"
-  | "torta" | "telefono" | "descarga" | "camara";
+  | "torta" | "telefono" | "descarga" | "camara" | "cerrar" | "recibo" | "ojoTachado";
 
 const trazos: Record<NombreIcono, ReactNode> = {
+  buscar: <><circle cx="10.5" cy="10.5" r="6.5" /><path d="m15.3 15.3 5 5" /></>,
   campana: <><path d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 13 6 9Z" /><path d="M10.2 18.5a2 2 0 0 0 3.6 0" /></>,
   volver: <path d="M19 12H6M12 5l-7 7 7 7" />,
   camara: <><path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h2.2a1 1 0 0 0 .84-.46l.92-1.42A1 1 0 0 1 9.3 4.6h5.4a1 1 0 0 1 .84.52l.92 1.42a1 1 0 0 0 .84.46h2.2A1.5 1.5 0 0 1 21 8.5v9A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5Z" /><circle cx="12" cy="12.6" r="3.4" /></>,
@@ -52,6 +53,9 @@ const trazos: Record<NombreIcono, ReactNode> = {
   sol: <><circle cx="12" cy="12" r="4.2" /><path d="M12 2.6v2.4M12 19v2.4M21.4 12H19M5 12H2.6M18.6 5.4l-1.7 1.7M7.1 16.9l-1.7 1.7M18.6 18.6l-1.7-1.7M7.1 7.1 5.4 5.4" /></>,
   luna: <path d="M20.4 14.2A8.6 8.6 0 0 1 9.8 3.6a8.6 8.6 0 1 0 10.6 10.6Z" />,
   salir: <><path d="M14.4 4.6H6.8a2 2 0 0 0-2 2v10.8a2 2 0 0 0 2 2h7.6" /><path d="M17.6 15.4 21 12l-3.4-3.4M20.4 12H10" /></>,
+  cerrar: <path d="M6.6 6.6 17.4 17.4M17.4 6.6 6.6 17.4" />,
+  ojoTachado: <><path d="M3.5 3.5 20.5 20.5" /><path d="M9.9 5.3A10.6 10.6 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-2.9 3.9M6.4 6.5C3.6 8.3 2 12 2 12s3.5 7 10 7c1.8 0 3.4-.5 4.7-1.3" /><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></>,
+  recibo: <><path d="M6 3.6h12v16.8l-2.4-1.5-2.4 1.5-1.2-.8-1.2.8-2.4-1.5L6 20.4Z" /><path d="M9 8.4h6M9 12h6M9 15.6h3.6" /></>,
 };
 
 /** El trazo lo fija el sistema según el tamaño, no cada pantalla.

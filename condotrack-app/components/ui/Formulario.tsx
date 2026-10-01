@@ -1,5 +1,6 @@
 "use client";
-import { useId, useState, type ReactNode } from "react";
+import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useIndicador } from "../sistema/useIndicador";
 import { SwipeButton } from "./SwipeButton";
 import { Hoja } from "./Hoja";
 import { Icon, type NombreIcono } from "./Icon";
@@ -76,19 +77,22 @@ export function Elegir<T extends string>({
 }) {
   const [abierto, setAbierto] = useState(false);
   const elegida = opciones.find((o) => o.id === valor);
+  const id = useId();
   return (
     <div className={"campo-f" + (error ? " mal" : "")}>
-      <span className="et">{etiqueta}{opcional && <em>opcional</em>}</span>
+      <span className="et" id={id + "-l"}>{etiqueta}{opcional && <em>opcional</em>}</span>
       <button className="caja elige" type="button" onClick={() => setAbierto(true)}
-        aria-haspopup="dialog" aria-invalid={error ? true : undefined}>
-        <span className={"val" + (elegida ? "" : " vacio")}>
+        aria-haspopup="dialog" aria-invalid={error ? true : undefined}
+        aria-labelledby={`${id}-l ${id}-v`}
+        aria-describedby={error ? id + "-e" : ayuda ? id + "-a" : undefined}>
+        <span className={"val" + (elegida ? "" : " vacio")} id={id + "-v"}>
           {elegida ? elegida.rotulo : placeholder ?? "Elegir"}
         </span>
         <span className="chev-sel" aria-hidden="true"><Icon n="chevron" s={16} w={2.2} /></span>
       </button>
       {error
-        ? <p className="err"><Icon n="alerta" s={14} w={2} />{error}</p>
-        : ayuda ? <p className="ay">{ayuda}</p> : null}
+        ? <p className="err" id={id + "-e"}><Icon n="alerta" s={14} w={2} />{error}</p>
+        : ayuda ? <p className="ay" id={id + "-a"}>{ayuda}</p> : null}
 
       {abierto && (
         <Hoja titulo={etiqueta} onCancelar={() => setAbierto(false)} cerrarRotulo="Cerrar" sinAcciones>
@@ -110,16 +114,36 @@ export function Elegir<T extends string>({
   );
 }
 
-/** Segmentado: cuando las opciones son pocas y conviene verlas todas. */
+/** Segmentado: cuando las opciones son pocas y conviene verlas todas.
+ *  El elegido lo marca un indicador que se traslada (el mismo mecanismo
+ *  que el segmentado de Recepción y Administración): la selección se mueve
+ *  de una opción a otra en 160 ms, el texto y el área táctil no se mueven.
+ *  Flechas, Inicio y Fin cambian la opción, como un grupo de radios. */
 export function Segmentos<T extends string>({
   etiqueta, valor, onCambio, opciones, ayuda,
 }: Base & { valor: T; onCambio: (v: T) => void; opciones: { id: T; rotulo: string }[] }) {
+  const caja = useRef<HTMLDivElement>(null);
+  const { medido, estilo } = useIndicador(caja, '[aria-checked="true"]', [valor, opciones.length]);
+  const id = useId();
+  function tecla(e: KeyboardEvent<HTMLButtonElement>, i: number) {
+    const n = opciones.length;
+    const j = e.key === "ArrowRight" || e.key === "ArrowDown" ? (i + 1) % n
+      : e.key === "ArrowLeft" || e.key === "ArrowUp" ? (i - 1 + n) % n
+      : e.key === "Home" ? 0 : e.key === "End" ? n - 1 : -1;
+    if (j < 0) return;
+    e.preventDefault();
+    onCambio(opciones[j].id);
+    caja.current?.querySelectorAll<HTMLButtonElement>('[role="radio"]')[j]?.focus();
+  }
   return (
     <div className="campo-f">
-      <span className="et">{etiqueta}</span>
-      <div className="segmentos" role="radiogroup" aria-label={etiqueta}>
-        {opciones.map((o) => (
+      <span className="et" id={id}>{etiqueta}</span>
+      <div ref={caja} className={"segmentos" + (medido ? " con-ind" : "")} role="radiogroup"
+        aria-labelledby={id} style={estilo}>
+        <span className="seg-ind" aria-hidden="true" />
+        {opciones.map((o, i) => (
           <button key={o.id} type="button" role="radio" aria-checked={o.id === valor}
+            tabIndex={o.id === valor ? 0 : -1} onKeyDown={(e) => tecla(e, i)}
             onClick={() => onCambio(o.id)}>
             {o.rotulo}
           </button>

@@ -20,10 +20,17 @@ import {
 import { PERMISOS, type Evento, type PermisoPermanente, type TipoEvento } from "./unidad";
 import { RECLAMOS, VOTACIONES, type Reclamo, type EstadoReclamo } from "./gestiones";
 import type { PagoInformado } from "./expensas";
+import { INCIDENCIAS, type Incidencia, type EstadoIncidencia } from "./edificio";
+import type { GastoDetalle } from "./expensas";
+import {
+  SOLICITUDES, PAGOS_UNIDADES, DOCUMENTOS_ADMIN,
+  type SolicitudReserva, type PagoUnidad, type DocumentoAdmin,
+} from "./admin";
 
 /* ── forma del estado ────────────────────────────────────────────── */
 
 export type Estado = {
+  incidencias: Incidencia[];
   visitas: Visita[];
   permisos: PermisoPermanente[];
   reclamos: Reclamo[];
@@ -33,9 +40,20 @@ export type Estado = {
   eventos: Evento[];          // sólo los nuevos: los históricos viven en unidad.ts
   votos: Record<string, string>;
   avisosLeidos: boolean;
+  /** Avisos abiertos uno por uno: leer es personal y por aviso. */
+  avisosAbiertos: string[];
+  /* Administración (R1.7). Datos de prototipo, ver lib/admin.ts. */
+  solicitudes: SolicitudReserva[];
+  cobranza: PagoUnidad[];
+  gastosCargados: GastoDetalle[];
+  documentos: DocumentoAdmin[];
+  /** Auditoría del edificio: decisiones de administración. Va aparte de
+   *  `eventos` (historial de la unidad del residente) para no mezclar. */
+  auditoria: Evento[];
 };
 
 const inicial: Estado = {
+  incidencias: INCIDENCIAS,
   visitas: VISITAS,
   permisos: PERMISOS,
   reclamos: RECLAMOS,
@@ -47,11 +65,18 @@ const inicial: Estado = {
     VOTACIONES.filter((v) => v.miVoto).map((v) => [v.id, v.miVoto!])
   ),
   avisosLeidos: false,
+  avisosAbiertos: [],
+  solicitudes: SOLICITUDES,
+  cobranza: PAGOS_UNIDADES,
+  gastosCargados: [],
+  documentos: DOCUMENTOS_ADMIN,
+  auditoria: [],
 };
 
 /* ── acciones ────────────────────────────────────────────────────── */
 
 export type Accion =
+  | { t: "incidencia/crear"; incidencia: Incidencia }
   | { t: "visita/crear"; visita: Visita }
   | { t: "visita/cancelar"; id: string }
   | { t: "acceso/validar"; id: string; por: string }
@@ -67,7 +92,18 @@ export type Accion =
   | { t: "pago/informar"; pago: PagoInformado }
   | { t: "pago/confirmar"; id: string; por: string }
   | { t: "voto/emitir"; votacionId: string; opcionId: string }
-  | { t: "avisos/leer" };
+  | { t: "avisos/leer" }
+  | { t: "aviso/abrir"; id: string }
+  /* Administración */
+  | { t: "solicitud/aprobar"; id: string; por: string }
+  | { t: "solicitud/rechazar"; id: string; motivo: string; por: string }
+  | { t: "reserva/cancelarAdmin"; id: string; motivo: string; por: string; rotulo: string }
+  | { t: "incidencia/actualizar"; id: string; estado?: EstadoIncidencia; responsable?: string; texto: string; por: string }
+  | { t: "reclamo/asignar"; id: string; responsable: string; autor: string }
+  | { t: "cobro/decidir"; id: string; decision: "conciliado" | "rechazado"; motivo?: string; por: string }
+  | { t: "pago/rechazar"; id: string; motivo: string; por: string }
+  | { t: "gasto/cargar"; gasto: GastoDetalle; por: string }
+  | { t: "documento/estado"; id: string; estado: DocumentoAdmin["estado"]; por: string };
 
 let n = 0;
 const nuevoId = (p: string) => `${p}-${Date.now().toString(36)}-${n++}`;
@@ -81,6 +117,10 @@ function evento(
 
 function reducer(e: Estado, a: Accion): Estado {
   switch (a.t) {
+    // Una incidencia del edificio no se atribuye a la unidad del residente.
+    // La bitácora la proyecta desde este registro compartido entre pantallas.
+    case "incidencia/crear":
+      return { ...e, incidencias: [a.incidencia, ...e.incidencias] };
     case "visita/crear":
       return {
         ...e,
@@ -234,6 +274,94 @@ function reducer(e: Estado, a: Accion): Estado {
 
     case "avisos/leer":
       return { ...e, avisosLeidos: true };
+    case "aviso/abrir":
+      return e.avisosAbiertos.includes(a.id) ? e : { ...e, avisosAbiertos: [...e.avisosAbiertos, a.id] };
+
+    /* ── Administración: cada decisión deja su registro de auditoría ── */
+    case "solicitud/aprobar": {
+      const s = e.solicitudes.find((x) => x.id === a.id);
+      if (!s || s.estado !== "pendiente") return e;
+      const ahora = new Date().toISOString();
+      const reserva: Reserva = { id: nuevoId("rs"), recursoId: s.recursoId, unidad: s.unidad, inicio: s.inicio, fin: s.fin,
+        estado: "confirmada", creadaPor: s.pedidaPor, creadaEl: s.pedidaEl };
+      return {
+        ...e,
+        solicitudes: e.solicitudes.map((x) => x.id === a.id ? { ...x, estado: "aprobada" as const, decision: { por: a.por, cuando: ahora } } : x),
+        reservas: [reserva, ...e.reservas],
+        auditoria: [evento("reserva", `Reserva aprobada · Unidad ${s.unidad}`, a.por, "Administración", `Pedido de ${s.pedidaPor}`, s.unidad), ...e.auditoria],
+      };
+    }
+    case "solicitud/rechazar": {
+      const s = e.solicitudes.find((x) => x.id === a.id);
+      if (!s || s.estado !== "pendiente") return e;
+      return {
+        ...e,
+        solicitudes: e.solicitudes.map((x) => x.id === a.id ? { ...x, estado: "rechazada" as const, decision: { por: a.por, cuando: new Date().toISOString(), motivo: a.motivo } } : x),
+        auditoria: [evento("reserva", `Reserva rechazada · Unidad ${s.unidad}`, a.por, "Administración", a.motivo, s.unidad), ...e.auditoria],
+      };
+    }
+    case "reserva/cancelarAdmin": {
+      const r = e.reservas.find((x) => x.id === a.id);
+      if (!r) return e;
+      return {
+        ...e,
+        reservas: e.reservas.map((x) => x.id === a.id ? { ...x, estado: "cancelada" as const } : x),
+        auditoria: [evento("reserva", `Reserva cancelada por administración · ${a.rotulo}`, a.por, "Administración", a.motivo, r.unidad), ...e.auditoria],
+      };
+    }
+    case "incidencia/actualizar": {
+      const i = e.incidencias.find((x) => x.id === a.id);
+      if (!i) return e;
+      const accion = { cuando: new Date().toISOString(), texto: a.texto, autor: a.por, rol: "Administración" };
+      return {
+        ...e,
+        incidencias: e.incidencias.map((x) => x.id === a.id ? { ...x,
+          estado: a.estado ?? x.estado, responsable: a.responsable ?? x.responsable,
+          acciones: [...(x.acciones ?? []), accion] } : x),
+        auditoria: [evento("reclamo", `Caso actualizado · ${i.titulo}`, a.por, "Administración", a.texto, "Edificio"), ...e.auditoria],
+      };
+    }
+    case "reclamo/asignar": {
+      const r = e.reclamos.find((x) => x.id === a.id);
+      if (!r) return e;
+      const accion = { id: nuevoId("ac"), cuando: new Date().toISOString(), estado: "asignado" as EstadoReclamo,
+        texto: `Asignado a ${a.responsable}.`, autor: a.autor, rol: "Administración" as const };
+      return {
+        ...e,
+        reclamos: e.reclamos.map((x) => x.id === a.id ? { ...x, estado: "asignado" as EstadoReclamo, responsable: a.responsable, acciones: [...x.acciones, accion] } : x),
+        auditoria: [evento("reclamo", `Reclamo asignado · ${r.codigo}`, a.autor, "Administración", `A ${a.responsable}`, r.unidad), ...e.auditoria],
+      };
+    }
+    case "cobro/decidir": {
+      const p = e.cobranza.find((x) => x.id === a.id);
+      if (!p) return e;
+      return {
+        ...e,
+        cobranza: e.cobranza.map((x) => x.id === a.id ? { ...x, estado: a.decision, decision: { por: a.por, cuando: new Date().toISOString(), motivo: a.motivo } } : x),
+        auditoria: [evento("expensa", `Pago ${a.decision === "conciliado" ? "conciliado" : "rechazado"} · Unidad ${p.unidad}`, a.por, "Administración", a.motivo, p.unidad), ...e.auditoria],
+      };
+    }
+    case "pago/rechazar":
+      return {
+        ...e,
+        pagos: e.pagos.map((p) => p.id === a.id ? { ...p, estado: "rechazado" as const } : p),
+        eventos: [evento("expensa", "Pago rechazado", a.por, "Administración", a.motivo), ...e.eventos],
+      };
+    case "gasto/cargar":
+      return {
+        ...e,
+        gastosCargados: [a.gasto, ...e.gastosCargados],
+        auditoria: [evento("expensa", `Gasto cargado · ${a.gasto.proveedor}`, a.por, "Administración", a.gasto.concepto, "Edificio"), ...e.auditoria],
+      };
+    case "documento/estado": {
+      const d = e.documentos.find((x) => x.id === a.id);
+      if (!d) return e;
+      return {
+        ...e,
+        documentos: e.documentos.map((x) => x.id === a.id ? { ...x, estado: a.estado, fecha: a.estado === "publicado" ? new Date().toISOString() : x.fecha } : x),
+        auditoria: [evento("comunicado", `Documento ${a.estado} · ${d.titulo}`, a.por, "Administración", undefined, "Edificio"), ...e.auditoria],
+      };
+    }
 
     default:
       return e;

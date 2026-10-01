@@ -3,13 +3,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Onboarding } from "./Onboarding";
 import { Login } from "./Login";
 import { Recuperar } from "./Recuperar";
+import { ReceptionLoading } from "./recepcion/ReceptionLoading";
 import { Carga } from "./Carga";
 import { ShellResidente } from "./ShellResidente";
 import { ShellRecepcion } from "./ShellRecepcion";
 import { ShellAdmin } from "./ShellAdmin";
 import { TemaToggle } from "./ui/TemaToggle";
 import { Sello } from "./ui/Sello";
+import { ScrollSuave } from "./sistema/ScrollSuave";
 import { ProveedorEstado } from "@/lib/estado";
+import { modoDeUrl } from "@/lib/movimiento";
 import { CtxNavegacion } from "@/lib/navegacion";
 import {
   ROTULOS, ROTULOS_A, ROTULOS_P,
@@ -17,6 +20,7 @@ import {
 } from "@/lib/data";
 
 const CLAVE = "condotrack:onboarding-visto";
+const CLAVE_MOV = "condotrack:movimiento-demo";
 type Pantalla = "onb" | "login" | "recuperar" | "carga" | "app";
 
 function leer(k: string) { try { return localStorage.getItem(k); } catch { return null; } }
@@ -31,7 +35,7 @@ const PERFILES: Perfil[] = ["residente", "recepcion", "administracion"];
  *  mobile-first, recepción tablet/desktop y administración desktop. */
 const MARCO: Record<Perfil, { clase: string; medida: string }> = {
   residente: { clase: "", medida: "390 × 844" },
-  recepcion: { clase: " ancho", medida: "1280 × 800" },
+  recepcion: { clase: " ancho", medida: "1440 × 900" },
   administracion: { clase: " extra", medida: "1440 × 900" },
 };
 
@@ -42,8 +46,8 @@ const MARCO: Record<Perfil, { clase: string; medida: string }> = {
    Cada vista queda en su propia URL para poder importarla de a una
    (html.to.design y similares capturan una URL, no un estado interno).
    limpio=1 oculta la barra del escenario para que no entre en la captura.
-   motionforce=1 muestra el movimiento aunque el sistema pida reducirlo:
-   es para la demo, no para el uso. */
+   motionreduce=0 fuerza el movimiento normal, motionreduce=1 lo fuerza
+   reducido; sin parámetro manda la preferencia del sistema (lib/movimiento). */
 function deLaUrl() {
   if (typeof window === "undefined") return null;
   const q = new URLSearchParams(window.location.search);
@@ -59,10 +63,7 @@ function deLaUrl() {
     perfil: perfil && PERFILES.includes(perfil) ? perfil : null,
     tema: q.get("tema"),
     limpio: q.get("limpio") === "1",
-    /* El prototipo se muestra con movimiento salvo que se pida lo
-       contrario: ?motionreduce=1 vuelve a respetar la preferencia del
-       sistema. motionforce=1 se acepta por compatibilidad. */
-    quieto: q.get("motionreduce") === "1",
+    movimiento: modoDeUrl(q),
   };
 }
 function guardar(k: string, v: string) { try { localStorage.setItem(k, v); } catch { /* modo privado */ } }
@@ -83,12 +84,31 @@ export function Prototipo() {
   const [vistaA, setVistaA] = useState<VistaA>("a01");
   const [refe, setRefe] = useState<string | undefined>();
   const [limpio, setLimpio] = useState(false);
+  /* Movimiento de la demo: el sistema de Felipe pide reducirlo y la app lo
+     respeta, así que en revisión el motion no se veía. Este control de la
+     barra del escenario (no de la app) lo fuerza sin tocar la URL. */
+  const [mov, setMov] = useState<"sistema" | "forzado" | "reducido">("sistema");
+  const cambiarMov = () => {
+    const sig = mov === "sistema" ? "forzado" : mov === "forzado" ? "reducido" : "sistema";
+    setMov(sig);
+    if (sig === "sistema") { borrar(CLAVE_MOV); document.documentElement.removeAttribute("data-movimiento"); }
+    else { guardar(CLAVE_MOV, sig); document.documentElement.setAttribute("data-movimiento", sig); }
+  };
 
   // el onboarding no se repite en cada ingreso; la URL tiene prioridad
   useEffect(() => {
     const u = deLaUrl();
     if (u?.limpio) setLimpio(true);
-    if (!u?.quieto) document.documentElement.setAttribute("data-movimiento", "forzado");
+    /* La URL manda; si no hay parámetro, la preferencia elegida en la barra
+       de demo; si tampoco, el sistema operativo. */
+    const pref = leer(CLAVE_MOV);
+    const modo = u?.movimiento ?? (pref === "forzado" || pref === "reducido" ? pref : null);
+    /* lo que pidió la URL queda como preferencia: Reiniciar demo o abrir la
+       demo sin el parámetro ya no vuelve el movimiento al del sistema */
+    if (u?.movimiento) guardar(CLAVE_MOV, u.movimiento);
+    if (modo) document.documentElement.setAttribute("data-movimiento", modo);
+    else document.documentElement.removeAttribute("data-movimiento");
+    setMov(modo ?? "sistema");
     if (u?.tema === "claro" || u?.tema === "oscuro") {
       document.documentElement.setAttribute("data-tema", u.tema);
     }
@@ -154,9 +174,33 @@ export function Prototipo() {
     });
   }, [perfil]);
 
+  /* RES-FIN-01 · salir de un flujo terminado. Después de "Pago informado",
+     Volver no puede regresar al formulario: se vuelve hasta el origen. */
+  const volverHasta = useCallback((v: string) => {
+    setDireccion("atras");
+    setPila((p) => {
+      const i = p.map((x) => x.v).lastIndexOf(v);
+      const destino = i >= 0 ? p[i] : { v, ref: undefined };
+      if (perfil === "residente") setVista(destino.v as Vista);
+      else if (perfil === "recepcion") setVistaP(destino.v as VistaP);
+      else setVistaA(destino.v as VistaA);
+      setRefe(destino.ref);
+      refeParaVolver.current = destino.ref;
+      return i >= 0 ? p.slice(0, i) : [];
+    });
+  }, [perfil]);
+  const reemplazar = useCallback((v: string, ref?: string) => {
+    setDireccion("adelante");
+    refeParaVolver.current = ref;
+    if (perfil === "residente") setVista(v as Vista);
+    else if (perfil === "recepcion") setVistaP(v as VistaP);
+    else setVistaA(v as VistaA);
+    setRefe(ref);
+  }, [perfil]);
+
   const navegacion = useMemo(
-    () => ({ volver, hayVuelta: pila.length > 0, reemplazarRef }),
-    [volver, pila.length, reemplazarRef]);
+    () => ({ volver, hayVuelta: pila.length > 0, reemplazarRef, anterior: pila[pila.length - 1], volverHasta, reemplazar }),
+    [volver, pila, reemplazarRef, volverHasta, reemplazar]);
 
   const entrar = useCallback((p: Perfil) => {
     setPerfil(p);
@@ -182,18 +226,23 @@ export function Prototipo() {
         : ROTULOS_A[vistaA]
       : ROTULO_PANTALLA[pantalla] ?? "";
 
-  const marco = pantalla === "app" ? MARCO[perfil] : MARCO.residente;
+  const marco = pantalla === "app" || (pantalla === "carga" && perfil !== "residente") ? MARCO[perfil] : MARCO.residente;
 
   return (
     <ProveedorEstado>
       <CtxNavegacion.Provider value={navegacion}>
       <main className="stage">
+        {/* v05 · scroll suave (lerp) en las tres apps */}
+        <ScrollSuave />
         {!limpio && <div className="stage-bar">
           <span>{rotulo} · {marco.medida}</span>
           <Sello />
           <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button type="button" onClick={() => { borrar(CLAVE); setPantalla("onb"); }}>
               Reiniciar demo
+            </button>
+            <button type="button" className="stage-mov" onClick={cambiarMov} aria-label={`Movimiento: ${mov === "sistema" ? "según el sistema" : mov === "forzado" ? "activado" : "reducido"}. Cambiar`}>
+              Movimiento: {mov === "sistema" ? "sistema" : mov === "forzado" ? "activado" : "reducido"}
             </button>
             <TemaToggle />
           </span>
@@ -207,15 +256,15 @@ export function Prototipo() {
             <Login onEntrar={entrar} onRecuperar={() => setPantalla("recuperar")} />
           )}
           {pantalla === "recuperar" && <Recuperar onVolver={() => setPantalla("login")} />}
-          {pantalla === "carga" && <Carga />}
+          {pantalla === "carga" && (perfil === "residente" ? <Carga /> : <ReceptionLoading rol={perfil} />)}
           {pantalla === "app" && perfil === "residente" && (
             <ShellResidente vista={vista} refe={refe} ir={ir} onSalir={salir} direccion={direccion} />
           )}
           {pantalla === "app" && perfil === "recepcion" && (
-            <ShellRecepcion vista={vistaP} refe={refe} ir={irP} onSalir={salir} />
+            <ShellRecepcion vista={vistaP} refe={refe} ir={irP} onSalir={salir} onCambiarPerfil={entrar} />
           )}
           {pantalla === "app" && perfil === "administracion" && (
-            <ShellAdmin vista={vistaA} refe={refe} ir={irA} onSalir={salir} />
+            <ShellAdmin vista={vistaA} refe={refe} ir={irA} onSalir={salir} onCambiarPerfil={entrar} />
           )}
         </div>
       </main>

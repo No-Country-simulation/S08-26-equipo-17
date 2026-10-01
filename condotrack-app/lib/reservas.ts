@@ -190,10 +190,10 @@ export const historialEdificio = (reservas: Reserva[] = RESERVAS) =>
 
 export const espacioPorId = (id: string) => ESPACIOS.find((e) => e.id === id)!;
 
-/** Espacios sin foto propia en el repo. La lavandería usaba la del cowork,
- *  que es otro lugar: mientras no llegue una va en carbón con su ícono.
- *  Mejor ningún lugar que el lugar equivocado. */
-export const SIN_FOTO = new Set(["lavanderia"]);
+/** Espacios sin foto propia en el repo (van en carbón con su ícono: mejor
+ *  ningún lugar que el lugar equivocado). La lavandería ya tiene la suya
+ *  (`esp_lavanderia.jpg`, a partir de la referencia de Felipe, v04). */
+export const SIN_FOTO = new Set<string>();
 
 /** Primer día con lugar después de `desde`, dentro de la ventana de
  *  reserva. Para que una card de espacio lleno diga cuándo sí hay. */

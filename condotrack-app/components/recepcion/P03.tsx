@@ -1,80 +1,72 @@
 "use client";
 import { useState } from "react";
+import { ReceptionPage } from "./ReceptionPage";
 import { Icon } from "../ui/Icon";
-import { Aviso } from "../ui/Estados";
 import { type VistaP } from "@/lib/data";
 import { useApp } from "@/lib/estado";
+import { soloHora } from "@/lib/formato";
+import { accesosPrevistos, mismoDiaOperativo } from "@/lib/recepcion";
 
-/** P03 · Escáner.
- *  El prototipo no pide la cámara: pedir permiso de cámara para una demo es
- *  invasivo y además no habría nada que leer. El visor muestra la geometría
- *  real de la pantalla y a un toque se pasa a la validación, que es lo que
- *  importa del flujo. */
+/** P03 · Escanear acceso. Referencia primaria: U06 Security.
+ *
+ *  USER GOAL: leer el pase del visitante y pasar a verificarlo.
+ *  La tarea es el visor, grande y limpio, con la leyenda debajo del marco.
+ *  Al costado, lo que viene después (verificar → identidad y estado →
+ *  registrar) y quién se espera hoy. La simulación de lectura existe sólo
+ *  porque el prototipo no usa cámara: es un control chico, plegado, rotulado
+ *  como prototipo, y no compite con la tarea. */
 export function P03({ ir }: { ir: (v: VistaP, ref?: string) => void }) {
   const { estado } = useApp();
-  const [leyendo, setLeyendo] = useState(false);
-  const vigentes = estado.visitas.filter((v) => v.estado === "vigente" || v.estado === "programada");
+  const [leyendo, setLeyendo] = useState<string | null>(null);
+  const ahora = new Date();
+  const esperados = accesosPrevistos(estado, ahora).filter(a => a.destino.vista === "p04" && mismoDiaOperativo(a.cuando, ahora));
+  const prueba = [
+    ...estado.visitas.filter(v => v.estado === "vigente" || v.estado === "programada").map(v => ({ codigo: v.codigo, nota: `${v.nombre} · ${v.estado === "vigente" ? "vigente" : "otro día"}` })),
+    ...estado.visitas.filter(v => v.estado === "finalizada").slice(0, 1).map(v => ({ codigo: v.codigo, nota: `${v.nombre} · ya usado` })),
+    { codigo: "CT 7D 0000", nota: "no existe" },
+  ];
 
-  function simular(codigo: string) {
-    setLeyendo(true);
-    window.setTimeout(() => ir("p04", codigo), 600);
+  function leer(codigo: string) {
+    setLeyendo(codigo);
+    window.setTimeout(() => ir("p04", codigo), 420);
   }
 
   return (
-    <>
-      <div className="desk-tit">
-        <div>
-          <h1>Escanear un pase</h1>
-          <p>Apuntá el QR del visitante al lector del mostrador.</p>
-        </div>
-        <div className="der">
-          <button className="btn-desk" type="button" onClick={() => ir("p04")}>
-            <Icon n="credencial" s={16} w={1.9} />Cargar el código a mano
-          </button>
-        </div>
-      </div>
-
-      <div className="validar">
-        <section className="panel-v on">
-          <span className="paso-t"><span className="n">1</span>Lectura</span>
-          <div className="visor">
-            <div className="marco" aria-hidden="true"><span /><span /><span /><span /></div>
-            <p className="leyenda-v">
-              {leyendo ? "Leyendo el código…" : "El prototipo no accede a la cámara. Elegí un pase de la derecha para simular la lectura."}
-            </p>
+    <ReceptionPage titulo="Escanear acceso" descripcion="Leé el QR del pase. Después verificás la autorización y, recién ahí, registrás el ingreso." icono="qr" clase="acc"
+      acciones={<button className="ct-btn ct-btn--secundario" type="button" onClick={() => ir("p04")}><Icon n="credencial" s={18} />Cargar el código a mano</button>}>
+      <div className="acc-escaner">
+        <section className="acc-visor-marco" aria-label="Lector de pases">
+          <div className="acc-visor" data-leyendo={leyendo ? "" : undefined}>
+            <div className="acc-visor-esquinas" aria-hidden="true"><span /><span /><span /><span /></div>
+            <Icon n="qr" s={44} />
           </div>
-          <Aviso icono="info">
-            Escanear no registra el ingreso. Lo único que hace es cargar el código
-            en la pantalla de validación.
-          </Aviso>
+          <p className="acc-visor-leyenda" role="status">{leyendo ? `Código leído: ${leyendo}. Abriendo la verificación…` : "Apuntá el QR del pase a la cámara del mostrador."}</p>
         </section>
 
-        <section className="panel-v on">
-          <span className="paso-t"><span className="n">2</span>Pases de prueba</span>
-          <h2>Simular una lectura</h2>
-          <p>Estos son los pases que hoy existen en el edificio.</p>
-          <div style={{ marginTop: 16 }}>
-            {vigentes.map((v) => (
-              <button className="fila-op" type="button" key={v.id} onClick={() => simular(v.codigo)}>
-                <span className="ic"><Icon n="qr" s={18} w={1.8} /></span>
-                <span className="d">
-                  <b>{v.codigo}</b>
-                  <i>{v.nombre} · Unidad {v.unidad} · {v.horario}</i>
-                </span>
-                <span className="der"><Icon n="chevron" s={15} w={2.2} /></span>
-              </button>
-            ))}
-            <button className="fila-op" type="button" onClick={() => simular("CT 7D 0000")}>
-              <span className="ic"><Icon n="alerta" s={18} w={1.8} /></span>
-              <span className="d">
-                <b>CT 7D 0000</b>
-                <i>Código inexistente · para ver el estado de error</i>
-              </span>
-              <span className="der"><Icon n="chevron" s={15} w={2.2} /></span>
-            </button>
-          </div>
-        </section>
+        <aside className="acc-lado">
+          <section>
+            <h2 className="ct-label">Qué pasa después</h2>
+            <ol className="acc-pasos">
+              <li data-actual=""><b>1</b><span><strong>Leer o cargar el código</strong><small>No registra nada.</small></span></li>
+              <li><b>2</b><span><strong>Ver identidad y estado</strong><small>Autorizado, vencido o no encontrado.</small></span></li>
+              <li><b>3</b><span><strong>Registrar el ingreso</strong><small>Sólo con un pase autorizado.</small></span></li>
+            </ol>
+          </section>
+          <section>
+            <h2 className="ct-label">Se esperan hoy · {String(esperados.length).padStart(2, "0")}</h2>
+            {esperados.length ? <ul className="acc-esperados">{esperados.map(a => <li key={a.id}>
+              <button type="button" onClick={() => ir("p04", a.destino.ref)}>
+                <time>{soloHora(a.cuando)}</time><span><b>{a.nombre}</b><small>{a.contexto}</small></span><Icon n="chevron" s={16} />
+              </button></li>)}</ul> : <p className="ct-meta">No quedan accesos previstos para hoy.</p>}
+          </section>
+        </aside>
       </div>
-    </>
+
+      <details className="rx-prototipo">
+        <summary>Prototipo · simular una lectura</summary>
+        <p>Sin cámara en la demo: elegí un código para ver cada resultado.</p>
+        <div>{prueba.map(p => <button key={p.codigo} type="button" onClick={() => leer(p.codigo)} disabled={Boolean(leyendo)}>{p.codigo}<small>{p.nota}</small></button>)}</div>
+      </details>
+    </ReceptionPage>
   );
 }

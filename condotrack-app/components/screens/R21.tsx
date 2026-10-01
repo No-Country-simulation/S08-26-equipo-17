@@ -1,4 +1,6 @@
 "use client";
+import { Importe } from "../ui/Importe";
+import { RESIDENTE } from "@/lib/data";
 import { useState } from "react";
 import { Icon } from "../ui/Icon";
 import { TopBar } from "../ui/TopBar";
@@ -51,8 +53,14 @@ export function R21({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       <TopBar volverA="r20" ir={ir} />
       <div className="tit comp-tit">
         <h1>Gastos del consorcio</h1>
-        <button className="comp-periodo" type="button" onClick={() => setAbrePeriodo(true)}>
-          {periodoLargo(periodo)}<Icon n="chevron" s={16} />
+        {/* DEC-004 · el control que Felipe señaló en Gastos (02:41–02:44) es
+            este: el selector de período. Se lee como control —rótulo, valor y
+            flecha— y abre la hoja de períodos. */}
+        <button className="comp-periodo" type="button" onClick={() => setAbrePeriodo(true)}
+          aria-haspopup="dialog" aria-label={`Período: ${periodoLargo(periodo)}. Cambiar período`}>
+          <span className="k" aria-hidden="true">Período</span>
+          <span className="v" aria-hidden="true">{periodoLargo(periodo)}</span>
+          <Icon n="chevron" s={16} />
         </button>
       </div>
 
@@ -80,6 +88,11 @@ export function R21({ ir }: { ir: (v: Vista, ref?: string) => void }) {
             <Chips etiqueta="Ver por" opciones={MODOS} valor={modo}
               onCambio={(m) => { setModo(m); setElegido(null); }} />
 
+            {/* Ronda 3 · una tabla sobre el fondo, con su encabezado: sin la card
+                blanca que la envolvía */}
+            <div className="comp-cab" aria-hidden="true">
+              <span>{modo === "rubro" ? "Rubro" : "Proveedor"}</span><span>Importe</span><span>%</span>
+            </div>
             <ul className="comp-filas">
               {modo === "rubro"
                 ? rubros.map((r, n) => (
@@ -133,24 +146,27 @@ export function R21({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       </section>
 
       {conDetalle && (
-        <section className="tu-parte" aria-label="Tu parte">
-          <h2 className="sec">Tu parte · {PARTICIPACION.toLocaleString("es-AR")}%</h2>
+        <section className="tu-parte" aria-labelledby="tu-parte-h">
+          <header className="tu-parte-cab">
+            <h2 className="sec" id="tu-parte-h">Tu parte</h2>
+            <span>Participación de la unidad {RESIDENTE.unidad} · <b>{PARTICIPACION.toLocaleString("es-AR")} %</b></span>
+          </header>
           <div className="tabla">
             {DESGLOSE.comunes.map((l) => (
               <div className="tabla-f" key={l.concepto}>
                 <span className="d"><b>Gastos comunes</b></span>
-                <span className="n">{pesos(l.monto)}</span>
+                <span className="n"><Importe valor={l.monto} /></span>
               </div>
             ))}
             {DESGLOSE.propios.map((l) => (
               <div className="tabla-f" key={l.concepto}>
                 <span className="d"><b>{l.concepto}</b></span>
-                <span className="n">{pesos(l.monto)}</span>
+                <span className="n"><Importe valor={l.monto} /></span>
               </div>
             ))}
             <div className="tabla-f total-f">
               <span className="d"><b>Tu expensa</b></span>
-              <span className="n">{pesos(exp.total)}</span>
+              <span className="n"><Importe valor={exp.total} /></span>
             </div>
           </div>
           <Descarga chico rotulo="Cupón" archivo={archivoCupon(exp.periodo)} />
@@ -160,19 +176,21 @@ export function R21({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       {abrePeriodo && (
         <Hoja titulo="Período" onCancelar={() => setAbrePeriodo(false)}
           cerrarRotulo="Cerrar" sinAcciones>
-          <div className="tabla" style={{ marginTop: 4 }}>
+          {/* RES-014 · una lista del sistema (la misma de "Elegir"), no una
+              tarjeta dentro de la hoja. El elegido se dice con peso, marca y
+              tilde; el total del período acompaña a la derecha. */}
+          <ul className="opciones-hoja periodos-hoja">
             {PERIODOS_GASTOS.map((p) => (
-              <button className="tabla-f pulsable" key={p} type="button"
-                aria-current={p === periodo ? "true" : undefined}
-                onClick={() => { setPeriodo(p); setElegido(null); setAbrePeriodo(false); }}>
-                <span className="d"><b>{periodoLargo(p)}</b></span>
-                <span className="n">{pesos(TOTAL_POR_PERIODO[p] ?? 0)}</span>
-                {p === periodo && (
-                  <span className="flech"><Icon n="check" s={16} w={2.4} /></span>
-                )}
-              </button>
+              <li key={p}>
+                <button type="button" aria-current={p === periodo ? "true" : undefined}
+                  onClick={() => { setPeriodo(p); setElegido(null); setAbrePeriodo(false); }}>
+                  <b>{periodoLargo(p)}</b>
+                  <span className="val">{pesos(TOTAL_POR_PERIODO[p] ?? 0)}</span>
+                  <span className="tic" aria-hidden="true">{p === periodo && <Icon n="check" s={16} w={2.4} />}</span>
+                </button>
+              </li>
             ))}
-          </div>
+          </ul>
           <div style={{ height: 20 }} />
         </Hoja>
       )}

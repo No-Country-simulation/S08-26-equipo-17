@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Icon, type NombreIcono } from "./Icon";
+import { cambiarTema } from "@/lib/movimiento";
 
 type Tema = "auto" | "claro" | "oscuro";
 const CLAVE = "condotrack:tema";
@@ -30,7 +31,7 @@ export function TemaToggle() {
     try { localStorage.setItem(CLAVE, t); } catch { /* modo privado */ }
   }
 
-  function elegir(t: Tema) { setTema(t); aplicar(t); }
+  function elegir(t: Tema) { setTema(t); cambiarTema(() => aplicar(t)); }
 
   return (
     <div className="tema" role="group" aria-label="Tema de la interfaz">

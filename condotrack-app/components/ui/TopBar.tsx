@@ -12,9 +12,11 @@ import { CONTEXTO, type Vista } from "@/lib/data";
  *  `volverA` ya no es el destino: es el destino **de reserva**. Si hay
  *  pantalla anterior, volver vuelve ahí (BUG-02, BUG-03). */
 export function TopBar({
-  volverA, ir, contexto = CONTEXTO, accion,
+  volverA, ir, contexto = CONTEXTO, accion, onVolver,
 }: {
   volverA: Vista;
+  /** Volver con un destino propio (p. ej. al terminar un flujo). */
+  onVolver?: () => void;
   ir: (v: Vista, ref?: string) => void;
   contexto?: string;
   accion?: ReactNode;
@@ -23,7 +25,7 @@ export function TopBar({
   return (
     <div className="topbar">
       <button className="redondo" type="button" aria-label="Volver"
-        onClick={() => (nav?.hayVuelta ? nav.volver() : ir(volverA))}>
+        onClick={() => (onVolver ? onVolver() : nav?.hayVuelta ? nav.volver() : ir(volverA))}>
         <Icon n="volver" s={20} w={2.1} />
       </button>
       <span className="ctx">{contexto}</span>

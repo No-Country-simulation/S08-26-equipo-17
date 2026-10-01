@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
+import { avisar } from "../sistema/Tostada";
 
 /** Descargar algo que todavía no existe.
  *
@@ -26,26 +27,32 @@ export function Descarga({
   function pedir() {
     if (fase === "preparando") return;
     setFase("preparando");
-    reloj.current.push(window.setTimeout(() => setFase("hecho"), 1100));
+    /* RES-FIN-01 · feedback después de descargar, sin bloquear la
+       pantalla: el botón pasa a "Descargado" con su tilde y un aviso
+       flotante dice qué archivo salió. La fila no crece. */
+    reloj.current.push(window.setTimeout(() => {
+      setFase("hecho");
+      avisar({ titulo: `${rotulo === "PDF" ? "Comprobante" : rotulo} descargado`, detalle: archivo, icono: "descarga" });
+    }, 900));
   }
 
   return (
-    <div className={"descarga" + (chico ? " chica" : "") + (fase === "hecho" ? " lista" : "")}>
+    <div className={"descarga" + (chico ? " chica" : "") + (fase === "hecho" ? " lista" : "") + (fase === "preparando" ? " bajando" : "")}>
       <button type="button" onClick={pedir} disabled={fase === "preparando"}
         aria-busy={fase === "preparando" || undefined}>
         {fase === "preparando"
           ? <span className="rueda-chica" aria-hidden="true" />
           : <Icon n={meta ? "documento" : fase === "hecho" ? "check" : "descarga"} s={meta ? 20 : 16} />}
         <span className="tx">
-          {fase === "preparando" ? "Preparando el archivo…" : meta ? <b>{rotulo}</b> : rotulo}
+          {fase === "preparando" ? (chico ? "Bajando…" : "Preparando el archivo…") : meta ? <b>{rotulo}</b> : fase === "hecho" && chico ? "Listo" : rotulo}
           {meta && fase !== "preparando" && <i>{meta}</i>}
         </span>
         {peso && fase === "listo" && !meta && <em>{peso}</em>}
         {meta && <span className="dl-ic" aria-hidden="true"><Icon n={fase === "hecho" ? "check" : "descarga"} s={16} /></span>}
       </button>
 
-      {fase === "hecho" && (
-        <p className="detalle-descarga" role="status">
+      {fase === "hecho" && !chico && (
+        <p className="detalle-descarga">
           <b>{archivo}</b>
         </p>
       )}
@@ -55,27 +62,32 @@ export function Descarga({
 
 /** Copiar al portapapeles: CBU, alias, código de pase. */
 export function Copiar({ valor, etiqueta }: { valor: string; etiqueta: string }) {
-  const [copiado, setCopiado] = useState(false);
+  const [estado, setEstado] = useState<"listo" | "copiado" | "error">("listo");
   const reloj = useRef<number[]>([]);
   useEffect(() => () => reloj.current.forEach((t) => window.clearTimeout(t)), []);
 
   async function copiar() {
     try {
+      if (!navigator.clipboard) throw new Error("sin portapapeles");
       await navigator.clipboard.writeText(valor);
-      setCopiado(true);
-      reloj.current.push(window.setTimeout(() => setCopiado(false), 2200));
+      setEstado("copiado");
     } catch {
       /* Sin permiso de portapapeles el valor igual está a la vista para
-         seleccionarlo a mano. No inventamos un éxito que no pasó. */
-      setCopiado(false);
+         seleccionarlo a mano. No inventamos un éxito que no pasó: se dice. */
+      setEstado("error");
     }
+    reloj.current.push(window.setTimeout(() => setEstado("listo"), 2600));
   }
 
   return (
-    <button className={"copiar" + (copiado ? " ok" : "")} type="button" onClick={copiar}
-      aria-label={copiado ? `${etiqueta} copiado` : `Copiar ${etiqueta}`}>
-      <Icon n={copiado ? "check" : "documento"} s={16} w={copiado ? 2.4 : 1.8} />
-      {copiado ? "Copiado" : "Copiar"}
+    <button className={"copiar" + (estado === "copiado" ? " ok" : estado === "error" ? " mal" : "")}
+      type="button" onClick={copiar} aria-label={`Copiar ${etiqueta}`}>
+      <Icon n={estado === "copiado" ? "check" : estado === "error" ? "alerta" : "documento"} s={16}
+        w={estado === "copiado" ? 2.4 : 1.8} />
+      {estado === "copiado" ? "Copiado" : estado === "error" ? "Copialo a mano" : "Copiar"}
+      <span className="sr" role="status">
+        {estado === "copiado" ? `${etiqueta} copiado` : estado === "error" ? `No se pudo copiar ${etiqueta}` : ""}
+      </span>
     </button>
   );
 }

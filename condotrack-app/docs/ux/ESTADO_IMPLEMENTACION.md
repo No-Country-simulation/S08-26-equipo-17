@@ -697,3 +697,188 @@ como patrón puntual. No se tocó Recepción ni Administración.
 **QA:** 26 vistas × 2 temas a 390×844 sin desbordes, sin imágenes rotas,
 todo en Satoshi y sin objetivos por debajo de 36 px; flujos de autorizar
 visita, reservar, entregas y gastos probados a mano; `next build` limpio.
+
+# HOME RECEPCIÓN · 21/09/2026 · IMPLEMENTADA, PENDIENTE DE REVISIÓN VISUAL
+
+Home P01 y shell desktop con prioridad 1440×900: navegación lateral estable,
+contexto de edificio/usuario/turno, búsqueda operativa protagonista, escaneo y
+registro de entregas, resumen horizontal, próximos accesos y columna secundaria
+de pendientes/bitácora. Navigation lock: activo sin amarillo.
+
+Componentes nuevos: `ReceptionSearch`, `ReceptionSidebar`, `ShiftActivity`.
+`lib/recepcion.ts` deriva búsqueda, accesos y actividad de las fuentes demo.
+Se reutilizan Icon, botones, colores y tipografía existentes. Hooks preparados:
+`brand-mark`, `operational-status` y `access-success`, sin librerías nuevas.
+
+Las incidencias pasan al estado compartido para que sobrevivan a la navegación
+y actualicen Home. Registrar entrega lleva al formulario con foco; validar un
+pase sigue separado de registrar ingreso. Agenda ya no marca como hecho un
+evento sólo porque pasó su hora.
+
+Referencias inspeccionadas con Figma MCP, file `CNuuTRQJHtAMwXJpDUQYER`:
+- `23204:129953`: anatomía horizontal de búsqueda y acción final.
+- `23204:130822`: agrupación de destinos y jerarquía de navegación lateral.
+- `23204:134577`: relación resumen/lista y composición asimétrica.
+- `23204:134646`: secuencia hora, icono/actor, acción y contexto.
+
+No se copian Inter/SF Pro, azul, glow, gradientes, vidrio sobre fondo plano,
+radios de píldora generalizados, tamaños diminutos ni assets del kit.
+
+**QA:** `npm run build` correcto. Recepción inspeccionada en claro y oscuro a
+1440×900, y adaptación a 1024×768 y 390×844 sin desborde horizontal. Probados
+búsqueda, ausencia de resultados, filtro Hoy, alta de entrega (contador y
+bitácora), incidencia compartida, salto/foco a bitácora y escaneo/registro de
+ingreso (presencia y actividad). Sin errores de consola durante esos flujos.
+Barrido DOM de las 27 vistas Resident × 2 temas a 390×844: sin desbordes una
+vez terminada la transición de entrada, sin imágenes rotas, Satoshi declarado.
+Revisión visual adicional de Home, Pase y Más. No se rediseñaron pantallas Resident.
+
+**Límites actuales:** datos demo en memoria; recargar reinicia las operaciones.
+La bitácora reúne movimientos de hoy, no hay entidad de turno con apertura/cierre.
+El turno del encabezado es el dato demo del usuario. Agenda conserva fuentes
+estáticas para proveedores/mudanzas del edificio. Las internas de Recepción y
+Administración no quedan declaradas rediseñadas ni aprobadas por esta entrega.
+
+**Archivos de esta entrega:** `app/globals.css`, `components/Prototipo.tsx`,
+`components/ShellRecepcion.tsx`, `components/recepcion/P01.tsx`, `P04.tsx`,
+`P05.tsx`, `P07.tsx`, `P08.tsx`, los tres componentes nuevos, `components/ui/Icon.tsx`,
+`lib/estado.tsx`, `lib/recepcion.ts`, `AGENTS.md`, `docs/ux/02_DECISION_LOG.md`,
+este archivo y los documentos incorporados `11_ROLE_SYSTEM.md` y
+`12_COMPONENT_REFERENCES.md`. Sin commit ni push.
+
+
+# V04 · R1 Foundations + shell + Home Recepción · 21/09/2026
+
+**Implementada para revisión visual; no aprobada ni continuada a R2.**
+
+Fuente: `E:/DESCARGAS/CondoTrack_UXUI_Master_V04.pdf`, 33 páginas. Los
+archivos 13/16/17/18 no estaban sueltos en el repositorio ni en las rutas de
+referencias consultadas. Se leyeron sus secciones completas dentro del PDF.
+V04 gobierna esta pasada; no cambia los locks de Resident.
+
+## Cambios de esta fase
+
+- Shell: sidebar 208 px colapsable a rail de 76 px, agrupación por espacio,
+  activo neutro, sin rótulos de rol repetidos. En móvil rail de 64 px.
+- Header: edificio con selector, fecha visible, hora de 40 px con cifras
+  tabulares, perfil desplegable con turno y cierre de sesión. Escape devuelve
+  foco al disparador; los paneles cierran al salir del control.
+- Home: se retiraron las tres frases de bienvenida y el hero promocional.
+  Título operativo de 32 px, búsqueda de 64 px, acciones de 48 px, un único
+  bloque Hoy carbón con cifras de 40 px. Sin cinco cards.
+- Próximos accesos: superficie plana, separadores, hora de 26 px, nombre de
+  17 px, estado de 14 px; filtro Hoy/Todos conserva la lógica anterior.
+- Atención: severidad, título, ubicación, responsable, fecha del reporte y
+  acción explícita. No se inventa una fecha de última actualización.
+- Bitácora: sólo preview de los últimos tres eventos. El acceso existente
+  se rotula Actividad reciente y mantiene el salto con foco; no simula una
+  Bitácora completa ni se agrega su pantalla, reservada para R3.
+- Logo: isotipo duotono oscuro del master vectorial V3, copiado sin cambios
+  de geometría/rellenos. SHA256 coincide con el original. Se usa isotipo solo;
+  no se reconstruye el wordmark con Satoshi ni una sustituta de Rothek.
+- Carga: ReceptionLoading conserva las proporciones del shell desktop.
+- Hooks conservados; agregado search-reveal. Sin motion avanzado ni dependencias.
+
+## Archivos de R1 (además de los cambios preexistentes preservados)
+
+Modificados: `app/globals.css`, `components/Prototipo.tsx`,
+`components/ShellRecepcion.tsx`, `components/recepcion/P01.tsx`,
+`components/recepcion/ReceptionSidebar.tsx`,
+`components/recepcion/ReceptionSearch.tsx`,
+`components/recepcion/ShiftActivity.tsx` y este documento.
+
+Nuevos: `components/recepcion/ReceptionHeader.tsx`,
+`components/recepcion/ReceptionLoading.tsx`,
+`public/brand/CT_MASTER_DUOTONE_DARK.svg`.
+
+Reutilizados: Icon, botones del sistema, ReceptionSearch, ReceptionSidebar,
+ShiftActivity, formateadores, estado compartido y selectores de lib/recepcion.
+No se editaron P02/P03/P04/P05/P07/P08, los reducers ni los datos durante R1.
+Los diffs ya presentes en varias de esas internas pertenecen a la pasada anterior.
+
+## Referencias usadas y límites
+
+- Figma MCP, file `CNuuTRQJHtAMwXJpDUQYER`, design context + imagen:
+  `23204:129953` búsqueda horizontal/icono al extremo;
+  `23204:130822` ritmo de filas, grupos e indicador activo;
+  `23204:129834` zonas izquierda/derecha de contexto y utilidades;
+  `23204:134577` resumen con peso propio, sin multiplicar contenedores;
+  `23204:134646` actividad cronológica con hora/icono/acción/contexto.
+- Linear: https://linear.app/changelog/2026-03-12-ui-refresh — navegación
+  atenuada y gramática consistente de encabezados, según A1 de V04.
+- Attio: https://attio.com/help/reference/attio-101/introduction-to-navigating-attio
+  — sidebar colapsable y utilidades, limitadas a A2 de V04.
+- Cloudbeds B3 / Envoy B1 / Ramp A4: se aplicaron las propiedades explícitas
+  del PDF: Hoy contextual, accesos ordenados por horario, y severidad/ubicación/
+  responsable/antigüedad/acción. No se tomó styling externo de sus productos.
+- Basis Treasury: la URL especificada de Framer devuelve Template unavailable /
+  Page not found. No hubo inspección visual del template. Sólo se aplicó C1 del
+  PDF: contraste carbón/claro y numerales tabulares. No se reemplazó por otra referencia.
+- Master local: `CondoTrack_FINAL_MASTER_V3/CondoTrack_FINAL_MASTER_V3/01_VECTOR_MASTER/CondoTrack_Isotipo_DUOTONE_DARK.svg`.
+
+No se copiaron branding, tipografías, pill de 99 px, glass, glow, gradientes,
+iconos externos ni el código Tailwind generado por Figma.
+
+## QA y decisiones pendientes
+
+`npx tsc --noEmit` y `npm run build` correctos. Inspección visual en 1440×900
+claro/oscuro, 1280×720, 1024×768 y fallback 390×844. Sin desborde horizontal;
+corregidos scroll horizontal del rail móvil y alineación de cifras con etiquetas
+multilínea. Satoshi en estilos computados y FontFaceSet cargado, sin errores de
+fuentes en consola. Navegación por teclado probada: búsqueda por código → pase,
+Escape de perfil/edificio, colapso/expansión, foco del formulario de entrega y
+salto a actividad. Preview limitado a tres eventos. Loader desktop revisado.
+Barrido DOM Resident: 27 vistas × claro/oscuro, 390×844, después de transición:
+sin desbordes, imágenes rotas ni cambios de familia tipográfica.
+
+Pendiente de decisión/revisión: aprobación visual R1; isotipo solo vs imagotipo
+horizontal con wordmark vectorizado oficial; selector multi-edificio cuando haya
+más edificios asignados; timestamp de actualización de incidencias cuando el
+modelo lo incluya. El preview sigue siendo actividad del día, no una sesión de
+turno formal. Bitácora completa y demás pantallas esperan aprobación de fase.
+
+Sin commit ni push. Cambios preexistentes preservados.
+
+
+## 22/09/2026 · R1 Visual Target Pack V05
+
+La UI de Recepción de V04 fue rechazada. Se reemplazó la composición de R1
+con los PNG locales V05: rail compacto/perfil inferior, puesto fotográfico
+con reloj, Today integrado, atención carbón, lista de accesos y timeline.
+Se conservan lógica, datos y routing. Build correcto; QA de escritorio,
+responsive y 54 combinaciones Resident correcto.
+
+**Pendiente de aprobación visual en localhost. No avanzar a R2.**
+Detalle por archivo, target, interacción y límites:
+[Informe R1 V05](19_R1_VISUAL_TARGET_V05_REVIEW.md). Sin commit ni push.
+
+
+## 22/09/2026 · Reconstrucción de composición de Home Recepción
+
+Nueva ronda solicitada después de R1: shell que empuja contenido, header
+de dos niveles, hero con operaciones integradas, Today como base compartida
+y accesos con cinco columnas. Pendiente de revisión visual; ver
+[detalle de reconstrucción](20_RECONSTRUCCION_HOME_RECEPCION.md).
+Build y 54 verificaciones Resident correctos. Sin commit ni push.
+
+
+## 22/09/2026 · R1.3 Command center
+
+Se reemplazó R1.2 por una Home de orientación, dock contextual y previews.
+Volvo U02 define composición; Planner U01 materialidad. Utility bar de 64 px,
+scroll único, reloj sin card propia y sin tabla en Home.
+Detalle: [R1.3 para revisión](21_R13_COMMAND_CENTER_REVIEW.md).
+Build/TypeScript correctos; 54 verificaciones Resident sin regresiones.
+Pendiente de aprobación. Sin commit/push. No avanzar a internas.
+
+## 24/09/2026 · Recepción R1.6
+
+Cierre implementado según handoff aprobado, pendiente de revisión visual. Agenda temporal, búsqueda con reflow, detalle operativo de Unidades, estados, temas y sensor local. Ver [informe y QA](24_R16_IMPLEMENTATION_REVIEW.md). Sin commit/push; se preservó el trabajo anterior.
+
+## 24/09/2026 · Recepción R1.6 · cierre user-centered
+
+Sobre el trabajo de Codex, preservado: Agenda rehecha sobre U01 (dos columnas hundidas, eventos elevados sin fills por tipo, detalle que reemplaza la columna del calendario sin comprimir el eje, "Ahora" detrás del contenido); Accesos sobre U06 (resumen del mostrador y fila de estados AUTORIZADO · VENCIDO · NO ENCONTRADO); Entregas sobre U05 (lista clara + registro en módulo oscuro, retiro que no confirma sin nombre); Unidades sobre U07 (marco con filetes, ficha fija en el tercio derecho); Incidencias sobre U06 (barras de gravedad y estado que cuentan y filtran); Actividad sobre U09 (recorrido con píldoras por carril y bitácora); Home con panel de acciones rápidas abierto en escritorio. Selección visible en oscuro, pesos de Satoshi válidos, deshabilitado neutro. Build, TypeScript, 12 selectores, barrido 8 vistas × 2 temas × 6 anchos y 54 combinaciones Resident correctos. Ver [cierre](25_R16_CIERRE_USER_CENTERED.md). Sin commit ni push.
+
+## 25/09/2026 · R1.7 · revisión de Felipe + sistema compartido + Administración
+
+Recepción corregida pantalla por pantalla según el video de revisión; oscuro único con los valores de Residente; sistema compartido de tokens, primitivas y movimiento; Administración A01–A17 sobre el mismo sistema (lista → detalle, casos, reservas con aprobación, cobranza sin integración bancaria). Build de producción, TypeScript, `git diff --check`, 276 mediciones responsive en producción sin problemas, Residente 27 × 2 sin regresiones, teclado y cuatro modos de movimiento verificados. CSS muerto de Recepción podado (1.022 reglas). Ver [R1.7](26_R17_REVISION_FELIPE_ADMIN.md). Sin commit ni push.

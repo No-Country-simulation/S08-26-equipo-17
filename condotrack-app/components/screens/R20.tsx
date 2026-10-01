@@ -1,4 +1,5 @@
 "use client";
+import { Importe, OjoImporte } from "../ui/Importe";
 import { useEffect, useState } from "react";
 import { Icon } from "../ui/Icon";
 import { HojaPagar } from "../paneles/HojaPagar";
@@ -28,7 +29,7 @@ import { useNavegacion } from "@/lib/navegacion";
 export function R20({ ir, refe }: { ir: (v: Vista, ref?: string) => void; refe?: string }) {
   const { estado } = useApp();
   const [pagar, setPagar] = useState(refe === "pagar");
-  const exp = expensaDelMes();
+  const exp = expensaDelMes(estado.pagos);
   const pagada = exp.estado === "pagada";
   const informado = estado.pagos.find((p) => p.periodo === exp.periodo);
 
@@ -48,11 +49,12 @@ export function R20({ ir, refe }: { ir: (v: Vista, ref?: string) => void; refe?:
         volverA="r01"
         foto="/img/fachada.jpg"
         volanta="Expensas"
-        titulo={pesos(exp.total)}
+        titulo={<Importe valor={exp.total} />}
+        accion={<OjoImporte claro />}
         cifra
         dato={
           <span className="linea-estado">
-            {pagada ? "Pagada" : "Vence " + diaMes(exp.vencimiento)}
+            {pagada ? "Pagada" : (exp.estado === "vencida" ? "Venció el " : "Vence ") + diaMes(exp.vencimiento)}
             {!pagada && (
               <span className={"estado-punto" + (exp.estado === "vencida" ? " vencido" : "")}>
                 {exp.estado === "vencida" ? "Vencida" : "Pendiente"}
@@ -74,7 +76,7 @@ export function R20({ ir, refe }: { ir: (v: Vista, ref?: string) => void; refe?:
 
       {informado && (
         <Aviso icono="reloj">
-          Pago de {pesos(informado.importe)} informado · a confirmar.
+          Pago de <Importe valor={informado.importe} /> informado · a confirmar.
         </Aviso>
       )}
 

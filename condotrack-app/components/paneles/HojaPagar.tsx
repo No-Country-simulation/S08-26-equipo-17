@@ -1,4 +1,6 @@
 "use client";
+import { Importe } from "../ui/Importe";
+import { useApp } from "@/lib/estado";
 import { Icon } from "../ui/Icon";
 import { Hoja } from "../ui/Hoja";
 import { PanelMedios } from "./PanelMedios";
@@ -11,14 +13,15 @@ import { pesos, diaMes } from "@/lib/formato";
  *  otra pantalla: pagar es una acción, no un destino. */
 export function HojaPagar({ onCerrar, onInformar }:
   { onCerrar: () => void; onInformar: () => void }) {
-  const exp = expensaDelMes();
+  const { estado } = useApp();
+  const exp = expensaDelMes(estado.pagos);
   const pagada = exp.estado === "pagada";
 
   return (
     <Hoja titulo="Pagar" onCancelar={onCerrar} cerrarRotulo="Cerrar" sinAcciones alto="alta">
       <div className="pagar-resumen">
-        <b>{pesos(exp.total)}</b>
-        <span>{pagada ? "Pagada" : "Vence el " + diaMes(exp.vencimiento)}</span>
+        <b><Importe valor={exp.total} /></b>
+        <span>{pagada ? "Pagada" : (exp.estado === "vencida" ? "Venció el " : "Vence el ") + diaMes(exp.vencimiento)}</span>
       </div>
       <PanelMedios />
       <button className="entrar" type="button" style={{ marginTop: 18, width: "100%" }}

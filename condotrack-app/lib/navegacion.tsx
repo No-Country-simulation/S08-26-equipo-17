@@ -20,6 +20,16 @@ export type Navegacion = {
    *  contexto que eligió el usuario, o nada si el ref era una orden de un
    *  solo uso. No re-renderiza. */
   reemplazarRef: (ref?: string) => void;
+  /** La pantalla de la que venís (id de vista y ref), para ofrecer un
+   *  "Volver a…" con nombre cuando una acción te llevó más adentro. */
+  anterior?: { v: string; ref?: string };
+  /** Vuelve hacia atrás hasta `v` (sacando de la pila lo que haya
+   *  encima). Si `v` no está en la pila, va a `v` y la pila queda vacía:
+   *  es el "volver al inicio" de un flujo terminado. */
+  volverHasta?: (v: string) => void;
+  /** Navega sin apilar la pantalla actual: para salir de una pantalla de
+   *  éxito sin que "Volver" regrese al formulario ya enviado. */
+  reemplazar?: (v: string, ref?: string) => void;
 };
 
 export const CtxNavegacion = createContext<Navegacion | null>(null);

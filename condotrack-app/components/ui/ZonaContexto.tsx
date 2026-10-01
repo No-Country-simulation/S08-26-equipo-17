@@ -25,7 +25,7 @@ export function ZonaContexto({
   volverA: Vista;
   foto?: string;
   volanta?: string;
-  titulo: string;
+  titulo: ReactNode;
   /** El título es un importe o un número: sube de escala y va en 900. */
   cifra?: boolean;
   dato?: ReactNode;

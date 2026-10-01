@@ -1,0 +1,37 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const ts = require('typescript');
+// Ejecuta los selectores reales sin sumar un runner al prototipo.
+require.extensions['.ts'] = (module, filename) => {
+  const compiled = ts.transpileModule(fs.readFileSync(filename, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } });
+  module._compile(compiled.outputText, filename);
+};
+const { agendaOperativa, actividadRegistrada, actividadDelDia } = require('../lib/recepcion.ts');
+const { VISITAS, RESERVAS, ENTREGAS } = require('../lib/data.ts');
+const { INCIDENCIAS } = require('../lib/edificio.ts');
+const estado = { visitas: structuredClone(VISITAS), reservas: structuredClone(RESERVAS), entregas: structuredClone(ENTREGAS), incidencias: structuredClone(INCIDENCIAS) };
+const agenda = agendaOperativa(estado);
+assert.equal(agenda.filter(a => a.id === 'visita-v1').length, 1, 'La visita debe aparecer una sola vez');
+const reserva = estado.reservas.find(r => r.estado !== 'cancelada');
+estado.visitas.find(v => v.id === 'v1').estado = 'cancelada';
+reserva.estado = 'cancelada';
+const actualizada = agendaOperativa(estado);
+assert.ok(!actualizada.some(a => a.id === 'visita-v1'), 'Cancelar una visita debe retirarla de agenda');
+assert.ok(!actualizada.some(a => a.id === `reserva-${reserva.id}`), 'Cancelar una reserva debe retirarla de agenda');
+assert.ok(actualizada.every((a, i) => !i || actualizada[i - 1].hora <= a.hora), 'Agenda cronológica');
+const ahora = new Date();
+const futuro = new Date(ahora.getTime() + 86400000).toISOString();
+estado.incidencias.push({ id: 'futura', cuando: futuro, reportadaPor: 'Prueba', titulo: 'Todavía no ocurrió', lugar: 'Hall' });
+const movimientos = actividadRegistrada(estado, ahora);
+assert.ok(!movimientos.some(m => m.id === 'futura'), 'No se presentan movimientos futuros como hechos');
+assert.ok(movimientos.every((m, i) => !i || movimientos[i - 1].cuando >= m.cuando), 'Bitácora ordenada de reciente a antiguo');
+assert.equal(new Set(movimientos.map(m => m.id)).size, movimientos.length, 'Sin movimientos duplicados');
+assert.ok(movimientos.every(m => ['accesos','entregas','incidencias'].includes(m.categoria)), 'Categorías para filtros');
+assert.ok(actividadDelDia(estado, ahora).every(m => new Date(m.cuando).toDateString() === ahora.toDateString()), 'Home conserva sólo actividad del día');
+const entrega = { ...estado.entregas[0], id: 'qa-nueva', recibidoEl: ahora.toISOString(), estado: 'retirado', retiradoEl: ahora.toISOString(), retiradoPor: 'Residente', entregadoPor: 'Recepción' };
+estado.entregas.push(entrega);
+const registro = actividadRegistrada(estado, ahora).filter(m => m.id.startsWith('qa-nueva-'));
+assert.deepEqual(registro.map(m => m.id).sort(), ['qa-nueva-recibida','qa-nueva-retirada'], 'Recepción y retiro son dos movimientos distintos');
+assert.equal(agenda.find(a => a.tipo === 'mudanza').estadoVisible, 'Aprobada', 'Recepción sólo opera mudanzas aprobadas');
+assert.equal(agenda.find(a => a.id === `reserva-${reserva.id}`).fin, reserva.fin, 'La duración del calendario conserva el fin real de la reserva');
+console.log('12 comprobaciones de agenda y bitácora correctas.');

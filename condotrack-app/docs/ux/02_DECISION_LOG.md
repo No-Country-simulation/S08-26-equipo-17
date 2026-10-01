@@ -302,6 +302,13 @@ contexto lleva un desenfoque moderado (3 px). El sistema completo queda en
 
 ---
 
+### D-41 · Navigation lock entre roles · REQUISITO (21/09/2026)
+La navegación activa no usa amarillo. Se resuelve con jerarquía tipográfica,
+contraste, superficie, indicador lateral o combinación de esos recursos.
+`#F5E500` queda para foco, acción primaria, selección relevante y estados
+puntuales. No se modifica sin pedido explícito. Confirma D-19 y corrige la
+sugerencia de activo amarillo de `12_COMPONENT_REFERENCES.md`.
+
 ## Derogadas
 
 | Decisión anterior | Dónde vivía | Qué la reemplaza |
@@ -379,3 +386,31 @@ R01 línea 54 usa `/brand/CT_SYMBOL_PRIMARY_TRANSPARENT.svg`, que es el símbolo
 **V1**. Los assets aprobados son `CT_LOGO_LIGHT_V2.png` y `CT_LOGO_DARK_V2.png`
 (y `CT_APPICON_V2.png` para el ícono). Hay que cambiar la referencia y respetar
 el tema.
+
+## 24/09/2026 · Aplicación de locks R1.6
+
+Se aplica el handoff del usuario: U02 como composición Home; glass restringido a contextos y Home; internas operativas sólidas; mudanzas sólo aprobadas; sin datos económicos en Unidades; verificación separada del ingreso; búsqueda compacta con reflow; temas mediante tokens y sensor de novedades finito. No se abrió una nueva dirección de diseño. Detalle: [R1.6](24_R16_IMPLEMENTATION_REVIEW.md).
+
+### D-42 · Una referencia primaria por pantalla en Recepción · REQUISITO (24/09/2026)
+Override USER-CENTERED VISUAL FIDELITY. Home → U02; Agenda → U01 (U08 sólo comportamiento del detalle); Accesos e Incidencias → U06; Entregas → U05; Unidades → U07; Actividad → U09; Búsqueda → U11; Perfil → menú existente. Se copia la lógica compositiva de la referencia; los desvíos sólo se aceptan por contenido, accesibilidad, responsive o límite funcional y se documentan.
+
+### D-43 · Selección y color en Recepción · DECISIÓN DE DISEÑO (24/09/2026)
+Lo elegido usa `--rec-sel`/`--rec-on-sel` (carbón en claro, hueso en oscuro): nav actual, segmentos, filtros, pisos y controles abiertos. Sin fills por categoría de evento. Verde y rojo sólo semánticos (aprobada/autorizado; vencido/no encontrado/gravedad alta). Amarillo sólo para acción primaria, foco, novedad y "lo próximo". Deshabilitado neutro.
+
+### D-44 · Un oscuro para los tres roles · REQUISITO (25/09/2026)
+Recepción y Administración usan los valores oscuros de Residente (#0E1210 fondo, #171D19 superficie) a través de tokens semánticos en `app/sistema.css`. Los `--rec-*` son alias; no hay paleta oscura por rol.
+
+### D-45 · Tres modos de movimiento · REQUISITO (25/09/2026)
+`?motionreduce=0` fuerza el normal, `?motionreduce=1` el reducido y sin parámetro manda `prefers-reduced-motion`. Una sola regla (`lib/movimiento.ts` + CSS) para Residente, Recepción y Administración. Se quitaron las reglas que apagaban el movimiento de Recepción aunque se forzara.
+
+### D-46 · FolderGlassCard como superficie firma · DECISIÓN DE DISEÑO (25/09/2026)
+Vidrio real con silueta de carpeta calculada (clip-path path), solapa del lado del control que la abre. Se usa en las carpetas contextuales y los módulos del Home; no en listas densas ni formularios.
+
+### D-47 · Home sin panel fijo · DECISIÓN DE DISEÑO (25/09/2026)
+Se revierte el panel "Acciones rápidas" siempre abierto (R1.6). Los rieles vuelven a abrir contenido contextual; el espacio libre del héroe queda como aire.
+
+### D-48 · Administración: lista → detalle y atención primero · DECISIÓN DE DISEÑO (25/09/2026)
+Menú lateral por grupos con activo de carbón; patrón central lista → detalle contextual sin cambiar de pantalla; A01 responde qué requiere atención, de quién es y qué acción corresponde, sin grilla de KPIs. Severidad, estado, responsable y categoría se muestran separados.
+
+### D-49 · Datos demo de Administración · ALCANCE (25/09/2026)
+Se agregan en `lib/admin.ts` sólo los datos que la administración necesita para tener trabajo: solicitudes de reserva pendientes, pagos informados de otras unidades, equipo/proveedores, documentos con audiencia. Decidir cambia el estado de la sesión y deja auditoría separada del historial del residente. No hay motor de liquidación ni conciliación bancaria.

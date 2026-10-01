@@ -10,6 +10,9 @@ const sello = new Date().toLocaleString("es-AR", {
 
 const nextConfig = {
   reactStrictMode: true,
+  /* CT_DIST_DIR permite correr un `next dev` de QA sin pisar el .next de un
+     `next start` que ya esté sirviendo el build (por defecto, .next). */
+  distDir: process.env.CT_DIST_DIR || ".next",
   env: { NEXT_PUBLIC_BUILD: sello },
 };
 export default nextConfig;

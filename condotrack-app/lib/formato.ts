@@ -104,3 +104,12 @@ export function isoDesdeHoy(dias: number, hora = 9, minuto = 0) {
   d.setHours(hora, minuto, 0, 0);
   return d.toISOString();
 }
+
+
+/** "08:00–13:00" → "De 08:00 a 13:00"; si termina después de medianoche lo
+ *  dice ("De 19:00 a 00:30 del día siguiente"). RES-010: el rango explícito. */
+export function franjaEnPalabras(horario: string) {
+  const [a, b] = horario.split(/[–—-]/).map((x) => x.trim());
+  if (!a || !b) return horario;
+  return `De ${a} a ${b}${b < a ? " del día siguiente" : ""}`;
+}

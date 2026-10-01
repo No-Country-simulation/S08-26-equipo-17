@@ -84,7 +84,7 @@
   --b-gap:8px; --b-borde:1px;
   --b-fs:15px; --b-fs-sec:14px;
   --b-prim-fondo:var(--txt); --b-prim-txt:var(--fondo);
-  --b-foco:2px solid var(--amarillo);
+  --b-foco:2px solid var(--foco-anillo,var(--txt));
 
   /* Material: dos vidrios y nada más. Sólo sobre foto o fondo con
      imagen; nunca sobre el fondo plano. */
@@ -264,7 +264,10 @@ html,body{height:100%}
 body{background:var(--stage);color:var(--txt);font-family:var(--ff-ui);-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;text-align:left}
 img,svg{display:block;max-width:100%}
-:focus-visible{outline:3px solid var(--amarillo);outline-offset:2px;border-radius:10px}
+:focus-visible{outline:2px solid var(--foco-anillo,var(--txt));outline-offset:2px;border-radius:10px;
+  box-shadow:0 0 0 5px color-mix(in srgb,var(--amarillo) 70%,transparent)}
+/* Sobre campos oscuros el anillo pasa a blanco para seguir contrastando. */
+.home-campo,.zona-ctx.con-foto,.saldo-card,.pase,.widget.en-campo,.visita.vigente,.reserva{--foco-anillo:#fff}
 /* ── prefers-reduced-motion ──────────────────────────────────────────
    Apaga lo decorativo y conserva lo funcional (05_MOTION_SYSTEM). La
    regla general sigue siendo apagar todo; las excepciones no son
@@ -429,7 +432,7 @@ form{margin-top:30px;display:flex;flex-direction:column;gap:14px}
   font-size:var(--b-fs);font-weight:700;letter-spacing:-.01em;
   transition:transform .12s ease,background .12s ease,color .12s ease}
 .entrar:hover{background:color-mix(in srgb,var(--b-prim-fondo) 90%,var(--b-prim-txt))}
-.entrar:active{transform:scale(.98);background:color-mix(in srgb,var(--b-prim-fondo) 80%,var(--b-prim-txt))}
+.entrar:active{transform:scale(.98);transition-duration:120ms;background:color-mix(in srgb,var(--b-prim-fondo) 80%,var(--b-prim-txt))}
 .entrar:focus-visible{outline:var(--b-foco);outline-offset:3px}
 .entrar[aria-busy="true"]{pointer-events:none;opacity:.85}
 .entrar .giro{width:16px;height:16px;border-radius:999px;
@@ -945,16 +948,20 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
 
 .campo-f{margin-top:20px}
 .campo-f label,.campo-f .et{display:flex;align-items:baseline;gap:8px;
-  font-size:var(--t-meta);font-weight:500;letter-spacing:0;color:var(--txt2)}
+  font-size:14px;font-weight:500;letter-spacing:0;color:var(--txt2)}
 .campo-f label em,.campo-f .et em{font-style:normal;font-size:var(--t-label);font-weight:500;
   color:color-mix(in srgb,var(--txt2) 80%,transparent)}
 .campo-f .caja{margin-top:9px;position:relative;display:flex;align-items:center;
   min-height:56px;border-radius:var(--b-radio);background:color-mix(in srgb,var(--txt) 4.5%,transparent);
-  border:0;padding:0 16px;transition:background .15s,box-shadow .15s}
+  border:0;padding:0 16px;
+  /* SYS-FORM · inset leve: filo de 1 px y sombra interior mínima. */
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--txt) 9%,transparent),inset 0 1px 2px color-mix(in srgb,var(--txt) 6%,transparent);
+  transition:background 160ms cubic-bezier(.22,1,.36,1),box-shadow 160ms cubic-bezier(.22,1,.36,1)}
 .campo-f .caja.alto{min-height:124px;padding:16px;align-items:flex-start}
 .campo-f .caja:hover{background:color-mix(in srgb,var(--txt) 7%,transparent)}
 .campo-f .caja:focus-within{background:color-mix(in srgb,var(--txt) 7%,transparent);
-  box-shadow:inset 0 0 0 1.5px var(--amarillo)}
+  box-shadow:inset 0 0 0 1.5px var(--txt),0 0 0 3px color-mix(in srgb,var(--amarillo) 65%,transparent)}
+.campo-f .caja :focus-visible{outline:none;box-shadow:none}
 .campo-f .caja .gl{flex:none;margin-right:12px;color:var(--txt2);display:flex}
 .campo-f .caja:focus-within .gl{color:var(--txt)}
 .campo-f input,.campo-f textarea,.campo-f select{width:100%;border:0;background:none;padding:0;
@@ -969,7 +976,7 @@ h3.grupo{margin-top:26px;font-size:12px;letter-spacing:.08em;text-transform:uppe
   font-size:var(--t-meta);line-height:1.45;color:var(--error);font-weight:500}
 .campo-f .err svg{flex:none;margin-top:2px}
 .campo-f.mal .caja{box-shadow:inset 0 0 0 1.5px var(--error)}
-.campo-f.mal .caja:focus-within{box-shadow:inset 0 0 0 1.5px var(--error)}
+.campo-f.mal .caja:focus-within{box-shadow:inset 0 0 0 1.5px var(--error),0 0 0 3px color-mix(in srgb,var(--error) 22%,transparent)}
 
 /* el campo que elige entre opciones: no es un select del navegador, es
    una fila que abre la hoja con las opciones */
@@ -2048,6 +2055,11 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
   font-family:var(--ff-display);font-size:38px;font-weight:900;line-height:1;
   letter-spacing:-.04em;font-variant-numeric:tabular-nums}
 .widget-panel .det{display:block;margin-top:9px;font-style:normal;font-size:13.5px;color:var(--txt2)}
+/* DEC-003: el estado se lee al mismo tamaño que el período que acompaña.
+   A 12px quedaba por debajo de su propio contexto, y AGENTS.md ya fija que
+   nada importante vive en 11–12 px. Sigue siendo metadata: hereda el color
+   del detalle y no gana superficie. */
+.widget-panel .det .pastilla{font-size:inherit;font-weight:500;color:inherit}
 
 /* cambio de pestaña: crossfade con un corrimiento corto, 180 ms (05) */
 @keyframes cruza-der{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
@@ -2229,7 +2241,8 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
   font-size:var(--b-fs-sec);font-weight:700;letter-spacing:-.01em;
   transition:background .12s,border-color .12s,transform .12s}
 .btn-sec:hover{border-color:var(--txt)}
-.btn-sec:active{transform:scale(.98)}
+.btn-sec:active{transform:scale(.98);transition-duration:120ms}
+.entrar[aria-busy="true"],.btn-sec[aria-busy="true"]{cursor:progress;pointer-events:none;opacity:.72}
 .btn-sec:focus-visible,.btn-ter:focus-visible,.circulo:focus-visible{outline:var(--b-foco);outline-offset:2px}
 .btn-sec:disabled,.btn-ter:disabled,.circulo:disabled{opacity:.4;cursor:not-allowed}
 .btn-sec.claro{background:var(--glass-dark);border:1px solid var(--glass-dark-borde);color:#fff;
@@ -2366,6 +2379,9 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
 .widget.en-campo .cifra.texto{font-size:38px;letter-spacing:-.035em}
 .widget.en-campo .det{display:flex;align-items:center;justify-content:center;gap:9px;
   margin-top:10px;font-style:normal;font-size:13.5px;color:rgba(255,255,255,.82)}
+/* Sobre el campo oscuro el estado sube a blanco pleno: es el dato que el
+   residente busca, y .82 sobre carbón lo dejaba en el límite. */
+.widget.en-campo .det .pastilla{font-size:inherit;font-weight:500;color:#fff}
 
 .widget-enlaces{margin-top:8px;display:flex;justify-content:center;gap:18px}
 
@@ -2849,10 +2865,13 @@ h2.chico{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:up
    un punto y el mismo peso que el vencimiento; manda la cifra. */
 .widget.en-campo .det{gap:9px;font-size:14px;color:rgba(255,255,255,.8)}
 .widget.en-campo .det .pastilla{height:auto;padding:0;background:none;border:0;
-  color:inherit;font-size:inherit;font-weight:500;gap:7px}
+  color:#fff;font-size:inherit;font-weight:500;gap:7px}
 .widget.en-campo .det .pastilla::before{content:"";width:6px;height:6px;border-radius:999px;
   background:var(--amarillo);box-shadow:none}
 .widget.en-campo .det .pastilla.gris::before{background:rgba(255,255,255,.5);box-shadow:none}
+/* Vencida: la severidad va en el punto; sobre carbón, el rojo de estado
+   (#B3261E) no llega a 3:1, así que usa su versión para fondo oscuro. */
+.widget.en-campo .det .pastilla.vencida::before{background:#F29A92;box-shadow:none}
 
 /* Pagar: amarillo con relieve, no una cápsula plana */
 
@@ -3286,3 +3305,1947 @@ button,input,select,textarea{font-family:inherit}
   :root:not([data-movimiento="forzado"]) .widget-panel,
   :root:not([data-movimiento="forzado"]) .cal-grilla{animation:none}
 }
+
+/* Recepción · Home 01. Selectores propios para conservar el lock de Resident. */
+.device.ancho{width:min(1440px,calc(100vw - 32px));height:min(900px,calc(100dvh - 96px))}
+.stage:has(.device.ancho):not(:has(.stage-bar)){padding:0;gap:0}
+.stage:not(:has(.stage-bar)) .device.ancho{width:100%;height:100dvh;border-radius:0;box-shadow:none}
+/* V05 R1: composición U05/U02 y reloj U01, acotados al escritorio de Recepción. */
+.recepcion{--fondo:#F4F5F1;--sup:#FFFFFF;--txt:#111614;--txt2:#515A56;--borde:rgba(17,22,20,.12);--est-ok:#286147;--est-vencido:#A3322B;--est-curso:#835415;background:var(--fondo);color:var(--txt)}
+[data-tema="oscuro"] .recepcion{--fondo:var(--bg);--sup:var(--surface);--txt:var(--text-primary);--txt2:var(--text-secondary);--borde:var(--divider-strong);--est-ok:var(--status-success);--est-vencido:var(--status-danger);--est-curso:var(--status-warning)}
+.recepcion button:focus-visible,.recepcion input:focus-visible{outline:2px solid #F5E500;outline-offset:3px}
+.recepcion .desk-main{margin-left:88px;min-width:0}
+.recepcion .desk-cuerpo{padding:24px 32px 32px;scroll-padding-top:24px}
+
+
+
+
+.rec-nav-group{display:flex;flex-direction:column;gap:10px}
+.rec-nav-group+.rec-nav-group{padding-top:24px;border-top:1px solid var(--borde)}
+.rec-nav-group button{display:flex;align-items:center;gap:18px;width:100%;height:48px;min-height:48px;padding:14px 18px;border-radius:12px;font-size:15px;line-height:1.3;text-align:left;white-space:nowrap;overflow:hidden}
+.rec-nav-group button:hover{background:var(--fondo)}
+.rec-nav-group button[aria-current="page"]{color:#FFF;background:#111614;font-weight:700}
+[data-tema="oscuro"] .rec-nav-group button[aria-current="page"]{background:#F4F5F1;color:#111614}
+
+.rec-nav-group button span,.rec-profile-name{transition:opacity 150ms,transform 180ms}
+.recepcion[data-compacta="true"] .rec-nav-group button span,.recepcion[data-compacta="true"] .rec-profile-name{opacity:0;transform:translateX(-6px);pointer-events:none}
+
+
+
+
+
+.rec-utility{position:relative;flex:none}
+.rec-utility-trigger{display:flex;align-items:center;gap:12px;min-height:48px;font-size:16px;font-weight:700;border-radius:8px;padding:6px}
+.rec-utility-trigger:hover{background:color-mix(in srgb,var(--txt) 5%,transparent)}
+.rec-utility-trigger>svg:last-child{transform:rotate(90deg);color:var(--txt2)}
+.rec-profile .rec-utility-trigger{width:100%;padding:4px 8px;overflow:hidden}
+.rec-profile .rec-utility-trigger>svg{display:none}
+.rec-profile-name{font-size:14px;font-weight:500;white-space:nowrap}
+.rec-avatar{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--fondo);font-size:13px;font-weight:700;border:1px solid var(--borde)}
+.rec-utility-panel{position:absolute;top:calc(100% + 12px);left:0;width:280px;max-width:calc(100vw - 110px);padding:20px;background:var(--sup);color:var(--txt);border:1px solid var(--borde);border-radius:12px;box-shadow:var(--sombra-2);animation:rec-reveal 180ms ease-out}
+.rec-profile .rec-utility-panel{top:auto;bottom:0;left:calc(100% + 24px)}
+.rec-utility-panel h2{font-size:17px;margin:0 0 10px}
+.rec-utility-panel p,.rec-utility-panel small{font-size:14px;line-height:1.5;color:var(--txt2)}
+.rec-utility-panel small{display:block}
+.rec-utility-panel button{display:flex;align-items:center;gap:12px;min-height:48px;width:100%;font-size:15px;text-align:left;margin-top:12px}
+.rec-utility-panel button:hover{background:var(--fondo)}
+.rec-utility-panel button>span{flex:1}
+
+
+
+
+
+.rec-search{position:relative;z-index:40;width:48%;transition:width 220ms cubic-bezier(.2,.7,.2,1)}
+.rec-search:focus-within{width:60%}
+.rec-search form{display:flex;flex-direction:row;margin:0;gap:0;align-items:center;background:var(--sup);color:var(--txt);border-radius:14px;padding:6px 6px 6px 20px;min-height:56px;border:1px solid var(--borde);transition:box-shadow 180ms}
+.rec-search form:focus-within{box-shadow:0 0 0 2px #F5E500}
+.rec-search input{width:100%;min-width:0;border:0;outline:none;background:transparent;color:inherit;font:inherit;font-size:16px;height:44px}
+.rec-search input:focus-visible{outline:none}
+.rec-search input::placeholder{color:var(--txt2);opacity:1}
+.rec-search form button{height:44px;width:44px;display:grid;place-items:center;flex:none;border-radius:10px;background:#111614;color:white}
+.rec-search-results{position:absolute;z-index:15;top:calc(100% + 8px);left:0;right:0;background:var(--sup);color:var(--txt);border:1px solid var(--borde);border-radius:14px;box-shadow:var(--sombra-2);padding:8px;max-height:400px;overflow-y:auto;transform-origin:top;animation:rec-reveal 180ms cubic-bezier(.2,.7,.2,1)}
+.rec-search-results>p{padding:10px 12px;font-size:14px;color:var(--txt2)}
+.rec-search-results button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:16px;padding:12px;border-radius:8px;min-height:64px;text-align:left}
+.rec-search-results button:hover,.rec-search-results button:focus-visible{background:var(--fondo)}
+.rec-search-results b{display:block;font-size:16px;font-weight:700}
+.rec-search-results small{display:block;margin-top:4px;font-size:14px;color:var(--txt2)}
+
+
+
+
+.rec-time-object{position:absolute;left:20px;right:20px;bottom:20px;display:flex;align-items:center;gap:20px;padding:18px 20px;background:rgba(244,245,241,.88);backdrop-filter:blur(18px);border:1px solid #FFFFFF80;border-radius:14px;color:#111614}
+.rec-clock{display:flex;flex-direction:column;gap:6px;min-width:0}
+.rec-time{font-size:48px;font-weight:500;line-height:.95;letter-spacing:-.055em;font-variant-numeric:tabular-nums}
+.rec-date{font-size:14px;line-height:1.4;color:#515A56}
+.rec-analog{width:64px;height:64px;flex:none;border:1px solid #11161440;border-radius:50%;position:relative;background:#F4F5F1}
+.rec-analog:before,.rec-analog:after{content:"";position:absolute;background:#111614;left:calc(50% - 1px);width:2px;height:4px;top:4px}
+.rec-analog:after{top:auto;bottom:4px}
+.rec-analog i{position:absolute;width:2px;height:18px;background:#111614;bottom:50%;left:calc(50% - 1px);transform-origin:bottom;transform:rotate(var(--hora));border-radius:2px}
+.rec-analog i+i{height:25px;transform:rotate(var(--minuto));width:1px}
+.rec-analog b{position:absolute;width:5px;height:5px;border-radius:50%;background:#111614;top:calc(50% - 2.5px);left:calc(50% - 2.5px)}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.rec-section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.rec-section-heading h2{font-size:21px;font-weight:700;letter-spacing:-.025em;line-height:1.25}
+.rec-section-heading>svg{color:var(--txt2);flex:none}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.rec-activity{border-top:1px solid var(--borde);padding-top:20px;margin-top:4px}
+.rec-activity ol{display:flex;flex-direction:column;gap:16px}
+.rec-activity li{display:grid;grid-template-columns:42px 18px minmax(0,1fr);gap:10px;align-items:start}
+.rec-activity time{font-size:14px;font-variant-numeric:tabular-nums;color:var(--txt2);line-height:21px}
+.rec-activity-icon{color:var(--txt2);padding-top:2px}
+.rec-activity li b{font-size:15px;font-weight:700;line-height:1.4;display:block}
+.rec-activity li p{font-size:14px;line-height:1.45;color:var(--txt2);margin-top:3px}
+.rec-activity li small{display:block;font-size:13px;color:var(--txt2);margin-top:3px}
+.rec-preview-caption{font-size:13px;color:var(--txt2);margin-top:16px}
+.rec-empty{display:flex;align-items:center;gap:10px;font-size:15px;line-height:1.5;color:var(--txt2);padding:24px 0}
+
+/* En R1, atención y actividad tienen anatomías propias, no una pila de cards. */
+
+
+
+
+
+
+
+
+
+
+.rec-section-heading h2{font-size:21px;font-weight:500}
+
+
+
+
+
+
+
+
+
+
+.rec-activity{padding:20px 0 0;margin:0;border:0;min-width:0}
+.rec-activity .rec-section-heading{margin-bottom:28px}
+.rec-activity ol{gap:0}
+.rec-activity li{position:relative;padding-bottom:24px;grid-template-columns:42px 22px minmax(0,1fr)}
+.rec-activity li:not(:last-child):before{content:"";position:absolute;left:62px;top:26px;bottom:3px;width:1px;background:var(--borde)}
+.rec-activity-icon{color:var(--txt);background:var(--fondo);position:relative}
+.rec-preview-caption{border-top:1px solid var(--borde);padding-top:16px;margin-top:0}
+.rec-loading-content{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:32px;gap:24px}
+.rec-loading-content h1{font-size:24px;font-weight:500;letter-spacing:-.03em}
+.rec-loading-mark{width:112px;height:112px;background:#111614;border-radius:28px;animation:rec-brand-in 500ms cubic-bezier(.2,.7,.2,1) both}
+.rec-loading-bars{display:flex;align-items:center;gap:5px;height:32px}
+.rec-loading-bars i{width:7px;height:24px;border-radius:3px;background:var(--txt);animation:rec-bars 900ms ease-in-out infinite alternate;transform-origin:center}
+.rec-loading-bars i:nth-child(2){animation-delay:150ms}.rec-loading-bars i:nth-child(3){animation-delay:300ms}.rec-loading-bars i:nth-child(4){animation-delay:450ms}
+@keyframes rec-reveal{from{opacity:0;transform:translateY(-6px) scaleY(.97)}to{opacity:1;transform:none}}
+@keyframes rec-bars{from{transform:scaleY(.3);opacity:.4}to{transform:scaleY(1);opacity:1}}
+@keyframes rec-brand-in{from{opacity:0;transform:scale(.9) translateY(8px)}to{opacity:1;transform:none}}
+@media(max-width:1200px){
+
+ .recepcion .desk-cuerpo{padding:24px}
+ .rec-time-object{left:14px;right:14px;padding:16px;gap:14px}.rec-analog{width:48px;height:48px}.rec-time{font-size:40px}
+
+
+}
+@media(max-width:1000px){
+
+ .rec-activity{grid-column:2;grid-row:3}
+
+ .rec-search{width:55%}.rec-search:focus-within{width:62%}.rec-search input{font-size:14px}
+}
+@media(max-width:700px){
+ .recepcion .desk-main{margin-left:64px}
+ .rec-nav-group button{padding:14px;gap:24px}.rec-nav-group button span,.rec-profile-name{display:none}.rec-profile .rec-utility-trigger{padding:4px}
+
+ .recepcion .desk-cuerpo{padding:24px 16px}.rec-search,.rec-search:focus-within{width:100%;margin-top:20px}.rec-search form{padding-left:12px}.rec-search input{font-size:14px}
+ .rec-time-object{gap:12px}.rec-time{font-size:38px}.rec-analog{width:44px;height:44px}.rec-date{font-size:13px}
+ .rec-activity{padding-top:12px}
+ .rec-section-heading{flex-wrap:wrap}
+ .rec-profile .rec-utility-panel{left:calc(100% + 12px)}
+}
+@media(prefers-reduced-motion:reduce){:root:not([data-movimiento="forzado"]) .recepcion *,:root:not([data-movimiento="forzado"]) .recepcion *:before{animation:none!important;transition:none!important}}
+/* R1.5: fondo aprobado y composición derivada del target R1.4. */
+.rec-command-center{--ease:cubic-bezier(.2,.7,.2,1);--cc-glass:rgba(255,255,255,.43);--cc-line:rgba(255,255,255,.82);--cc-shadow:0 12px 36px #1116140a,inset 0 1px 0 #ffffffb0;background:#F4F5F1 url("/recepcion/abstract-approved.png") center/cover no-repeat;color:var(--rec-text)}
+.rec-command-center .desk-main{margin:0;min-width:0;overflow-y:auto;overflow-x:hidden;display:block;scroll-behavior:smooth;scroll-padding:24px}
+.rec-command-center .desk-cuerpo{overflow:visible;min-height:auto;padding:0 3.25vw 12px;flex:none}
+.cc-utility{height:120px;display:grid;grid-template-columns:minmax(200px,1fr) auto minmax(340px,1fr);align-items:center;gap:30px;padding:0 3.25vw;position:relative;z-index:60;max-width:1700px;margin:auto}
+
+
+
+.cc-utility .rec-utility-trigger{border:1px solid var(--cc-line);background:var(--cc-glass);backdrop-filter:blur(14px);border-radius:14px;box-shadow:0 5px 18px #11161403;transition:background 180ms,transform 180ms,box-shadow 180ms}
+
+
+.cc-utility .rec-utility-trigger:hover{background:#ffffffd9;box-shadow:0 7px 22px #1116140a}
+.rec-command-center button:active{transform:scale(.97)}.rec-command-center button:focus-visible,.rec-command-center input:focus-visible{outline:2px solid #F5E500;outline-offset:3px}
+.cc-utility .rec-profile-name,.cc-utility .rec-profile .rec-utility-trigger>svg{display:none}.cc-utility .rec-utility-trigger{padding:5px;min-height:50px;width:50px;justify-content:center}.cc-utility .rec-avatar{width:36px;height:36px;font-size:16px;background:#11161408}
+.cc-utility .rec-profile .rec-utility-panel{top:calc(100% + 12px);bottom:auto;right:0;left:auto}
+.cc-utility .rec-utility-panel{position:absolute;right:0;top:calc(100% + 12px);width:290px;background:rgba(255,255,255,.87);border:1px solid var(--cc-line);backdrop-filter:blur(22px);box-shadow:0 18px 50px #11161418;border-radius:16px;padding:22px;animation:cc-reveal 200ms var(--ease)}
+
+
+
+.cc-menu-destinations{display:flex;flex-direction:column;gap:10px}.cc-menu-destinations .rec-nav-group{display:flex;flex-direction:column;gap:4px;border:0;padding:0}.cc-menu-destinations .rec-nav-group button{display:flex;align-items:center;gap:14px;width:100%;padding:13px 14px;min-height:46px;border-radius:12px;font-size:16px;text-align:left;transition:background 180ms,color 180ms}.cc-menu-destinations .rec-nav-group button span{opacity:1;transform:none;display:inline}.cc-menu-destinations button:hover{background:#ffffffb3}.cc-menu-destinations button[aria-current="page"]{background:#111614;color:white}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@keyframes cc-reveal{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@keyframes cc-search-in{from{opacity:0;transform:scaleX(.88)}to{opacity:1;transform:scaleX(1)}}
+@media(min-width:1550px){.cc-utility{height:134px}.cc-utility{gap:44px}}
+@media(max-width:1280px){.cc-utility{gap:18px;grid-template-columns:1fr auto 1fr}}
+@media(max-width:1050px){.cc-utility{gap:12px}}
+@media(max-width:800px){.cc-utility{height:auto;min-height:140px;grid-template-columns:1fr auto;padding-block:16px;gap:16px}.cc-utility .rec-utility-trigger{width:44px;min-height:44px;height:44px}}
+@media(max-width:480px){.rec-command-center .desk-cuerpo{padding-inline:14px}.cc-utility{padding:14px;gap:12px}.cc-utility .rec-utility-trigger{width:42px;height:42px;min-height:42px;border-radius:12px}.cc-utility .rec-profile .rec-utility-panel{position:fixed;top:72px;left:14px;right:14px;width:auto}}
+@media(prefers-reduced-motion:reduce){:root:not([data-movimiento="forzado"]) .rec-command-center *{animation:none!important;transition:none!important}.rec-command-center .desk-main{scroll-behavior:auto}}
+
+/* Un único lenguaje de búsqueda; el panel flota sin desplazar el header. */
+
+
+
+@media(max-width:1280px){.cc-utility{gap:16px}}
+@media(max-width:800px){.cc-utility{grid-template-columns:1fr auto}}
+
+
+/* R1.5 · superficies y composición de las internas de Recepción. */
+
+.op-page{max-width:1380px;margin:0 auto;padding:10px 0 32px;animation:cc-reveal 220ms var(--ease)}
+
+.op-panel{background:rgba(255,255,255,.48);border:1px solid #ffffffd9;border-radius:22px;backdrop-filter:blur(14px);box-shadow:var(--cc-shadow)}
+.op-panel{min-width:0;overflow:hidden}.op-panel-heading{padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid #11161412}.op-panel-heading h2{display:flex;align-items:center;gap:14px;font-size:20px;font-weight:700;letter-spacing:-.025em}.op-panel-heading>span{font-size:16px;color:var(--rec-muted);font-variant-numeric:tabular-nums}.op-panel .cuerpo{padding:0 24px 12px}
+.op-page .pastilla{font-size:13px;line-height:1.3;min-height:30px;padding:6px 11px;gap:7px;background:#F5E50078;color:var(--rec-text);border:0}.op-page .pastilla.gris{background:#11161407;color:var(--rec-muted)}
+.op-page .entrar{border-radius:14px;background:#F5E500;color:var(--rec-text);min-height:54px;font-size:16px;font-weight:700;box-shadow:0 5px 16px #11161406;transition:transform 160ms,box-shadow 160ms,background 160ms}.op-page .entrar:hover:not(:disabled){background:#f9ee3f;box-shadow:0 8px 22px #1116140e}.op-page .entrar:disabled{opacity:.45;cursor:not-allowed}
+.op-page .campo-f{margin-top:20px}.op-page .campo-f>label,.op-page .campo-f>.et{font-size:14px;margin-bottom:9px;color:var(--rec-muted)}.op-page .campo-f .caja{border:1px solid #ffffff4d;background:rgba(17,22,20,.035);border-radius:14px;box-shadow:inset 0 1px 3px #11161404;min-height:54px}.op-page .campo-f .caja:focus-within{border-color:var(--rec-text,#111614);box-shadow:0 0 0 3px color-mix(in srgb,#F5E500 65%,transparent)}.op-page .campo-f input,.op-page .campo-f textarea,.op-page .campo-f .val{font-size:16px}.op-page .campo-f textarea{line-height:1.5}.op-page .segmentos{padding:0;gap:6px;background:transparent}.op-page .segmentos button{background:#11161405;min-height:46px;border-radius:12px;font-size:14px}.op-page .segmentos button[aria-checked="true"]{background:#111614;color:#fff;box-shadow:inset 0 1px 3px #ffffff1c}.op-page .campo-f .ay{font-size:13px;line-height:1.5}.op-page .adjuntar{background:#11161404;border-radius:14px;padding:16px;gap:14px}.op-page .adjuntar .ic{background:#111614;color:#fff;border-radius:12px}.op-page .adjuntar .tx b{font-size:16px}.op-page .adjuntar .tx i{font-size:13px;line-height:1.5}
+
+
+
+
+
+.op-page button:active{transform:scale(.98)}
+@media(max-width:1150px){.op-panel-heading{padding:20px}.op-panel .cuerpo{padding-inline:20px}}
+@media(max-width:900px){.op-page .columnas{grid-template-columns:1fr}}
+@media(max-width:650px){.op-page{padding:6px 0 24px}.op-panel-heading{padding:20px}.op-panel-heading h2{font-size:18px}.op-panel .cuerpo{padding-inline:18px}.op-page .campo-f .caja{min-height:52px}.op-page .segmentos button{font-size:13px;padding-inline:8px}}
+
+/* El contenedor conserva el foco visible sin duplicar el anillo del campo. */
+.rec-command-center .rec-search input:focus-visible{outline:none}
+
+/* R1.6 — materiales y estados exclusivos de Recepción. */
+.rec-command-center,.device:has(.rec-command-center){--rec-canvas:var(--bg);--rec-surface:var(--surface);--rec-elevated:var(--surface-elevated);--rec-inset:var(--surface-sunken);--rec-text:var(--text-primary);--rec-muted:var(--text-secondary);--rec-border:var(--divider);--rec-glass:var(--surface-glass);--rec-hover:var(--interactive-hover);--rec-shadow:var(--shadow-1),var(--shadow-2);--rec-ok:var(--status-success);--rec-error:var(--status-danger);--rec-ok-bg:var(--status-success-bg);--rec-error-bg:var(--status-danger-bg);--txt:var(--rec-text);--txt2:var(--rec-muted);--sup:var(--rec-surface);--fondo:var(--rec-canvas);--borde:var(--rec-border);--error:var(--rec-error);--error-fondo:var(--rec-error-bg);--cc-shadow:var(--rec-shadow)}
+/* R1.7: el oscuro de Recepción es el de Residente (sistema.css); sin valores propios. */
+[data-tema="oscuro"] .rec-command-center,[data-tema="oscuro"] .device:has(.rec-command-center){color-scheme:dark}
+.rec-command-center{color:var(--rec-text);background-color:var(--rec-canvas)}
+[data-tema="oscuro"] .rec-command-center{background-image:linear-gradient(rgba(14,18,16,.95),rgba(14,18,16,.93)),url('/recepcion/abstract-approved.png')}
+.rec-command-center :is(button,a,input,textarea,summary):focus-visible{outline:2px solid #F5E500;outline-offset:3px}
+.rec-command-center input::placeholder,.rec-command-center textarea::placeholder{color:var(--rec-muted);opacity:1}
+.rec-command-center :is(input,textarea){color:var(--rec-text)}
+.rec-logo-dark{display:none!important}[data-tema="oscuro"] .rec-logo-light{display:none!important}[data-tema="oscuro"] .rec-logo-dark{display:block!important}
+.cc-utility{height:112px;grid-template-columns:minmax(180px,1fr) auto minmax(310px,1fr) 0fr;gap:18px;transition:grid-template-columns 260ms ease-out,gap 260ms ease-out}
+
+.rec-command-center .rec-utility-trigger{background:var(--rec-glass);color:var(--rec-text);border-color:var(--rec-border)}
+.cc-utility[data-search="true"]{grid-template-columns:220px 0fr 0fr minmax(0,1fr);gap:0}
+
+
+.rec-search-results h3{font-size:13px;color:var(--rec-muted);padding:12px 18px 4px}.rec-search-results li button{color:var(--rec-text)}.rec-search-results li button:hover,.rec-search-results li button:focus-visible{background:var(--rec-hover)}
+.rec-command-center .rec-utility-panel{background:var(--rec-elevated);color:var(--rec-text);border:1px solid var(--rec-border);box-shadow:var(--rec-shadow);backdrop-filter:blur(22px)}
+.rec-command-center .rec-utility-panel{width:280px;padding:20px}.rec-utility-panel h2{font-size:18px}.rec-utility-panel p{color:var(--rec-muted)}.rec-utility-panel button,.rec-utility-panel summary{min-height:44px;padding:10px;display:flex;align-items:center;gap:10px;color:var(--rec-text);cursor:pointer}.rec-utility-panel button:hover,.rec-utility-panel summary:hover{background:var(--rec-hover)}.rec-theme-options{display:flex;gap:8px;border-block:1px solid var(--rec-border);margin-block:8px;padding-block:8px}.rec-profile-detail{padding:12px}.rec-utility-panel details button{padding-left:26px}
+@keyframes rec-novelty-pulse{0%{box-shadow:0 0 0 0 #F5E50060;opacity:.2}30%{opacity:1}100%{box-shadow:0 0 0 12px #F5E50000;opacity:0}}
+
+
+.rec-command-center :is(.op-glass,.op-panel,.op-page .tarjeta,.op-page .panel-v,.op-unit-directory){background:var(--rec-surface);border:1px solid var(--rec-border);backdrop-filter:none;box-shadow:var(--rec-shadow);border-radius:18px}.op-panel-heading{padding:20px 24px;border-color:var(--rec-border)}.op-panel .cuerpo{padding-inline:24px}.op-page .pastilla,.op-page .pastilla.gris{background:var(--rec-inset);color:var(--rec-text)}
+.rec-command-center .op-page .entrar{color:#111614;background:#F5E500;min-height:50px}.op-page .campo-f{margin-top:16px}.op-page .campo-f .caja,.op-page .adjuntar,.op-page .segmentos button{background:var(--rec-inset);border-color:var(--rec-border);color:var(--rec-text)}.op-page .campo-f .caja{min-height:50px}.op-page .campo-f .et,.op-page .campo-f>label,.op-page .campo-f .ay{color:var(--rec-muted)}.op-page .segmentos button[aria-checked="true"]{background:#111614;color:white}
+.op-search-field{display:flex;align-items:center;gap:12px;min-height:50px;background:var(--rec-inset);border:1px solid var(--rec-border);padding:0 14px;border-radius:12px}.op-search-field input{flex:1;min-width:0;width:100%;border:0;background:none;outline:none;color:var(--rec-text);font:inherit;font-size:15px}.op-search-field:focus-within{outline:2px solid #F5E500;outline-offset:2px}.op-search-field button{width:40px;height:44px;font-size:24px}.op-active-filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0;color:var(--rec-muted);font-size:13px}.op-active-filters button{border:1px solid var(--rec-border);padding:7px 12px;border-radius:8px;min-height:36px;color:var(--rec-text)}.op-active-filters>span{margin-left:auto}
+
+
+
+
+@keyframes rec-panel-in{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}@keyframes rec-result-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(min-width:901px){.device:has(.rec-command-center) .hoja{left:auto;right:0;top:0;bottom:0;width:min(440px,90%);max-height:100%;border-radius:20px 0 0 20px;background:var(--rec-elevated);color:var(--rec-text)}}
+@media(max-width:1150px){.cc-utility{grid-template-columns:180px 1fr auto 0fr;gap:12px}.cc-utility[data-search="true"]{grid-template-columns:190px 0fr 0fr minmax(0,1fr)}}
+
+@media(max-width:900px){.cc-utility{height:auto;min-height:126px;grid-template-columns:1fr auto;gap:12px;padding-block:18px}.cc-utility[data-search="true"]{grid-template-columns:1fr auto;gap:12px}}
+@media(max-width:650px){.cc-utility{min-height:120px}.op-panel .cuerpo{padding-inline:18px}}
+@media(prefers-reduced-motion:reduce){:root:not([data-movimiento="forzado"]) .rec-command-center *,:root:not([data-movimiento="forzado"]) .rec-command-center *:before,:root:not([data-movimiento="forzado"]) .rec-command-center *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+[data-movimiento="reducido"] .rec-command-center *,[data-movimiento="reducido"] .rec-command-center *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+
+/* Correcciones detectadas en la revisión desktop. */
+
+.rec-command-center[data-reduced="true"] *, .rec-command-center[data-reduced="true"] *:before,.rec-command-center[data-reduced="true"] *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+
+.device:has(.rec-command-center) .hoja{background:var(--rec-elevated);color:var(--rec-text);border-color:var(--rec-border)}.device:has(.rec-command-center) .hoja .campo-f .caja{background:var(--rec-inset);color:var(--rec-text)}
+@media(min-width:901px){.device:has(.rec-command-center) .velo{justify-content:flex-end;align-items:stretch}.device:has(.rec-command-center) .hoja{position:absolute;margin:0;animation:rec-panel-in 280ms ease-out}.device:has(.rec-command-center) .hoja.sale{animation:rec-panel-out 220ms ease-in forwards}.device:has(.rec-command-center) .hoja .agarre{display:none}.device:has(.rec-command-center) .hoja .tirador{padding-top:24px}}
+@keyframes rec-panel-out{to{opacity:0;transform:translateX(24px)}}
+@media(prefers-reduced-motion:reduce){:root:not([data-movimiento="forzado"]) .device:has(.rec-command-center) .hoja{animation:none!important;transition:none!important}}
+
+
+
+
+
+@media(min-width:901px){.device:has(.rec-command-center) .hoja{top:24px;right:24px;bottom:auto;height:auto;min-height:460px;max-height:calc(100% - 48px);border-radius:18px}}
+
+@media(prefers-color-scheme:dark){:root:not([data-tema="claro"]) .rec-command-center,:root:not([data-tema="claro"]) .device:has(.rec-command-center){color-scheme:dark}
+:root:not([data-tema="claro"]) .rec-command-center{background-image:linear-gradient(rgba(14,18,16,.95),rgba(14,18,16,.93)),url('/recepcion/abstract-approved.png')}:root:not([data-tema="claro"]) .rec-logo-light{display:none!important}:root:not([data-tema="claro"]) .rec-logo-dark{display:block!important}}
+
+/* Hover conserva el material del tema, también en paneles contextuales. */
+.rec-command-center .rec-utility-trigger:hover,.cc-menu-destinations button:hover:not([aria-current="page"]){background:var(--rec-hover);color:var(--rec-text)}
+
+@media(prefers-reduced-motion:no-preference){.rec-loading-mark{animation-duration:280ms}.rec-loading-bars i{animation:rec-bars 180ms ease-in-out 1 backwards}.rec-loading-bars i:nth-child(2){animation-delay:60ms}.rec-loading-bars i:nth-child(3){animation-delay:120ms}.rec-loading-bars i:nth-child(4){animation-delay:180ms}}
+/* Las cuatro tracks usan fr en ambos estados para que el reflow sea interpolable. */
+@media(min-width:901px){.cc-utility{--rec-brand-track:220px;--rec-nav-track:382px;grid-template-columns:minmax(var(--rec-brand-track),1fr) minmax(0,var(--rec-nav-track)) minmax(0,1fr) minmax(0,0fr)}.cc-utility[data-search="true"]{grid-template-columns:minmax(var(--rec-brand-track),1fr) minmax(0,0px) minmax(0,0fr) minmax(0,2fr)}}
+@media(min-width:901px) and (max-width:1150px){.cc-utility{--rec-brand-track:180px;--rec-nav-track:340px}}
+
+
+/* ══ R1.6 cierre · criterio user-centered ═══════════════════════════════
+   Selección y materiales de Recepción. Lo elegido se dice con contraste,
+   no con un color nuevo: carbón en claro, hueso en oscuro. Hundido es el
+   fondo de trabajo (las columnas); elevado es lo que se toca o lo elegido. */
+.rec-command-center,.device:has(.rec-command-center){--rec-sel:var(--interactive);--rec-on-sel:var(--on-interactive);--rec-raised:var(--surface-elevated);--rec-raised-line:var(--divider);--rec-raised-shadow:var(--shadow-1),var(--shadow-2);--rec-recessed:var(--surface-sunken);--rec-hatch:var(--divider)}
+
+
+
+/* R1.7: el bloque de Agenda R1.6 (.ag-*) se reemplazó por app/recepcion.css (.agd-*). */
+
+/* ── Sistema de Recepción · una sola gramática de selección ─────────────
+   Todo lo elegido (destino actual, segmento, filtro, control abierto,
+   acción fuerte de una fila) usa el mismo par de tokens. En oscuro se
+   invierte a hueso: el carbón sobre carbón no se veía (1:1 medido). */
+.rec-command-center .cc-menu-destinations button[aria-current="page"],.device:has(.rec-command-center) .cc-menu-destinations button[aria-current="page"],.rec-command-center .op-page .segmentos button[aria-checked="true"]{background:var(--rec-sel);color:var(--rec-on-sel);border-color:var(--rec-sel);font-weight:700}
+
+
+
+
+
+
+
+/* deshabilitado es neutro: nada de amarillo lavado que parezca otro estado */
+.rec-command-center .op-page .entrar:disabled,.rec-command-center .op-page .entrar:disabled:hover{background:var(--rec-inset);color:var(--rec-muted);border:1px solid var(--rec-border);box-shadow:none;opacity:1;cursor:not-allowed}
+/* los campos de búsqueda ya tienen su propio borrar */
+.rec-command-center input[type="search"]::-webkit-search-cancel-button,.rec-command-center input[type="search"]::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+/* el disclosure usa el chevron del sistema, no el triángulo del navegador */
+.rec-command-center summary{list-style:none;display:flex;align-items:center;gap:8px}
+.rec-command-center summary::-webkit-details-marker{display:none}
+.rec-command-center summary::before{content:"";flex:none;width:6px;height:6px;margin:0 3px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);transition:transform 160ms}
+.rec-command-center details[open]>summary::before{transform:rotate(45deg)}
+/* modo reducido del prototipo: el aviso queda en el contador, sin anillo */
+
+/* Escanear: la leyenda va debajo del marco, no encima de sus esquinas */
+
+
+
+
+/* ── Home · U02 Volvo ───────────────────────────────────────────────────
+   El panel de acciones queda abierto al costado del riel derecho, como el
+   asistente de U02: la mitad derecha del hero deja de estar vacía y la
+   acción principal (escanear) se ve sin buscarla. El riel y su fila se
+   iluminan juntos para que se entienda que son lo mismo. */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* "Actividad" del módulo de entregas: el blanco táctil no puede ser una línea de texto */
+
+/* el brillo interior de los vidrios es una luz de modo claro; en oscuro dibuja un arco */
+
+
+
+/* ── Accesos · U06 Security ─────────────────────────────────────────────
+   Arriba el resumen del mostrador en tarjetas iguales (ícono y nombre,
+   número grande, una línea que explica); abajo el trabajo. El resultado
+   es la fila de estados de U06: el que ocurrió se llena, los otros quedan
+   grises con su nombre, así se lee por posición y texto, no sólo color. */
+
+
+
+
+
+
+
+.ac .validar{align-items:stretch}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* verde y rojo llenos, legibles con texto blanco en los dos temas */
+.rec-command-center,.device:has(.rec-command-center){--rec-ok-strong:#0b6b45;--rec-error-strong:#a32b28}
+
+
+
+/* el paso 1 entero entra en 900 px de alto: la acción de verificar no puede quedar abajo del pliegue */
+
+
+
+.ac .validar .teclado{gap:6px;margin-top:12px}.ac .validar .teclado button{height:42px}
+
+
+/* ── Entregas · U05 Management ──────────────────────────────────────────
+   Módulos de distinto peso: la lista clara de trabajo y el registro en el
+   módulo oscuro, con filas de U05 (redondeadas, contorno fino, ícono en
+   círculo). El estado es punto + nombre: Recibido, Avisado, Retirado. */
+
+
+
+
+.en-registro{border-radius:24px;padding:20px 22px 22px}
+
+.en-registro>header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.en-registro h2{font-size:20px;font-weight:500;letter-spacing:-.025em}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* el módulo oscuro redefine sus propios tokens: los campos del sistema
+   se leen igual de bien adentro, sin estilos paralelos */
+.en-registro{--rec-text:#F1F3EF;--rec-muted:#A2AAA3;--rec-inset:rgba(255,255,255,.07);--rec-border:rgba(255,255,255,.12);--rec-hover:rgba(255,255,255,.1);--rec-sel:#F1F3EF;--rec-on-sel:#111614;--txt:#F1F3EF;--txt2:#A2AAA3;--borde:rgba(255,255,255,.12);--text-primary:#F1F3EF;--text-secondary:#A2AAA3;--interactive-hover:rgba(255,255,255,.07);--interactive-press:rgba(255,255,255,.12);--divider:rgba(255,255,255,.1);background:#111614;color:#F1F3EF;border:1px solid #111614;box-shadow:0 18px 40px #11161426}
+[data-tema="oscuro"] .en-registro{background:#1E2420;border-color:rgba(255,255,255,.1);box-shadow:none}
+.en-registro .cuerpo{padding:0}
+.en-registro .campo-f .caja{border-color:transparent}
+.en-registro .campo-f .caja .gl,.en-registro .adjuntar .tx i{color:var(--rec-muted)}
+.en-registro .adjuntar .ic{background:#F4F5F1;color:#111614}
+
+.en-registro .aviso{background:rgba(255,255,255,.07);color:#F4F5F1}
+
+
+@media(max-width:650px){.en-registro{padding:16px}}
+
+/* ── Unidades · U07 Timepiece ───────────────────────────────────────────
+   Un marco, filetes y bloques que comparten bordes. Sin sombras, sin
+   tarjetas redondeadas adentro: la grilla ordena. Dos tercios directorio,
+   un tercio ficha; la grilla no cambia al elegir. */
+.un-marco{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);background:var(--rec-surface);border:1px solid var(--rec-border);border-radius:0;min-height:640px}
+.un-directorio{min-width:0;border-right:1px solid var(--rec-border);display:flex;flex-direction:column}
+.un-banda{padding:18px 24px;border-bottom:1px solid var(--rec-border)}
+.un-banda .op-search-field{background:transparent;border:0;border-radius:0;padding:0;min-height:40px}
+.un-banda .op-search-field input{font-size:17px}
+.un-banda .op-search-field:focus-within{outline:2px solid #F5E500;outline-offset:6px}
+.un-pisos{display:flex;align-items:center;gap:14px;padding-block:12px}
+.un-pisos>span:first-child{font-size:13px;color:var(--rec-muted)}
+
+.un-cuenta{font-size:13px;color:var(--rec-muted);white-space:nowrap}
+.un-banda.op-active-filters{margin:0;padding-block:10px}
+.un-tabla{flex:1;overflow:auto;max-height:560px}
+.un-fila{width:100%;display:grid;grid-template-columns:96px minmax(0,1fr) 170px 20px;gap:18px;align-items:center;min-height:72px;padding:12px 24px;border-bottom:1px solid var(--rec-border);text-align:left;color:var(--rec-text);font-size:15px;position:relative;transition:background 140ms}
+.un-fila b{display:block;font-size:22px;font-weight:500;letter-spacing:-.02em}
+.un-fila small{display:block;font-size:13px;color:var(--rec-muted);margin-top:2px}
+.un-fila>svg{color:var(--rec-muted)}
+.un-cab{min-height:40px;padding-block:8px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--rec-muted);font-weight:700;position:sticky;top:0;z-index:1;background:var(--rec-surface)}
+button.un-fila:hover{background:var(--rec-inset)}
+button.un-fila[aria-expanded="true"]{background:var(--rec-inset)}
+button.un-fila[aria-expanded="true"]::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--rec-sel)}
+button.un-fila[aria-expanded="true"] b{font-weight:700}
+.un-vacio{padding:32px 24px;color:var(--rec-muted)}
+.un-columna{display:grid;grid-template-rows:auto auto 1fr;min-width:0;outline:none}
+.un-bloque{padding:22px 24px;border-bottom:1px solid var(--rec-border);min-width:0}
+.un-bloque:last-child{border-bottom:0}
+.un-id header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.un-id header span{font-size:13px;color:var(--rec-muted)}
+.un-cerrar{min-height:36px;padding:0 4px;font-size:14px;color:var(--rec-text);text-decoration:underline;text-underline-offset:3px}
+.un-id h2{font-size:56px;line-height:1;font-weight:500;letter-spacing:-.05em;margin-top:14px}
+.un-personas{list-style:none;margin-top:14px}.un-personas li{font-size:16px;line-height:1.6}
+.un-bloque h3{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--rec-muted);margin-bottom:10px}
+.un-lista{list-style:none}
+.un-lista li{border-top:1px solid var(--rec-border)}
+.un-lista li:first-child{border-top:0}
+.un-lista li>span,.un-lista li>button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px;padding:8px 0;text-align:left;color:var(--rec-text)}
+.un-lista b{display:block;font-size:15px;font-weight:500}.un-lista small{display:block;font-size:13px;color:var(--rec-muted);margin-top:2px}
+.un-lista li>button:hover b{text-decoration:underline;text-underline-offset:3px}
+.un-accion{display:inline-flex;align-items:center;gap:8px;min-height:40px;margin-top:10px;font-size:15px;font-weight:500;color:var(--rec-text)}
+.un-accion:hover{text-decoration:underline;text-underline-offset:3px}
+.un-nada{font-size:14px;line-height:1.5;color:var(--rec-muted);margin-top:6px}
+.un-permisos{margin-top:14px;font-size:14px}.un-permisos summary{min-height:40px;cursor:pointer}.un-permisos p{padding:6px 0}.un-permisos small{display:block;color:var(--rec-muted)}
+@media(max-width:1150px){.un-fila{grid-template-columns:70px minmax(0,1fr) 130px 18px;gap:12px;padding-inline:18px}.un-banda,.un-bloque{padding-inline:18px}}
+@media(max-width:900px){.un-marco{grid-template-columns:1fr}.un-directorio{border-right:0;border-bottom:1px solid var(--rec-border)}.un-tabla{max-height:none}}
+@media(max-width:650px){.un-fila{grid-template-columns:52px minmax(0,1fr) 18px}.un-fila .un-op{grid-column:2;grid-row:2}.un-fila>svg{grid-column:3;grid-row:1}.un-cab>span:nth-child(3){display:none}.un-pisos{flex-wrap:wrap}.un-id h2{font-size:44px}}
+
+/* ── Incidencias · U06 Security ─────────────────────────────────────────
+   Resumen en tarjetas iguales; después la vista de casos con dos barras
+   de U06: gravedad (el ancho sigue a la cantidad, la más grave llena) y
+   estado. Cada segmento cuenta y filtra. En la fila, gravedad a la
+   izquierda y estado a la derecha: dos datos, dos lugares. */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* la gravedad alta es semántica, no una selección: roja, nunca el color de "elegido" */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ── Actividad · U09 Timeline Journey ───────────────────────────────────
+   Título con su número ("04/"), eje con guías punteadas y píldoras
+   carbón por carril, escala abajo. Debajo, la bitácora: el detalle de
+   cada movimiento vive plegado, como las viñetas bajo cada etapa. */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ── Búsqueda · U11 ─────────────────────────────────────────────────────
+   Campo suave con la lupa adelante, sin botón oscuro: el campo es el
+   control. Esc sigue a la derecha para cerrar con el mouse. */
+
+
+
+
+
+
+/* la búsqueda cerrada no deja su botón Esc asomado fuera del header */
+
+@media(max-width:480px){.cc-utility .rec-utility-trigger{padding:2px}}
+/* en el teléfono el resumen es una fila corta: verificar el pase va primero */
+
+/* "Hoy" en anchos medios: cinco cifras no entran en una fila; pasan a 3 + 2 sin pisar rótulos */
+
+
+/* ── Ajustes de la verificación final ── */
+/* días de otro mes: se distinguen por color, no por transparencia ilegible */
+/* "opcional" también se lee */
+.rec-command-center .campo-f label em,.rec-command-center .campo-f .et em,.device:has(.rec-command-center) .hoja .campo-f label em{color:var(--rec-muted)}
+/* una sola acción primaria: verificado el pase, el amarillo pasa a registrar */
+
+/* filtro elegido de la agenda: elevación + filo + peso, no sólo el fondo */
+/* incidencias en anchos medios: el estado sigue a la derecha, junto al título */
+
+
+/* ══ MASTER v02 · FASE 1 · INDICADOR SELECCIONADO (SYS-SELECT) ══════
+   Un fondo que se traslada al elegido. En el selector del Home crece a
+   1.03 mientras está activo (MOT-001, 160 ms E1); el texto y el área
+   táctil quedan quietos. Con movimiento reducido: sin traslado ni zoom. */
+/* Siempre posicionados: el indicador mide contra este contenedor desde el primer render. */
+.widget-tabs,.segmentos{position:relative;isolation:isolate}
+.widget-ind,.seg-ind{display:none}
+.con-ind>.widget-ind,.con-ind>.seg-ind{display:block;position:absolute;left:0;top:0;z-index:-1;
+  width:var(--ind-w);height:var(--ind-h);border-radius:var(--r-pill);pointer-events:none;
+  transform:translate(var(--ind-x),var(--ind-y));
+  transition:transform 160ms cubic-bezier(.22,1,.36,1),width 160ms cubic-bezier(.22,1,.36,1)}
+.widget.en-campo .widget-tabs.con-ind button[aria-selected="true"]{background:transparent}
+.widget.en-campo .widget-tabs>.widget-ind{background:rgba(255,255,255,.22);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.26);
+  transform:translate(var(--ind-x),var(--ind-y)) scale(1.03)}
+.widget.en-campo .widget-tabs button{color:rgba(255,255,255,.74)}
+.segmentos.con-ind>.seg-ind{border-radius:var(--b-radio);background:var(--txt)}
+.segmentos.con-ind button[aria-checked="true"]{background:transparent;color:var(--fondo)}
+.segmentos.con-ind button{transition:color 160ms cubic-bezier(.22,1,.36,1),background .15s}
+.segmentos button:focus-visible{outline-offset:2px}
+:root[data-movimiento="reducido"] .con-ind>.widget-ind,:root[data-movimiento="reducido"] .con-ind>.seg-ind{transition:none}
+:root[data-movimiento="reducido"] .widget.en-campo .widget-tabs>.widget-ind{transform:translate(var(--ind-x),var(--ind-y))}
+@media (prefers-reduced-motion:reduce){
+  :root:not([data-movimiento="forzado"]) .con-ind>.widget-ind,:root:not([data-movimiento="forzado"]) .con-ind>.seg-ind{transition:none}
+  :root:not([data-movimiento="forzado"]) .widget.en-campo .widget-tabs>.widget-ind{transform:translate(var(--ind-x),var(--ind-y))}
+}
+
+
+/* ══ MASTER v02 · FASE 2 · NOTIFICACIONES (RES-018/019, DEC-004) ════
+   "No leída" es texto junto a la hora (se entiende sin color); el filo
+   flotante a la izquierda se retira. Grupos Hoy/Ayer con 24 px y rótulo
+   que queda arriba al scrollear. Marcar todas sube junto al filtro. */
+.residente .noti button.nueva::after{content:none}
+.residente .noti .h{align-items:baseline}
+.residente .noti .cuando{display:inline-flex;align-items:baseline;gap:8px;flex:none}
+.residente .noti .no-leida{display:inline-flex;align-items:center;gap:5px;font-size:var(--t-label);
+  font-weight:700;color:var(--txt)}
+.residente .noti .no-leida i{width:7px;height:7px;border-radius:999px;background:var(--amarillo);
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--txt) 22%,transparent)}
+.residente .noti button.nueva .h b{font-weight:700}
+.residente #r03 .dia{position:sticky;top:0;z-index:2;margin-top:24px;padding:8px 0 6px;
+  background:var(--fondo)}
+.noti-barra{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  font-size:var(--t-meta);color:var(--txt2)}
+.noti-barra .btn-ter{margin:0;min-height:44px;padding:0 2px;font-size:14px;font-weight:700;color:var(--txt)}
+
+
+/* ══ MASTER v02 · FASE 2 · EXPENSAS (RES-002/003/005/033) ═══════════
+   El importe baja a 32 px: cabe en una línea a 390 px y deja de ser lo más
+   grande del Home. Junto a él, el ojo de privacidad (44 px de toque). */
+.widget.en-campo .cifra-fila{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px}
+.widget.en-campo .cifra-fila .cifra{margin-top:0}
+.widget.en-campo .cifra{font-size:32px;letter-spacing:-.035em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.widget.en-campo .cifra.texto{font-size:30px;letter-spacing:-.03em}
+.ojo-importe{width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:999px;
+  color:var(--txt2);transition:background 140ms cubic-bezier(.22,1,.36,1),color 140ms}
+.ojo-importe:hover{background:color-mix(in srgb,var(--txt) 7%,transparent);color:var(--txt)}
+.ojo-importe.claro{color:rgba(255,255,255,.8)}
+.ojo-importe.claro:hover{background:rgba(255,255,255,.1);color:#fff}
+.ojo-importe[aria-pressed="true"]{color:var(--txt)}
+.ojo-importe.claro[aria-pressed="true"]{color:#fff}
+.importe-oculto{letter-spacing:.06em}
+.saldo-card .k{display:inline-flex;align-items:center;gap:4px}
+.saldo-card .k .ojo-importe{width:36px;height:36px}
+
+/* Transferencia: grilla de datos, sin tarjeta dentro de la hoja. */
+.medio-principal{padding:0;border:0;background:none;border-radius:0}
+.medio-principal>h3.k{margin:0;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2)}
+.transf{margin-top:6px}
+.transf>div{display:grid;grid-template-columns:84px minmax(0,1fr);align-items:center;gap:12px;
+  min-height:44px;padding:8px 0;border-bottom:1px solid var(--borde)}
+.transf dt{font-size:13px;color:var(--txt2)}
+.transf dd{margin:0;display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0;
+  font-size:14px;font-weight:500}
+.transf .copia{display:grid;padding:8px 0}
+.transf .copia+.copia{border-top:0}
+.transf .copia .v{font-size:14.5px;font-weight:700;word-break:break-all}
+.transf .copia.grande .v{font-size:19px;font-weight:900;letter-spacing:-.01em}
+.medio-principal .paso{margin-top:12px;font-size:13.5px;line-height:1.45;color:var(--txt)}
+.copiar.mal{color:var(--error)}
+
+/* RES-007 · la reserva a la que se llegó desde el Home queda marcada. */
+
+/* ══ MASTER v02 · FASE 2 · GASTOS (DEC-004a, RES-012/014) ═══════════ */
+.comp-periodo{height:auto;min-height:44px;padding:6px 12px 6px 14px;border-radius:14px;display:inline-flex;
+  align-items:center;gap:10px;background:color-mix(in srgb,var(--txt) 5%,transparent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--txt) 10%,transparent);color:var(--txt)}
+.comp-periodo .k{font-size:12px;color:var(--txt2)}
+.comp-periodo .v{font-size:14.5px;font-weight:700}
+.comp-periodo svg{opacity:.7}
+.comp-periodo:hover{background:color-mix(in srgb,var(--txt) 8%,transparent)}
+.periodos-hoja button{min-height:52px;padding:14px 4px;border-radius:0}
+.periodos-hoja button[aria-current="true"]{box-shadow:inset 3px 0 0 var(--txt);padding-left:14px}
+.periodos-hoja .tic{width:18px;display:flex;justify-content:flex-end}
+/* Tu parte: su propio plano, opaco, separado de la composición del edificio. */
+.tu-parte{margin-top:28px;padding:18px 18px 16px;border-radius:var(--r-card);
+  background:color-mix(in srgb,var(--txt) 4%,var(--fondo));box-shadow:inset 0 0 0 1px var(--borde)}
+.tu-parte-cab{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px}
+.tu-parte-cab h2.sec{margin-top:0}
+.tu-parte-cab span{font-size:13px;color:var(--txt2)}
+.tu-parte-cab span b{color:var(--txt);font-variant-numeric:tabular-nums}
+.tu-parte .tabla{background:none;box-shadow:none;border:0;padding:0}
+.tu-parte .total-f{border-top:1.5px solid var(--txt)}
+
+/* ══ MASTER v02 · FASE 2 · VOTACIONES (RES-024) ═════════════════════
+   Sin verde/rojo por opción: barras neutras, el voto propio en amarillo
+   tenue y dicho con texto. Contraste ≥4.5:1 en el cuerpo sobre carbón. */
+.votacion .opciones-voto button::before{content:none}
+.votacion .opciones-voto button .barra{background:rgba(255,255,255,.18)}
+.votacion .opciones-voto button.on .barra{background:color-mix(in srgb,var(--amarillo) 42%,transparent)}
+.votacion .cuando,.votacion .quorum{color:rgba(255,255,255,.74)}
+.votacion .cuerpo-txt{color:rgba(255,255,255,.84)}
+.votacion .opciones-voto .pc{color:rgba(255,255,255,.82)}
+.opciones-voto .tu-voto{margin-left:6px;font-style:normal;font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.14)}
+.votacion.fin .opciones-voto .tu-voto{background:color-mix(in srgb,var(--txt) 8%,transparent)}
+
+/* ══ MASTER v02 · FASE 2 · MÁS / TU CUENTA (RES-017) ════════════════ */
+.mas-grilla{display:grid;grid-template-columns:minmax(0,1fr);gap:8px 28px}
+.mas-grupo h2.grupo{margin-top:26px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt)}
+.mas-grupo .sub-grupo{margin-top:18px;font-size:12px;font-weight:500;letter-spacing:.04em;color:var(--txt2)}
+.mas-grupo .perfil{margin-top:12px}
+.mas-grupo .menu{margin-top:8px}
+.mas-salir{margin-top:14px}
+
+/* ══ MASTER v02 · FASE 2 · VISITA Y PASE (RES-010/026/027/029/030) ═ */
+.ay.recurrencia{margin-top:10px;font-size:13.5px;line-height:1.45;color:var(--txt)}
+.listo.compacta{min-height:0;padding-top:28px}
+.listo.compacta .tilde{width:52px;height:52px}
+.listo.compacta h1{margin-top:16px}
+.listo.compacta>*{animation:listo-entra 240ms cubic-bezier(.22,1,.36,1) both}
+.listo.compacta>:nth-child(2){animation-delay:40ms}
+.listo.compacta>:nth-child(n+3){animation-delay:80ms}
+@keyframes listo-entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+:root[data-movimiento="reducido"] .listo.compacta>*{animation:none}
+@media (prefers-reduced-motion:reduce){:root:not([data-movimiento="forzado"]) .listo.compacta>*{animation:none}}
+.visita-ticket{width:100%;margin-top:18px;text-align:left;border-top:1px solid var(--borde)}
+.visita-ticket>div{display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;padding:11px 0;border-bottom:1px solid var(--borde)}
+.visita-ticket dt{font-size:13px;color:var(--txt2)}
+.visita-ticket dd{margin:0;font-size:15px;font-weight:500;color:var(--txt)}
+.visita-ticket dd.mono{font-variant-numeric:tabular-nums;letter-spacing:.08em;font-weight:700}
+.listo.compacta .entrar{margin-top:22px;width:100%}
+.pase{overflow:hidden;padding-top:0}
+.pase-cab{position:relative;margin:0 -22px;padding:26px 22px 18px;isolation:isolate}
+.pase-foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;opacity:.55}
+.pase-cab::after{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,rgba(17,22,20,.35) 0%,rgba(17,22,20,.86) 78%,#111614 100%)}
+.comp-estado{margin-top:10px;min-height:0;font-size:13.5px;line-height:1.45;text-align:center;color:var(--txt2)}
+.comp-estado[data-estado="compartido"],.comp-estado[data-estado="copiado"]{color:var(--txt)}
+.comp-estado[data-estado="error"]{color:var(--error)}
+
+/* ══ MASTER v02 · FASE 2 · RESERVAS (RES-015/016) ═══════════════════
+   Espacio y fecha se leen con el título. El espacio elegido va con filo,
+   no con un bloque negro. Leyenda corta: disponibilidad ≠ selección. */
+.res-contexto{margin-top:6px;font-size:15px;color:var(--txt2)}
+.res-contexto b{color:var(--txt)}
+.esp-op[aria-checked="true"]{background:var(--sup);color:var(--txt);
+  box-shadow:inset 0 0 0 2px var(--txt)}
+.esp-op[aria-checked="true"] .ic{background:color-mix(in srgb,var(--txt) 8%,transparent);color:var(--txt)}
+.cal-leyenda{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--txt2)}
+.cal-leyenda span{display:inline-flex;align-items:center;gap:6px}
+.cal-leyenda .pto{position:static;display:inline-block;width:6px;height:6px;border-radius:999px;background:var(--txt)}
+.cal-leyenda .pto.poco{background:none;box-shadow:inset 0 0 0 1.5px var(--txt)}
+.cal-leyenda .sel{display:inline-block;width:14px;height:14px;border-radius:5px;background:var(--txt)}
+.horas button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:52px}
+.horas button small{font-size:11.5px;font-weight:500;color:var(--txt2)}
+.horas button.ocupada{background:none;box-shadow:inset 0 0 0 1px var(--borde);color:var(--txt2);text-decoration:none;opacity:1}
+.horas button.ocupada b{font-weight:500;text-decoration:line-through;text-decoration-thickness:1px}
+.horas button.propia{background:color-mix(in srgb,var(--amarillo) 30%,var(--sup));color:var(--txt);opacity:1;
+  box-shadow:inset 0 0 0 1.5px var(--txt)}
+.horas button.propia small{color:var(--txt);font-weight:700}
+.hoja-conflicto{margin:4px 0 12px;font-size:14px;font-weight:500;color:var(--error)}
+
+/* ══ MASTER v02 · FASE 2 · CABECERA INTERNA Y MARCA (RES-025/032) ═══
+   Las pantallas internas dejan las manchas tonales por ámbito y usan un
+   plano común: un velo neutro arriba que se disuelve, igual en todas.
+   La marca del pie de lista va a opacidad 1 (la atenuación al 14 % la
+   dejaba como un logo roto); no se redibuja, se achica. */
+.residente{--cabecera-plano:color-mix(in srgb,var(--txt) 5%,transparent)}
+.residente .vista:not(#r01)::before{height:300px;
+  background:linear-gradient(180deg,var(--cabecera-plano) 0%,transparent 100%);
+  -webkit-mask-image:none;mask-image:none}
+.marca-pie{opacity:1;margin:22px 0 8px}
+.marca-pie img{height:14px}
+/* SYS-SELECT · un solo "elegido" en la pantalla de reservas: el día del
+   calendario se marca igual que el de la tira y la leyenda (antes uno era
+   amarillo y el otro carbón). */
+.cal.sin-caja .cal-dia.sel{background:var(--txt)}
+.cal.sin-caja .cal-dia.sel b{color:var(--fondo)}
+.cal.sin-caja .cal-dia.sel .pto{background:var(--amarillo);border-color:var(--amarillo);opacity:1}
+.cal-leyenda .sel{border-radius:999px}
+
+
+/* ══ RESIDENT CORRECTION PACK v01 ═══════════════════════════════════
+   G01-01 · un solo foco en el login: la silueta amarilla del campo. El
+   input interno no suma su propio anillo (el halo global de foco lo
+   duplicaba adentro del campo). */
+.campo input:focus-visible,.campo textarea:focus-visible{outline:none;box-shadow:none}
+.lg-card .campo:focus-within{border-color:var(--amarillo);box-shadow:inset 0 0 0 1px var(--amarillo)}
+/* G01-03 · la marca un poco más presente, alineada a la izquierda */
+.lg-card .lg-top img{height:30px}
+.lg-card h1{margin-top:22px}
+
+/* R04-01 · Más vuelve a ser una sola columna: el teléfono mide 390 px
+   aunque la ventana sea ancha (la media query anterior miraba la ventana). */
+/* R04-02 · Expensas, Gestiones y Ayuda con la misma jerarquía que Tu cuenta,
+   Edificio y Preferencias */
+.mas-grupo .sub-grupo{margin-top:26px;font-size:13px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--txt)}
+
+/* G01-02 · cursor suave (skiper106): el nativo se oculta y una barra
+   amarilla de 2 px se desliza con resorte a la posición de inserción. */
+.lg-card .campo input{caret-color:transparent}
+.cursor-medida{position:absolute;left:0;top:0;visibility:hidden;white-space:pre;pointer-events:none}
+.cursor-suave{position:absolute;left:0;top:50%;width:2px;height:20px;border-radius:1px;background:var(--amarillo);
+  pointer-events:none;opacity:0;transform:translate3d(0,-50%,0);transition:opacity 120ms linear;will-change:transform}
+/* R07-01 · Dar de baja cerca del contenido, separado del primario */
+.pase-acciones{gap:12px}
+
+/* R01-03 · pila calibrada (ver PilaVivas). Sin movimiento: lista quieta. */
+.pila-grupo{position:relative}
+.pila-grupo:not(.apilada) .pila-c{position:relative;top:auto;transform:none;filter:none}
+.pila-grupo.apilada .pila{gap:0}
+.pila-grupo.apilada .pila-c{position:sticky;transform-origin:50% 0;
+  filter:brightness(calc(1 - .09 * var(--prof,0)));will-change:transform}
+.pila-grupo.apilada .pila-cab{position:sticky;z-index:0}
+/* R01-02 · "En tu edificio" centrado sobre su módulo y un escalón más
+   liviano: presenta las cards, no compite con ellas. */
+.pila-cab{justify-content:center}
+.pila-cab h2.sec{font-size:16px;letter-spacing:-.01em;color:var(--txt)}
+/* el desplazamiento compensatorio no agranda el área scrolleable: la pila
+   recorta en vertical (overflow clip no crea contenedor de scroll, así que
+   el sticky sigue pegado a la vista) */
+.pila-grupo.apilada .pila{overflow-x:visible;overflow-y:clip}
+.pila-grupo.apilada .pila-c::before{content:none}
+/* R01-01 · el indicador del selector viaja de opción a opción: 240 ms E1
+   para que el traslado se lea (160 ms se percibía como un salto). */
+.widget.en-campo .widget-tabs.con-ind>.widget-ind{
+  transition:transform 240ms cubic-bezier(.22,1,.36,1),width 240ms cubic-bezier(.22,1,.36,1)}
+
+/* ── Card de espacio compartida (G15-01/02 · R05-04/07) ────────────
+   Foto entera, velo parejo y, al centro, nombre + acción en vidrio. */
+.esp-grilla{gap:12px}
+.esp-card{position:relative;overflow:hidden;isolation:isolate;aspect-ratio:1/1.08;min-height:150px;
+  border-radius:24px;background:#1A211D;color:#fff;box-shadow:var(--sombra-2)}
+.esp-card>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.esp-card::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(90% 70% at 50% 52%,rgba(12,16,14,.58),rgba(12,16,14,.28) 72%),
+    linear-gradient(180deg,rgba(12,16,14,.08),rgba(12,16,14,.3))}
+.esp-card.sin-foto{background:linear-gradient(160deg,#27302A,#131916)}
+.esp-card.sin-foto::after{background:none}
+.esp-card-ic{position:absolute;top:16px;left:16px;color:rgba(255,255,255,.62)}
+.esp-card-ver{position:absolute;inset:0;z-index:1;border-radius:inherit}
+.esp-card-centro{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:12px;padding:14px;text-align:center;pointer-events:none}
+.esp-card-centro b{font-size:19px;font-weight:700;letter-spacing:-.02em;text-shadow:0 1px 14px rgba(0,0,0,.4)}
+.esp-card-cta{position:relative;pointer-events:auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 18px;
+  border-radius:999px;font-size:13.5px;font-weight:700;color:#fff;background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.2);
+  backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);
+  transition:background 140ms cubic-bezier(.22,1,.36,1),transform 120ms cubic-bezier(.22,1,.36,1)}
+.esp-card-cta:hover{background:rgba(255,255,255,.24)}
+.esp-card-cta:active{transform:scale(.97)}
+.esp-card.elegida{box-shadow:0 0 0 2px var(--fondo),0 0 0 4px var(--txt),var(--sombra-2)}
+.esp-card.elegida .esp-card-cta{background:#fff;color:#111614;border-color:#fff}
+
+/* G15-03 · el rol del contacto se lee: un escalón más y color de texto */
+#g15 .contacto .d i:not(.hor){font-size:14px;font-weight:500;color:var(--txt)}
+#g15 .contacto .d i{white-space:normal}
+
+/* ── R05 · Reservar: calendario protagonista (R05-02/03/06) ─────────
+   Luz ambiente sin foto (dos focos cálidos y un toque del amarillo de
+   marca, muy bajos) y el calendario sobre un panel de vidrio. */
+.residente #r05::before{height:760px;-webkit-mask-image:none;mask-image:none;
+  background:radial-gradient(70% 34% at 88% 10%,rgba(245,229,0,.14) 0%,transparent 70%),
+    radial-gradient(80% 40% at 0% 34%,rgba(222,186,118,.18) 0%,transparent 72%),
+    radial-gradient(130% 44% at 50% -4%,color-mix(in srgb,var(--txt) 7%,transparent) 0%,transparent 72%)}
+.res-cal{margin-top:18px;padding:18px 14px 12px;border-radius:28px;
+  background:color-mix(in srgb,var(--sup) 64%,transparent);border:1px solid color-mix(in srgb,var(--txt) 7%,transparent);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 20px 44px -28px rgba(17,22,20,.4);
+  backdrop-filter:blur(22px) saturate(1.25);-webkit-backdrop-filter:blur(22px) saturate(1.25)}
+.res-cal .cal.sin-caja{margin-top:0}
+/* estados del día: el calendario los dice solo, sin leyenda */
+#r05 .cal-dia .pto{display:none}
+#r05 .cal-dia.poco::after{content:"";position:absolute;left:50%;bottom:7px;width:14px;height:3px;border-radius:2px;
+  background:var(--amarillo);box-shadow:0 0 0 1px rgba(17,22,20,.28);transform:translateX(-50%)}
+#r05 .cal-dia.propia{box-shadow:inset 0 0 0 2px var(--amarillo),inset 0 0 0 3px rgba(17,22,20,.32)}
+#r05 .cal-dia.propia b{font-weight:700}
+#r05 .cal-dia.sel.propia{box-shadow:inset 0 0 0 2px var(--amarillo)}
+#r05 .cal-dia.sel.poco::after{box-shadow:none}
+.res-pista{margin-top:12px;font-size:13.5px;color:var(--txt2)}
+.res-explorar{margin-top:30px}
+#r05 .dia-elegido{margin-top:12px}
+
+/* ── F01 · éxito protagonista (F01-S01…S04) ────────────────────────
+   El tilde al centro con aire, título fuerte, detalle callado y las
+   acciones juntas al pie del contenido. Entra una vez. */
+.exito{flex:1;display:flex;flex-direction:column;min-height:calc(100dvh - 260px);padding:8px 0 12px}
+.exito-cuerpo{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 4px}
+.exito-tilde{width:112px;height:112px;border-radius:999px;display:grid;place-items:center;color:var(--carbon);
+  background:radial-gradient(circle,var(--amarillo) 0 46%,color-mix(in srgb,var(--amarillo) 22%,transparent) 47% 100%)}
+.exito-tilde svg{width:48px;height:48px}
+.exito h1{margin-top:26px;font-size:30px;line-height:1.08;font-weight:700;letter-spacing:-.03em}
+.exito-resumen{margin-top:10px;font-size:15.5px;line-height:1.45;color:var(--txt2)}
+.exito-resumen b{color:var(--txt);font-weight:700}
+.exito-datos{margin-top:22px;width:100%;max-width:300px;display:grid;gap:8px;text-align:left}
+.exito-datos>div{display:flex;justify-content:space-between;gap:14px;font-size:13.5px}
+.exito-datos dt{color:var(--txt2)}
+.exito-datos dd{margin:0;text-align:right;color:var(--txt);font-weight:500}
+.exito-datos dd.mono{font-variant-numeric:tabular-nums;letter-spacing:.08em;font-weight:700}
+.exito-nota{margin-top:18px;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--txt2)}
+.exito-acciones{display:flex;flex-direction:column;align-items:stretch;gap:6px;padding-top:12px}
+.exito-cta{height:48px;border-radius:999px;font-size:15px}
+.exito-acciones .btn-ter{align-self:center}
+/* entrada, una sola vez */
+.exito-tilde{animation:exito-tilde 320ms cubic-bezier(.22,1,.36,1) both}
+.exito-tilde path{stroke-dasharray:40;stroke-dashoffset:40;animation:exito-trazo 300ms cubic-bezier(.22,1,.36,1) 160ms forwards}
+.exito-cuerpo>:not(.exito-tilde),.exito-acciones{animation:exito-sube 280ms cubic-bezier(.22,1,.36,1) 120ms both}
+@keyframes exito-tilde{from{opacity:0;transform:scale(.72)}to{opacity:1;transform:none}}
+@keyframes exito-trazo{to{stroke-dashoffset:0}}
+@keyframes exito-sube{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+:root[data-movimiento="reducido"] .exito-tilde,:root[data-movimiento="reducido"] .exito-cuerpo>*,:root[data-movimiento="reducido"] .exito-acciones{animation:none}
+:root[data-movimiento="reducido"] .exito-tilde path{animation:none;stroke-dashoffset:0}
+@media (prefers-reduced-motion:reduce){
+  :root:not([data-movimiento="forzado"]) .exito-tilde,:root:not([data-movimiento="forzado"]) .exito-cuerpo>*,:root:not([data-movimiento="forzado"]) .exito-acciones{animation:none}
+  :root:not([data-movimiento="forzado"]) .exito-tilde path{animation:none;stroke-dashoffset:0}
+}
+
+/* ── H01 · Historial de la unidad (H01-01/02) ─────────────────────
+   Filtros a la vista; grupos por día con peso; título > descripción >
+   actor; aire entre eventos; el amarillo sólo marca lo último. */
+.hist-filtros{margin-top:16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px 0 4px;
+  margin-inline:-20px;padding-inline:20px}
+.hist-filtros::-webkit-scrollbar{display:none}
+.hist-filtros button{flex:none;display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 14px;
+  border-radius:999px;font-size:14px;font-weight:500;color:var(--txt);
+  background:color-mix(in srgb,var(--txt) 5%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--txt) 9%,transparent);
+  transition:background 140ms cubic-bezier(.22,1,.36,1),color 140ms}
+.hist-filtros button .n{font-size:12px;font-weight:700;color:var(--txt2);font-variant-numeric:tabular-nums}
+.hist-filtros button[aria-checked="true"]{background:var(--txt);color:var(--fondo);font-weight:700;box-shadow:none}
+.hist-filtros button[aria-checked="true"] .n{color:color-mix(in srgb,var(--fondo) 70%,transparent)}
+#r17 .grupo-dia{margin-top:26px}
+#r17 .grupo-dia .dia{font-size:17px;font-weight:700;letter-spacing:-.015em;color:var(--txt);
+  padding-bottom:8px;border-bottom:1px solid var(--borde)}
+#r17 .grupo-dia .dia span{font-size:12.5px;font-weight:500;color:var(--txt2)}
+#r17 .linea-t.con-hora .hito{padding-bottom:22px}
+#r17 .linea-t .arr b{font-size:15px;font-weight:700;line-height:1.3}
+#r17 .linea-t .c p{margin-top:4px;font-size:13.5px;color:var(--txt2)}
+#r17 .linea-t .quien{margin-top:7px;font-size:12px;opacity:1;color:color-mix(in srgb,var(--txt2) 82%,transparent)}
+#r17 .linea-t.con-hora .hora-col{font-size:13px;font-weight:700;color:var(--txt)}
+#r17 .linea-t .marca{background:color-mix(in srgb,var(--txt) 6%,var(--fondo));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--txt) 10%,transparent)}
+#r17 .linea-t .hito.on .marca{background:var(--amarillo);box-shadow:none}
+
+/* ── G11 · Entrega como seguimiento (G11-01…06) ───────────────────
+   Card carbón (misma familia que el pase), estado en ficha amarilla, datos
+   clave y el recorrido Recibida → Avisada → Retirada con sus fechas. */
+.ent-track{margin-top:16px;padding:20px 20px 18px;border-radius:var(--r-feature);background:#141A17;color:#fff;
+  border:1px solid rgba(255,255,255,.07);box-shadow:0 24px 48px -30px rgba(17,22,20,.6)}
+.ent-track-cab{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.ent-track-id{min-width:0}
+.ent-track-tipo{display:block;font-size:12.5px;font-weight:500;color:rgba(255,255,255,.66)}
+.ent-track h1,.ent-track-rem{display:block;margin-top:4px;font-size:26px;line-height:1.1;font-weight:700;letter-spacing:-.025em;color:#fff}
+.ent-track-glifo{flex:none;width:58px;height:58px;border-radius:18px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.14)}
+.ent-chip-fila{margin-top:14px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.ent-chip{display:inline-flex;align-items:center;gap:7px;min-height:30px;padding:0 12px;border-radius:999px;
+  font-size:13.5px;font-weight:700;background:var(--amarillo);color:#111614}
+.ent-chip::before{content:"";width:7px;height:7px;border-radius:999px;background:#111614}
+.ent-chip.hecho{background:rgba(255,255,255,.14);color:#fff}
+.ent-chip.hecho::before{background:#7CD3A2}
+.ent-track-dato{font-size:13px;color:rgba(255,255,255,.72)}
+.ent-track-datos{margin-top:16px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px;
+  padding-top:14px;border-top:1px solid rgba(255,255,255,.1)}
+.ent-track-datos dt{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.56)}
+.ent-track-datos dd{margin:3px 0 0;font-size:14px;font-weight:500;color:#fff}
+.ent-pasos{list-style:none;margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);position:relative}
+.ent-pasos::before{content:"";position:absolute;left:8px;right:calc(33.3% - 8px);top:7px;height:2px;border-radius:2px;background:rgba(255,255,255,.16)}
+.ent-pasos li{position:relative;display:flex;flex-direction:column;gap:3px;padding-top:24px}
+.ent-pasos li:nth-child(2){align-items:center;text-align:center}
+.ent-pasos li:nth-child(3){align-items:flex-end;text-align:right}
+.ent-paso-punto{position:absolute;top:0;width:16px;height:16px;border-radius:999px;background:#141A17;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.28)}
+.ent-pasos li:nth-child(1) .ent-paso-punto{left:0}
+.ent-pasos li:nth-child(2) .ent-paso-punto{left:50%;transform:translateX(-50%)}
+.ent-pasos li:nth-child(3) .ent-paso-punto{right:0}
+.ent-pasos li.hecho .ent-paso-punto{background:#fff;box-shadow:none}
+.ent-pasos li.actual .ent-paso-punto{background:var(--amarillo);box-shadow:0 0 0 4px rgba(245,229,0,.2)}
+.ent-pasos li:nth-child(2).hecho::before,.ent-pasos li:nth-child(3).hecho::before{content:"";position:absolute;top:7px;height:2px;background:#fff;border-radius:2px}
+.ent-pasos li:nth-child(2).hecho::before{left:-50%;right:50%}
+.ent-pasos li:nth-child(3).hecho::before{left:-50%;right:8px}
+.ent-pasos b{font-size:13.5px;font-weight:700;color:#fff}
+.ent-pasos li:not(.hecho) b{color:rgba(255,255,255,.62)}
+.ent-pasos small{font-size:11.5px;color:rgba(255,255,255,.62)}
+
+/* ══ ONBOARDING (ONB-01/02/03) ══════════════════════════════════════
+   ONB-01 · la foto se disuelve desde abajo con una curva larga (sin
+   banda rectangular): la máscara baja por escalones suaves y el velo ya
+   no oscurece el borde inferior. */
+.mosaico{height:74%;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 36%,rgba(0,0,0,.93) 46%,rgba(0,0,0,.78) 56%,
+    rgba(0,0,0,.58) 65%,rgba(0,0,0,.37) 74%,rgba(0,0,0,.19) 83%,rgba(0,0,0,.07) 92%,transparent 100%);
+          mask-image:linear-gradient(180deg,#000 0%,#000 36%,rgba(0,0,0,.93) 46%,rgba(0,0,0,.78) 56%,
+    rgba(0,0,0,.58) 65%,rgba(0,0,0,.37) 74%,rgba(0,0,0,.19) 83%,rgba(0,0,0,.07) 92%,transparent 100%)}
+.mosaico::after{background:linear-gradient(180deg,rgba(9,12,10,var(--onb-velo-alto)) 0%,
+  rgba(9,12,10,var(--onb-velo-medio)) 38%,rgba(9,12,10,0) 100%)}
+/* ONB-02 · cambio de slide: fundido de 900 ms con la foto que se asienta
+   (1.035 → 1) y el texto que entra subiendo 8 px mientras el anterior se
+   va rápido. Sin rebote ni demoras largas. */
+.mosaico figure{transition:opacity 900ms cubic-bezier(.22,1,.36,1)}
+.mosaico figure img{transform:scale(1.035);transition:transform 1400ms cubic-bezier(.22,1,.36,1)}
+.mosaico figure[data-on="1"] img{transform:none}
+.onb-txt .par{transform:translateY(8px);
+  transition:opacity 240ms cubic-bezier(.4,0,1,1),transform 240ms cubic-bezier(.4,0,1,1)}
+.onb-txt .par[data-on="1"]{transform:none;
+  transition:opacity 560ms cubic-bezier(.22,1,.36,1) 160ms,transform 560ms cubic-bezier(.22,1,.36,1) 160ms}
+/* reducido: sin escala ni traslado, pero el cambio sigue siendo un fundido
+   corto (el contrato quita movimiento, no la opacidad) */
+:root[data-movimiento="reducido"] .mosaico figure,:root[data-movimiento="reducido"] .onb-txt .par{transition:opacity 320ms linear!important}
+:root[data-movimiento="reducido"] .mosaico figure img,:root[data-movimiento="reducido"] .onb-txt .par{transform:none!important}
+@media (prefers-reduced-motion:reduce){
+  :root:not([data-movimiento="forzado"]) .mosaico figure,:root:not([data-movimiento="forzado"]) .onb-txt .par{transition:opacity 320ms linear!important}
+  :root:not([data-movimiento="forzado"]) .mosaico figure img,:root:not([data-movimiento="forzado"]) .onb-txt .par{transform:none!important}
+}
+/* ONB-03 · titular con peso real (Satoshi Black) y el texto de apoyo un
+   escalón abajo, con aire */
+.onb-txt h1{font-size:31px;line-height:1.04;font-weight:900;letter-spacing:-.04em}
+.onb-txt p{margin-top:14px;font-size:15.5px;line-height:1.5}
+.onb-txt{min-height:168px}
+
+/* ══ RONDA 2 · revisión de Felipe (30/09) ═══════════════════════════════
+   Sólo Residente. Cada bloque dice qué pidió. */
+
+/* R01 · En tu edificio: la misma card para las cuatro, más grande. Foto
+   con rótulo y titular (abre la lista de lo suyo) y la misma franja
+   amarilla con la acción puntual. */
+.viva.vc{height:300px;display:flex;flex-direction:column;border-radius:26px;overflow:hidden;
+  background:var(--carbon);color:#fff;isolation:isolate;position:relative;padding:0}
+.vc-foto{position:relative;flex:1;min-height:0;display:block;width:100%;text-align:left;color:#fff;overflow:hidden}
+.vc-foto>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 45%;
+  filter:saturate(.7) brightness(.86);transform:scale(1.02)}
+.vc-foto::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(8,11,9,.42) 0%,rgba(8,11,9,.06) 34%,rgba(8,11,9,.5) 68%,rgba(8,11,9,.9) 100%)}
+.vc-et{position:absolute;top:21px;left:20px;z-index:2;font-size:13.5px;font-weight:700;color:rgba(255,255,255,.94)}
+.vc-ir{position:absolute;top:12px;right:12px;z-index:2}
+.vc-tx{position:absolute;left:20px;right:20px;bottom:18px;z-index:2}
+.vc-tx b{font-size:30px;font-weight:800;letter-spacing:-.035em;line-height:1.06;text-wrap:balance;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vc-tx i{display:block;margin-top:6px;font-style:normal;font-size:13.5px;color:rgba(255,255,255,.78);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vc-franja{flex:none;display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:0 20px;
+  background:var(--amarillo);color:var(--carbon);text-align:left}
+.vc-franja b{flex:1;font-size:14.5px;font-weight:700}
+.vc-ver{display:flex;align-items:center;gap:4px;font-size:13.5px;font-weight:700}
+.vc-franja:active{filter:brightness(.95)}
+
+/* R01 · la pila como skiper16: cada card sticky, de a una, 20 px de filo
+   y las de atrás achicándose desde arriba (PilaVivas). */
+.pila-resto{height:0}
+.pila-grupo.apilada .pila{gap:16px;overflow:visible}
+.pila-grupo.apilada .pila-c{position:sticky;transform-origin:50% 0;filter:none;will-change:transform}
+.pila-grupo.apilada .pila-c .viva.vc{box-shadow:0 -12px 30px -16px rgba(8,11,9,.6),var(--sombra-2)}
+
+/* R02 · "Historial de la unidad": todo blanco, sin filo */
+#r02>.fila.aire{border-color:transparent}
+
+/* R05 · fondo shader (FondoShader): detrás del título, el selector y el
+   calendario; se funde con la página hacia abajo. Mientras vive, la luz
+   ambiente en CSS de la ronda anterior se apaga (queda de respaldo). */
+.fondo-shader{position:absolute;z-index:-1;left:0;top:0;width:100%;height:700px;pointer-events:none;
+  opacity:0;transition:opacity .6s cubic-bezier(.22,1,.36,1);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 52%,rgba(0,0,0,.5) 76%,transparent 100%);
+          mask-image:linear-gradient(180deg,#000 0%,#000 52%,rgba(0,0,0,.5) 76%,transparent 100%)}
+.fondo-shader.vivo{opacity:1}
+.residente #r05.con-shader::before{display:none}
+
+/* R05 · el selector de espacio vuelve arriba, con foto y en vidrio */
+#r05 .esp-selector{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:16px -20px 0;padding:2px 20px 4px;
+  -webkit-mask-image:none;mask-image:none}
+#r05 .esp-selector::-webkit-scrollbar{display:none}
+#r05 .esp-op{height:48px;padding:0 16px 0 8px;border-radius:999px;
+  background:color-mix(in srgb,var(--sup) 58%,transparent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--txt) 8%,transparent),inset 0 1px 0 rgba(255,255,255,.4);
+  backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2)}
+#r05 .esp-op img{width:32px;height:32px;border-radius:999px}
+#r05 .esp-op .ic{width:32px;height:32px;border-radius:999px}
+#r05 .esp-op[aria-checked="true"]{background:var(--sup);color:var(--txt);
+  box-shadow:inset 0 0 0 2px var(--txt),0 8px 20px -12px rgba(17,22,20,.45)}
+
+/* R05 · estados del día, dichos por el calendario:
+   barra corta = parte del día ya reservada (crece con lo tomado);
+   filo amarillo = tu reserva; número tachado = completo; carbón = elegido. */
+#r05 .cal-dia.poco::after{content:none}
+#r05 .cal-dia .ocup{position:absolute;left:50%;bottom:7px;width:20px;height:3px;border-radius:2px;overflow:hidden;
+  transform:translateX(-50%);background:color-mix(in srgb,var(--txt) 13%,transparent)}
+#r05 .cal-dia .ocup::after{content:"";position:absolute;left:0;top:0;bottom:0;border-radius:2px;
+  width:calc(var(--o,0) * 100%);min-width:4px;background:color-mix(in srgb,var(--txt) 78%,transparent)}
+#r05 .cal-dia.sel .ocup{background:rgba(255,255,255,.24)}
+#r05 .cal-dia.sel .ocup::after{background:#fff}
+#r05 .cal-dia.completo:disabled{opacity:.52}
+#r05 .cal-dia.completo b{text-decoration:line-through;text-decoration-thickness:1.5px;text-decoration-color:var(--txt)}
+.cal-clave{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-top:10px;padding-top:12px;
+  border-top:1px solid color-mix(in srgb,var(--txt) 7%,transparent);font-size:12.5px;color:var(--txt2)}
+.cal-clave span{display:inline-flex;align-items:center;gap:7px}
+.cal-clave i{font-style:normal}
+.cal-clave .k-ocup{position:relative;width:20px;height:3px;border-radius:2px;overflow:hidden;
+  background:color-mix(in srgb,var(--txt) 13%,transparent)}
+.cal-clave .k-ocup::after{content:"";position:absolute;left:0;top:0;bottom:0;width:55%;background:color-mix(in srgb,var(--txt) 78%,transparent)}
+.cal-clave .k-mia{width:16px;height:16px;border-radius:6px;box-shadow:inset 0 0 0 2px var(--amarillo),inset 0 0 0 3px rgba(17,22,20,.32)}
+.cal-clave .k-completo{font-size:13px;font-weight:600;color:var(--txt);opacity:.55;text-decoration:line-through;text-decoration-thickness:1.5px}
+
+/* R19 · Preguntas frecuentes y reglamento con el lenguaje de Preferencias:
+   grupos titulados y una fila por pregunta sobre el fondo, sin card blanca */
+.faq-grupo .faq-filas,.faq-grupo .regla-filas{margin-top:10px;display:flex;flex-direction:column;gap:9px;list-style:none}
+.faq-filas .faq-f{border-radius:var(--b-radio);background:color-mix(in srgb,var(--txt) 4.5%,transparent);overflow:hidden}
+.faq-filas .faq-f+.faq-f{border-top:0}
+.faq-filas .faq-f>button{padding:16px;align-items:center}
+.faq-filas .faq-f>button span:first-child{font-size:var(--t-fila);font-weight:500;letter-spacing:0}
+.faq-filas .faq-f.on>button span:first-child{font-weight:700}
+.faq-filas .faq-f>p{padding:0 16px 16px;margin-top:-4px}
+.regla-filas li{padding:15px 16px;border-radius:var(--b-radio);background:color-mix(in srgb,var(--txt) 4.5%,transparent);
+  font-size:14.5px;line-height:1.5}
+
+/* R24 · Votaciones: la abierta en la superficie clara con marca amarilla
+   (se distingue igual en claro y en oscuro); el estado es texto; las
+   cerradas y próximas quedan apagadas, como estaban. */
+.vot{margin-top:14px;padding:20px;border-radius:var(--r-card);background:color-mix(in srgb,var(--txt) 4.5%,transparent)}
+.vot.abierta{background:var(--sup);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--txt) 7%,transparent),var(--sombra-2)}
+.vot-estado{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt2)}
+.vot-estado b{font-size:13px;font-weight:700;color:var(--txt)}
+.vot-marca{width:9px;height:9px;border-radius:3px;flex:none;background:color-mix(in srgb,var(--txt) 30%,transparent)}
+.vot.abierta .vot-marca{background:var(--amarillo);box-shadow:0 0 0 3px color-mix(in srgb,var(--amarillo) 26%,transparent)}
+.vot.proxima .vot-marca{background:none;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--txt) 45%,transparent)}
+.vot h3{margin-top:10px;font-size:18px;line-height:1.25;font-weight:700;letter-spacing:-.025em;color:var(--txt)}
+.vot:not(.abierta) h3{color:color-mix(in srgb,var(--txt) 86%,transparent)}
+.vot-txt{margin-top:8px;font-size:13.5px;line-height:1.5;color:var(--txt2)}
+.vot-ops{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.vot-ops button{position:relative;overflow:hidden;width:100%;min-height:50px;display:flex;align-items:center;gap:10px;
+  padding:0 16px;border-radius:var(--b-radio);text-align:left;color:var(--txt);
+  background:color-mix(in srgb,var(--txt) 5%,transparent);transition:background .15s}
+.vot-ops button:not(:disabled):hover{background:color-mix(in srgb,var(--txt) 9%,transparent)}
+.vot-ops .barra{position:absolute;left:0;top:0;bottom:0;background:color-mix(in srgb,var(--txt) 7%,transparent);border-radius:inherit}
+.vot-ops .tx{position:relative;flex:1;display:flex;align-items:center;gap:7px;font-size:15px;font-weight:500}
+.vot-ops .pc{position:relative;font-size:13px;color:var(--txt2);font-variant-numeric:tabular-nums}
+.vot-ops button:disabled{cursor:default}
+.vot-ops button.on{box-shadow:inset 0 0 0 2px var(--txt)}
+.vot-ops button.on .tx{font-weight:700}
+.vot-ops button.on .pc{color:var(--txt);font-weight:700}
+.vot-ops button.on .barra{background:color-mix(in srgb,var(--amarillo) 45%,transparent)}
+.vot-res{margin-top:12px}
+.vot-res>div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:10px 0;
+  border-top:1px solid color-mix(in srgb,var(--txt) 8%,transparent)}
+.vot-res dt{font-size:13px;color:var(--txt2)}
+.vot-res dd{font-size:14.5px;font-weight:600;color:var(--txt);text-align:right}
+.vot-pie{margin-top:12px;font-size:12.5px;color:var(--txt2);line-height:1.45}
+.vot-pie.fuerte{margin-top:4px;color:var(--txt);font-weight:500}
+
+/* F01 · "Autorizar visita" en amarillo: es la acción del día, como el pase */
+#f01 .pie-form .entrar{background:var(--amarillo);color:var(--carbon);box-shadow:0 10px 24px -14px rgba(120,110,0,.55)}
+#f01 .pie-form .entrar:hover{filter:brightness(.97)}
+#f01 .pie-form .entrar .giro{border-color:rgba(17,22,20,.25);border-top-color:var(--carbon)}
+
+/* G11 · ronda 2 · el recorrido en una sola línea con los tres puntos
+   alineados a sus rótulos (antes los tramos no coincidían con los puntos) */
+.ent-riel{display:block;margin-top:18px}
+.ent-riel-linea{position:relative;display:block;height:16px}
+.ent-riel-linea::before{content:"";position:absolute;left:8px;right:8px;top:7px;height:2px;border-radius:2px;background:rgba(255,255,255,.16)}
+.ent-riel-fill{position:absolute;left:8px;top:7px;height:2px;border-radius:2px;background:#fff;
+  width:calc((100% - 16px) * var(--avance,0))}
+.ent-riel-punto{position:absolute;top:0;left:calc(8px + (100% - 16px) * var(--x,0));width:16px;height:16px;margin-left:-8px;
+  border-radius:999px;background:#141A17;box-shadow:inset 0 0 0 2px rgba(255,255,255,.3)}
+.ent-riel-punto.hecho{background:#fff;box-shadow:none}
+.ent-riel-punto.actual{background:var(--amarillo);box-shadow:0 0 0 4px rgba(245,229,0,.22)}
+.ent-riel-pasos{list-style:none;margin-top:9px;display:grid;grid-template-columns:repeat(3,1fr)}
+.ent-riel-pasos>*{display:flex;flex-direction:column;gap:3px;min-width:0}
+.ent-riel-pasos>:nth-child(2){align-items:center;text-align:center}
+.ent-riel-pasos>:nth-child(3){align-items:flex-end;text-align:right}
+.ent-riel-pasos b{font-size:13.5px;font-weight:700;color:rgba(255,255,255,.6)}
+.ent-riel-pasos .hecho b{color:#fff}
+.ent-riel-pasos small{font-size:11.5px;color:rgba(255,255,255,.62)}
+.ent-track-datos{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ent-track-datos dt{text-transform:none;letter-spacing:0;font-size:12px}
+
+/* R08 · la lista usa la misma card de seguimiento, en chico */
+.ent-lista{margin-top:16px;display:flex;flex-direction:column;gap:12px}
+.ent-mini{display:block;width:100%;margin-top:0;padding:18px;text-align:left;border-radius:var(--r-card)}
+.ent-mini .ent-track-rem{font-size:22px}
+.ent-mini .ent-track-glifo{width:48px;height:48px;border-radius:15px}
+.ent-mini .ent-chip-fila{margin-top:12px}
+.ent-mini .ent-riel{margin-top:16px}
+.ent-mini .ent-riel-pasos b{font-size:12.5px}
+.ent-mini:active{transform:scale(.99)}
+.ent-mini.cerrada{background:color-mix(in srgb,var(--txt) 4.5%,transparent);color:var(--txt);border-color:transparent;box-shadow:none}
+.ent-mini.cerrada .ent-track-tipo,.ent-mini.cerrada .ent-track-dato{color:var(--txt2)}
+.ent-mini.cerrada .ent-track-rem{color:var(--txt)}
+.ent-mini.cerrada .ent-track-glifo{color:var(--txt);background:color-mix(in srgb,var(--txt) 6%,transparent);
+  border-color:color-mix(in srgb,var(--txt) 10%,transparent)}
+.ent-mini.cerrada .ent-chip.hecho{background:color-mix(in srgb,var(--txt) 9%,transparent);color:var(--txt)}
+.ent-mini.cerrada .ent-riel-linea::before{background:color-mix(in srgb,var(--txt) 14%,transparent)}
+.ent-mini.cerrada .ent-riel-fill,.ent-mini.cerrada .ent-riel-punto.hecho{background:var(--txt)}
+.ent-mini.cerrada .ent-riel-punto{background:var(--fondo);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--txt) 30%,transparent)}
+.ent-mini.cerrada .ent-riel-pasos b{color:var(--txt2)}
+.ent-mini.cerrada .ent-riel-pasos .hecho b{color:var(--txt)}
+
+/* R06 · Mis visitas · ronda 2: Próximas como ticket con talón amarillo y
+   cuánto falta; Historial como cards apagadas con iniciales y resultado */
+.vis-lista{margin-top:14px;display:flex;flex-direction:column;gap:12px}
+.vis-lista>.visita{margin-top:0}
+.vis-ticket{position:relative;display:flex;align-items:stretch;width:100%;text-align:left;border-radius:var(--r-card);overflow:hidden;
+  background:var(--sup);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--txt) 7%,transparent),var(--sombra-2);color:var(--txt)}
+.vis-ticket:active{transform:scale(.99)}
+.vt-talon{flex:none;width:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  background:var(--amarillo);color:var(--carbon);padding:16px 0}
+.vt-talon b{font-size:36px;line-height:1;font-weight:900;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.vt-talon i{font-style:normal;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.vt-corte{position:relative;flex:none;width:0;border-left:2px dashed color-mix(in srgb,var(--txt) 14%,transparent);margin:12px 0}
+.vt-corte::before,.vt-corte::after{content:"";position:absolute;left:-10px;width:18px;height:18px;border-radius:999px;background:var(--fondo)}
+.vt-corte::before{top:-21px}
+.vt-corte::after{bottom:-21px}
+.vt-cuerpo{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;padding:16px 8px 16px 18px}
+.vt-falta{align-self:flex-start;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;
+  background:color-mix(in srgb,var(--txt) 7%,transparent);color:var(--txt)}
+.vt-cuerpo b{margin-top:6px;font-size:18px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.vt-cuerpo>i{font-style:normal;font-size:13.5px;color:var(--txt2)}
+.vt-pase{margin-top:8px;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;color:var(--txt2)}
+.vt-flech{flex:none;display:flex;align-items:center;padding-right:14px;color:var(--txt2)}
+.vis-pasada{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;text-align:left;border-radius:var(--r-card);
+  background:color-mix(in srgb,var(--txt) 4.5%,transparent);color:var(--txt)}
+.vis-pasada:active{transform:scale(.99)}
+.vp-ini{flex:none;width:44px;height:44px;border-radius:999px;display:grid;place-items:center;font-size:14px;font-weight:700;
+  background:var(--sup);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--txt) 8%,transparent)}
+.vp-d{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.vp-d b{font-size:16px;font-weight:700;letter-spacing:-.015em}
+.vp-d i{font-style:normal;font-size:13px;color:var(--txt2)}
+.vp-res{flex:none;font-size:12.5px;font-weight:700;padding:5px 10px;border-radius:999px;
+  background:color-mix(in srgb,var(--txt) 7%,transparent);color:var(--txt2)}
+.vp-res.ok{color:var(--txt);background:color-mix(in srgb,var(--est-ok) 16%,transparent)}
+/* la abierta lleva la franja amarilla arriba (el mismo amarillo de las
+   cards del Inicio): en oscuro se distingue sin depender de la superficie */
+.vot.abierta{padding-top:0;overflow:hidden}
+.vot.abierta .vot-estado{margin:0 -20px 4px;padding:12px 20px;background:var(--amarillo);color:rgba(17,22,20,.72)}
+.vot.abierta .vot-estado b{color:var(--carbon)}
+.vot.abierta .vot-marca{background:var(--carbon);box-shadow:none;border-radius:999px;width:8px;height:8px}
+.vot.abierta h3{margin-top:14px}
+:root[data-tema="oscuro"] .vot:not(.abierta){background:color-mix(in srgb,var(--txt) 3%,transparent)}
+@media (prefers-color-scheme:dark){:root:not([data-tema="claro"]) .vot:not(.abierta){background:color-mix(in srgb,var(--txt) 3%,transparent)}}
+
+/* ══ RONDA 3 · segunda devolución de Felipe (30/09) ══════════════════ */
+
+/* R01 · las cards vuelven a su alto de antes (188 px); lo que crece es el
+   título "En tu edificio" */
+.viva.vc{height:188px}
+.vc-et{top:15px;left:18px;font-size:13px}
+.vc-ir{top:8px;right:8px}
+.vc-tx{left:18px;right:18px;bottom:12px}
+.vc-tx b{font-size:22px;line-height:1.08}
+.vc-tx i{margin-top:3px;font-size:12.5px}
+.vc-franja{min-height:46px;padding:0 18px}
+.vc-franja b{font-size:14px}
+.pila-cab h2.sec{font-size:24px;font-weight:700;letter-spacing:-.03em}
+/* el cierre de la lista vive en el espacio que la pila necesita para
+   posarse; mientras se mide no cuenta */
+.pila-resto{position:relative}
+.pila-grupo.midiendo .pila-resto{overflow:hidden}
+
+/* Pagar · el alias entra entero, el CBU no pisa "Copiar", y los títulos
+   hablan el lenguaje de la app (no versalitas chicas) */
+.medio-principal>h3.k{font-size:15px;font-weight:700;letter-spacing:-.015em;text-transform:none;color:var(--txt)}
+.transf .copia.grande .v{font-size:16px;font-weight:800;letter-spacing:0;white-space:nowrap;word-break:normal}
+.transf .copia .v{white-space:nowrap;word-break:normal;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.transf .copia:not(.grande) .v{font-size:12.5px;font-weight:600}
+.transf .copia dd{min-width:0}
+.transf .copia .copiar{flex:none}
+
+/* G01 · el logo centrado */
+.lg-card .lg-top{justify-content:center}
+
+/* R05 · tus reservas activas, a la vista y a un toque */
+.res-mias{margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.res-mias .k{width:100%;font-size:13px;font-weight:700;color:var(--txt)}
+.res-mia{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px 0 12px;border-radius:999px;
+  background:color-mix(in srgb,var(--sup) 60%,transparent);color:var(--txt);text-align:left;
+  box-shadow:inset 0 0 0 2px var(--amarillo),inset 0 0 0 3px rgba(17,22,20,.22);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.res-mia .pto{width:8px;height:8px;border-radius:999px;background:var(--amarillo);box-shadow:0 0 0 1px rgba(17,22,20,.3)}
+.res-mia b{font-size:13.5px;font-weight:700}
+.res-mia i{font-style:normal;font-size:13px;color:var(--txt2)}
+.res-mia:active{transform:scale(.98)}
+#r05 .esp-selector.rail{cursor:grab;scroll-snap-type:none}
+#r05 .esp-selector.rail:active{cursor:grabbing}
+
+/* R21 · Gastos del consorcio: la tabla sobre el fondo, como "Tu cuenta" en
+   Preferencias; sin la card blanca ni la card gris de "Tu parte" */
+#r21 .comp-cab{margin-top:18px;display:flex;align-items:center;gap:10px;padding:0 2px 8px 22px;
+  font-size:12px;font-weight:500;color:var(--txt2);border-bottom:1.5px solid var(--txt)}
+#r21 .comp-cab span:first-child{flex:1}
+#r21 .comp-cab span:last-child{width:42px;text-align:right}
+#r21 .comp-filas{margin-top:0;border-radius:0;overflow:visible;background:none;border:0;box-shadow:none}
+#r21 .comp-filas li{border-bottom:1px solid var(--borde)}
+#r21 .comp-filas li+li{border-top:0}
+#r21 .comp-filas>li>button{padding:0 2px;min-height:52px}
+#r21 .comp-filas li.abierta>button{background:none}
+#r21 .tu-parte{margin-top:34px;padding:0;background:none;box-shadow:none;border-radius:0}
+#r21 .tu-parte .tabla{margin-top:12px;border-radius:0;border:0;border-top:1.5px solid var(--txt)}
+#r21 .tu-parte .tabla-f{padding:14px 2px;border-bottom:1px solid var(--borde)}
+#r21 .tu-parte .total-f{border-top:0;border-bottom:0}
+#r21 .tu-parte .total-f .d b,#r21 .tu-parte .total-f .n{font-size:17px;font-weight:700}
+
+/* R03 · Notificaciones: lo sin leer aparte, arriba, en carbón con texto
+   blanco y marca amarilla; lo leído en filas por día sobre el fondo */
+.noti-nuevas{margin-top:18px}
+.noti-cab{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.noti-cab h2{font-size:18px;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.noti-cab h2 .n{min-width:24px;height:24px;padding:0 7px;border-radius:999px;display:inline-grid;place-items:center;
+  font-size:13px;font-weight:700;background:var(--amarillo);color:var(--carbon)}
+.noti-cards{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.noti-card{border-radius:var(--r-card);background:#141A17;color:#fff;overflow:hidden;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),var(--sombra-2)}
+.noti-abrir{display:flex;align-items:flex-start;gap:14px;width:100%;padding:16px 16px 12px;text-align:left;color:#fff}
+.noti-card .ic{flex:none;width:42px;height:42px;border-radius:999px;display:grid;place-items:center;
+  background:var(--amarillo);color:var(--carbon)}
+.noti-card .d{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.noti-card .arr{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.noti-card .nueva{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;
+  font-size:11.5px;font-weight:700;background:var(--amarillo);color:var(--carbon)}
+.noti-card time{font-size:12.5px;color:rgba(255,255,255,.62)}
+.noti-card b{margin-top:2px;font-size:16.5px;font-weight:700;letter-spacing:-.02em;line-height:1.25;color:#fff}
+.noti-card .desc{font-size:13.5px;line-height:1.45;color:rgba(255,255,255,.74)}
+.noti-leer{display:flex;align-items:center;gap:7px;width:100%;min-height:44px;padding:0 16px 0 72px;
+  font-size:13px;font-weight:700;color:var(--amarillo);border-top:1px solid rgba(255,255,255,.09);text-align:left}
+.noti-leer:hover{background:rgba(255,255,255,.04)}
+.noti-aldia{margin-top:18px;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--txt2)}
+.noti-grupo .dia{margin-top:28px;font-size:15px;font-weight:700;letter-spacing:-.015em;text-transform:none;color:var(--txt)}
+.noti-filas{margin-top:6px;display:flex;flex-direction:column}
+.noti-fila{display:flex;align-items:flex-start;gap:14px;width:100%;padding:14px 0;text-align:left;color:var(--txt);
+  border-bottom:1px solid var(--borde)}
+.noti-fila:last-child{border-bottom:0}
+.noti-fila .ic{flex:none;width:38px;height:38px;border-radius:999px;display:grid;place-items:center;
+  background:color-mix(in srgb,var(--txt) 6%,transparent);color:var(--txt)}
+.noti-fila .d{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.noti-fila .h{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.noti-fila b{font-size:15px;font-weight:600;letter-spacing:-.01em;line-height:1.3}
+.noti-fila time{flex:none;font-size:12px;color:var(--txt2)}
+.noti-fila .desc{font-size:13.5px;line-height:1.45;color:var(--txt2)}
+.pila-grupo.apilada .pila-resto{overflow:hidden}
+/* el CBU entero, sin cortar: columna de rótulo más angosta y cifra más fina */
+.transf>div{grid-template-columns:70px minmax(0,1fr)}
+.transf .copia:not(.grande) .v{font-size:12px;font-weight:500;letter-spacing:-.02em;overflow:visible;text-overflow:clip}
+#r21 .tu-parte .total-f{background:none}
+
+/* ══ AUDIT v03 · RESIDENTE · SISTEMAS ════════════════════════════════════
+   RES-COLOR-01 · sin blanco puro en superficies: blanco cálido. El carbón
+   ya es #111614 (nunca #000). */
+:root{--sup:#FBFBF8;--blanco-calido:#FAFAF6}
+.residente .zona-ctx .subnav button[aria-current="page"]{background:var(--blanco-calido)}
+.lg-card .entrar:hover{background:var(--blanco-calido)}
+.esp-card.elegida .esp-card-cta{background:var(--blanco-calido);border-color:var(--blanco-calido)}
+
+/* Pastilla de estado REAL (no texto coloreado): superficie tintada, marca
+   con forma y palabra. Amarillo = activo/para vos; neutro = programado o
+   cerrado; rojo y verde sólo para mal y bien, siempre con texto. */
+.residente .pastilla{padding:4px 10px 4px 8px;border-radius:999px;font-size:12.5px;font-weight:600;line-height:1.2;
+  color:var(--txt);background:color-mix(in srgb,var(--amarillo) 32%,transparent)}
+.residente .pastilla.gris{color:var(--txt2);background:color-mix(in srgb,var(--txt) 6%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--txt) 8%,transparent)}
+.residente .pastilla.gris::before{background:transparent;box-shadow:inset 0 0 0 1.5px currentColor}
+.residente .pastilla.vencida{color:var(--est-vencido);background:color-mix(in srgb,var(--est-vencido) 12%,transparent)}
+.residente .pastilla.vencida::before{border-radius:1.5px;transform:rotate(45deg);width:6.5px;height:6.5px}
+.residente .pastilla.ok{color:var(--est-ok);background:color-mix(in srgb,var(--est-ok) 13%,transparent)}
+.residente .pastilla.curso{color:var(--txt);background:color-mix(in srgb,var(--txt) 9%,transparent)}
+.residente .pastilla::before{background:var(--carbon)}
+.residente .pastilla.ok::before{background:var(--est-ok)}
+.residente .pastilla.vencida::before{background:var(--est-vencido)}
+.residente .pastilla.curso::before{background:var(--txt)}
+/* sobre carbón o foto */
+.residente :is(.widget.en-campo,.reserva,.visita.vigente) .pastilla{color:#F1F3EF;background:rgba(255,255,255,.14)}
+.residente :is(.widget.en-campo,.reserva,.visita.vigente) .pastilla:not(.gris):not(.vencida):not(.ok)::before{background:var(--amarillo)}
+.residente .widget.en-campo .pastilla.vencida{color:#FFD5CF;background:rgba(242,154,146,.2)}
+.residente .widget.en-campo .pastilla.vencida::before{background:#F29A92}
+.residente .widget.en-campo .det .pastilla{font-size:12.5px;font-weight:600}
+/* RES-FIN-01 · microinteracción de descarga: press, giro y tilde que entra */
+.descarga button{transition:transform .12s cubic-bezier(.22,1,.36,1),background .15s,color .15s}
+.descarga button:active{transform:scale(.96)}
+.descarga.lista button{color:var(--est-ok)}
+.descarga.lista button svg{animation:dl-tilde 320ms cubic-bezier(.22,1,.36,1) both}
+@keyframes dl-tilde{from{opacity:0;transform:scale(.4) rotate(-20deg)}}
+.descarga.chica.lista button{background:color-mix(in srgb,var(--est-ok) 12%,transparent);border-radius:999px}
+
+/* RES-ONB-01 · el titular y el apoyo bajan un poco, sin tocar CTA ni fundido */
+.onb-txt{min-height:148px}
+.onb-foot{gap:16px}
+
+/* RES-HOME-01 · pila compacta con solapamiento desde el reposo */
+.vista.inicio .pila-grupo{margin-top:6px}
+.vista.inicio .pila-cab h2.sec{margin-top:18px}
+.pila-grupo.apilada .pila{gap:0;overflow:visible}
+.pila-grupo.apilada .pila-resto{overflow:visible}
+.pila-grupo.apilada .pila-c .viva.vc{box-shadow:0 -14px 26px -14px rgba(8,11,9,.55),var(--sombra-2)}
+
+/* RES-HOME-02 · Pagar es el único amarillo del bloque de expensas */
+.widget.en-campo .entrar.compacto.acento{background:var(--amarillo);color:var(--carbon);
+  box-shadow:inset 0 -2px 0 rgba(17,22,20,.12),0 10px 22px -12px rgba(160,148,0,.7)}
+.widget.en-campo .entrar.compacto.acento:hover{background:var(--amarillo-hundido)}
+.pila-suelta{height:0;pointer-events:none}
+.pila-grupo:not(.apilada) .pila-suelta{display:none}
+
+/* ── R05 · audit v03 ───────────────────────────────────────────────── */
+/* RES-R05-01 · el selector se recorre (rueda, trackpad, dedo, arrastre) y
+   anuncia que sigue: fundido al borde derecho mientras haya más */
+#r05 .esp-selector{-webkit-mask-image:linear-gradient(90deg,#000 0,#000 86%,transparent 100%);
+          mask-image:linear-gradient(90deg,#000 0,#000 86%,transparent 100%)}
+#r05 .esp-op{background:color-mix(in srgb,var(--sup) 52%,transparent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--txt) 8%,transparent),inset 0 1px 0 rgba(255,255,255,.55),0 6px 16px -12px rgba(17,22,20,.35);
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4)}
+/* RES-R05-02 · el degradé baja de intensidad */
+#r05 .fondo-shader.vivo{opacity:.5}
+/* RES-R05-04 · estados del día sin leyenda:
+   · con reservas: barra amarilla que crece con lo tomado;
+   · tu reserva: borde amarillo entero;
+   · completo: número tachado y apagado;
+   · elegido: carbón lleno, inequívoco (con filo amarillo si además es tuyo). */
+#r05 .cal-dia .ocup{background:color-mix(in srgb,var(--txt) 10%,transparent);height:4px;width:22px;bottom:6px}
+#r05 .cal-dia .ocup::after{background:var(--amarillo-hundido)}
+#r05 .cal-dia.propia{box-shadow:inset 0 0 0 2.5px var(--amarillo);background:color-mix(in srgb,var(--amarillo) 14%,transparent)}
+#r05 .cal-dia.sel{background:var(--carbon);box-shadow:0 8px 18px -10px rgba(17,22,20,.7)}
+#r05 .cal-dia.sel b{color:#FAFAF6;font-weight:800}
+#r05 .cal-dia.sel.propia{box-shadow:inset 0 0 0 2.5px var(--amarillo),0 8px 18px -10px rgba(17,22,20,.7)}
+#r05 .cal-dia.sel .ocup{background:rgba(255,255,255,.2)}
+#r05 .cal-dia.sel .ocup::after{background:var(--amarillo)}
+#r05 .cal-dia.completo b{color:var(--txt2)}
+.res-pista-mia{padding:0 5px;border-radius:6px;box-shadow:inset 0 0 0 2px var(--amarillo);font-weight:600;color:var(--txt)}
+
+/* RES-R05-06 · éxito: acciones compactas al pie, nota centrada sin cortes */
+.exito-acciones{align-items:center;gap:4px}
+.exito-cta{width:auto;min-width:220px;height:46px;padding:0 30px;font-size:15px}
+.exito-nota{display:block;max-width:30ch;margin:18px auto 0;text-align:center;line-height:1.45;text-wrap:balance}
+.exito-nota svg{display:inline-block;vertical-align:-3px;margin-right:6px}
+.exito-datos{margin-left:auto;margin-right:auto}
+
+/* ── R02 · audit v03 (RES-R02-01) ─────────────────────────────────── */
+/* sin blanco duro: superficie neutra CondoTrack con filo fino */
+#r02>.fila.aire,#r02 .acciones-panel .btn-sec{background:color-mix(in srgb,var(--sup) 55%,var(--fondo));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--txt) 7%,transparent)}
+#r02 .mini-f .pastilla{font-size:12px}
+
+/* ── R17 · Historial (RES-HIST-01/02) ─────────────────────────────── */
+/* los filtros entran siempre: se acomodan en dos líneas si hace falta */
+#r17 .hist-filtros{flex-wrap:wrap;overflow:visible;margin-inline:0;padding-inline:0;gap:8px}
+#r17 .hist-filtros button{min-height:38px;padding:0 13px;font-size:14.5px}
+#r17 .grupo-dia .dia{font-size:18px}
+#r17 .linea-t .hito{position:relative;border-radius:14px;transition:background .16s cubic-bezier(.22,1,.36,1)}
+#r17 .linea-t .hito+.hito{border-top:1px solid color-mix(in srgb,var(--txt) 7%,transparent)}
+#r17 .linea-t.con-hora .hito{padding-top:14px;padding-bottom:16px}
+#r17 .linea-t .arr b{font-size:16px}
+#r17 .linea-t .c p{font-size:14px}
+#r17 .linea-t .marca{width:28px;height:28px;transition:background .16s,box-shadow .16s,transform .16s cubic-bezier(.22,1,.36,1)}
+/* al recorrer (hover, toque) y al filtrar, el evento toma el acento */
+#r17 .linea-t .hito:hover .marca,#r17 .linea-t .hito:active .marca,
+#r17:not([data-filtro="todo"]) .linea-t .marca{background:var(--amarillo);color:var(--carbon);box-shadow:none}
+#r17 .linea-t .hito:hover .marca{transform:scale(1.08)}
+#r17 .linea-t .hito:hover{background:color-mix(in srgb,var(--txt) 3%,transparent)}
+
+/* ── R06 / R16 · Visitas (RES-VIS-01) ─────────────────────────────── */
+.vt-flech{padding-right:12px}
+.vt-flech svg{width:32px;height:32px;padding:8px;border-radius:999px;box-sizing:border-box;color:var(--txt);
+  background:color-mix(in srgb,var(--txt) 7%,transparent);transition:transform .18s cubic-bezier(.22,1,.36,1),background .18s}
+.vis-ticket:hover .vt-flech svg,.vis-ticket:focus-visible .vt-flech svg{transform:translateX(3px);background:var(--amarillo)}
+.acceso.con-foto{isolation:isolate}
+.acceso-foto{position:absolute;inset:0;z-index:-1;width:100%;height:100%;object-fit:cover;object-position:center 40%;
+  filter:saturate(.6) brightness(.72)}
+.acceso.con-foto::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(105deg,rgba(14,18,16,.92) 0%,rgba(14,18,16,.76) 45%,rgba(14,18,16,.5) 100%)}
+#r16 .btn-ter.baja{display:block;margin-left:auto;margin-right:auto;text-align:center}
+
+/* ── R03 · Notificaciones (RES-NOTIF-01) ──────────────────────────── */
+.noti-cab h2{font-size:17px}
+.noti-cab h2 .n{min-width:20px;height:20px;padding:0 6px;font-size:12px}
+.noti-cards{gap:8px}
+.noti-abrir{padding:13px 14px 10px;gap:12px}
+.noti-card .ic{width:34px;height:34px}
+.noti-card .nueva{height:19px;padding:0 7px;font-size:11px}
+.noti-card b{font-size:15px}
+.noti-card .desc{font-size:13px}
+.noti-leer{min-height:40px;padding-left:60px;font-size:12.5px}
+
+/* ── R08 / G11 · Entregas (RES-DEL-01 · RES-G11-01) ──────────────────
+   Vidrio real (claro), como la referencia logística: estado protagonista,
+   recorrido con puntos, glifo del paquete a la derecha. */
+.ent-track{background:var(--vidrio);color:var(--txt);border:0;
+  -webkit-backdrop-filter:blur(var(--desenfoque)) saturate(1.4);backdrop-filter:blur(var(--desenfoque)) saturate(1.4);
+  box-shadow:inset 0 1px 0 var(--vidrio-brillo),inset 0 0 0 1px var(--vidrio-borde),0 20px 40px -26px rgba(17,22,20,.45)}
+.ent-track-tipo{color:var(--txt2)}
+.ent-track h1,.ent-track-rem{color:var(--txt)}
+.ent-track-glifo{color:var(--carbon);background:color-mix(in srgb,var(--amarillo) 70%,var(--sup));border:0;
+  box-shadow:inset 0 -2px 0 rgba(17,22,20,.08)}
+.ent-track.cerrada .ent-track-glifo{background:color-mix(in srgb,var(--txt) 7%,transparent);color:var(--txt2)}
+.ent-chip{min-height:32px;padding:0 13px;font-size:14px;background:var(--amarillo);color:var(--carbon)}
+.ent-chip.hecho{background:color-mix(in srgb,var(--est-ok) 14%,transparent);color:var(--est-ok)}
+.ent-chip.hecho::before{background:var(--est-ok)}
+.ent-track-dato{color:var(--txt2)}
+.ent-track-datos{border-top:1px solid color-mix(in srgb,var(--txt) 8%,transparent)}
+.ent-track-datos dt{color:var(--txt2)}
+.ent-track-datos dd{color:var(--txt)}
+.ent-riel-linea::before{background:color-mix(in srgb,var(--txt) 12%,transparent)}
+.ent-riel-fill{background:var(--carbon)}
+.ent-riel-punto{background:var(--sup);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--txt) 25%,transparent)}
+.ent-riel-punto.hecho{background:var(--carbon);box-shadow:none}
+.ent-riel-punto.actual{background:var(--amarillo);box-shadow:0 0 0 4px color-mix(in srgb,var(--amarillo) 30%,transparent),inset 0 0 0 2px var(--carbon)}
+.ent-riel-pasos b{color:var(--txt2)}
+.ent-riel-pasos .hecho b{color:var(--txt)}
+.ent-riel-pasos small{color:var(--txt2)}
+/* G11 · el estado manda: ficha grande arriba del recorrido */
+#g11 .ent-track{padding:20px 20px 18px}
+#g11 .ent-chip{min-height:38px;padding:0 16px;font-size:15.5px;font-weight:800}
+#g11 .ent-chip-fila{margin-top:16px}
+/* R08 · la lista: compacta, la acción afuera */
+.ent-lista{gap:14px}
+.ent-item{display:grid;gap:0}
+.ent-mini{padding:15px 16px 14px;border-radius:22px 22px 8px 8px}
+.ent-mini .ent-track-rem{font-size:19px}
+.ent-mini .ent-track-glifo{width:42px;height:42px;border-radius:13px}
+.ent-mini .ent-chip{min-height:28px;font-size:13px;padding:0 11px}
+.ent-mini .ent-riel{margin-top:14px}
+.ent-mini.cerrada{background:color-mix(in srgb,var(--txt) 4%,transparent);box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+.ent-cta{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:0 16px;margin-top:3px;
+  border-radius:8px 8px 18px 18px;font-size:14px;font-weight:700;color:var(--txt);
+  background:color-mix(in srgb,var(--sup) 55%,var(--fondo));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--txt) 6%,transparent);
+  transition:background .15s,transform .12s}
+.ent-item:not(.cerrada) .ent-cta{background:var(--carbon);color:#FAFAF6;box-shadow:none}
+.ent-cta:active{transform:scale(.99)}
+.ent-cta svg{transition:transform .18s cubic-bezier(.22,1,.36,1)}
+.ent-cta:hover svg{transform:translateX(3px)}
+
+/* ── R18 y demás · pestañas con más peso y activo sobrio (RES-TABS-01) ── */
+.residente .chips{padding:5px;background:color-mix(in srgb,var(--txt) 5%,transparent);box-shadow:none;border:0}
+.residente .chips .marca{background:var(--sup);box-shadow:0 1px 2px rgba(17,22,20,.08),0 6px 14px -8px rgba(17,22,20,.3)}
+.residente .chips button{font-size:15px;font-weight:600;color:var(--txt2)}
+.residente .chips button[aria-pressed="true"]{color:var(--txt);font-weight:800}
+.res-pista-mia{white-space:nowrap}
+
+/* ══ v04 · CORRECCIÓN FINAL · RESIDENTE ═════════════════════════════════ */
+
+/* A1 · En tu edificio como mazo (PilaVivas): una card dominante adelante,
+   las que siguen laminadas debajo (asoman 12 px, más chicas y apagadas).
+   La escena —campo + mazo— se traba mientras se reparte: la pantalla
+   queda siempre llena y el recorrido es de 96 px por card. */
+.pila-marco{position:relative;flex:none}
+.pila-escena{position:relative}
+.pila-recorrido{height:0}
+.pila-iman{position:absolute;left:0;width:1px;height:1px;pointer-events:none;scroll-snap-align:start}
+.pila-marco:not(.mazo) .pila-iman{display:none}
+.vista.con-mazo{scroll-snap-type:y proximity}
+.pila-resto{height:auto;flex:none}
+.pila-marco.mazo .pila-escena{position:sticky;z-index:1}
+.pila-marco.mazo .pila{display:block;position:relative;gap:0;margin-top:14px;overflow:visible}
+.pila-marco.mazo .pila-grupo .pila-c{position:absolute;inset:0 0 auto 0;top:0;transform-origin:50% 100%;
+  will-change:transform,opacity;transition:none}
+.pila-marco.mazo .pila-c::before{content:none}
+.pila-marco.mazo .pila-c::after{content:"";position:absolute;inset:0;border-radius:26px;pointer-events:none;
+  background:#0E1311;opacity:var(--velo,0)}
+.pila-marco.mazo .pila-c:not([data-frente]){pointer-events:none}
+.pila-marco.mazo .pila-c .viva.vc{box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 18px 34px -22px rgba(8,11,9,.7),0 2px 6px rgba(8,11,9,.12)}
+.vista.inicio .pila-marco .pila-grupo{margin-top:0}
+.vista.inicio .pila-marco .pila-cab h2.sec{margin-top:20px}
+
+/* A1 · la card: foto a sangre + panel de vidrio con quién/qué, el estado
+   y la acción. Sin franja: la acción vive donde se lee. */
+.viva.vc{height:188px}
+.vc-foto::after{background:linear-gradient(180deg,rgba(8,11,9,.46) 0%,rgba(8,11,9,.06) 38%,rgba(8,11,9,.12) 62%,rgba(8,11,9,.34) 100%)}
+.vc-et{top:12px;left:12px;display:inline-flex;align-items:center;height:28px;padding:0 11px;border-radius:999px;
+  font-size:12.5px;font-weight:700;color:#FBFBF8;background:rgba(14,19,17,.34);
+  -webkit-backdrop-filter:blur(12px) saturate(1.3);backdrop-filter:blur(12px) saturate(1.3);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+.vc-ir{top:8px;right:8px}
+.vc-vidrio{position:absolute;left:8px;right:8px;bottom:8px;z-index:3;display:flex;align-items:center;gap:12px;
+  min-height:64px;padding:10px 10px 10px 16px;border-radius:19px;color:#FBFBF8;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.22),rgba(255,255,255,.08) 60%,rgba(255,255,255,.12));
+  -webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.34),inset 0 0 0 1px rgba(255,255,255,.14),0 12px 26px -16px rgba(0,0,0,.7)}
+.vc-vidrio .vc-tx{position:static;flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.vc-vidrio .vc-tx b{font-size:18px;font-weight:800;letter-spacing:-.025em;line-height:1.15;-webkit-line-clamp:1;
+  text-shadow:0 1px 10px rgba(0,0,0,.25)}
+.vc-vidrio .vc-tx i{display:flex;align-items:center;gap:7px;margin:0;font-size:12.5px;font-weight:500;
+  color:rgba(251,251,248,.84);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vc-estado{flex:none;display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 8px 0 7px;border-radius:999px;
+  font-style:normal;font-size:11.5px;font-weight:700;color:#FBFBF8;background:rgba(14,19,17,.36)}
+.vc-estado::before{content:"";width:6px;height:6px;border-radius:50%;background:#7BD88F}
+.vc-estado[data-tono="atencion"]::before{background:var(--amarillo)}
+.vc-accion{flex:none;pointer-events:auto;display:inline-flex;align-items:center;gap:6px;height:42px;padding:0 15px 0 13px;
+  border-radius:999px;background:var(--amarillo);color:var(--carbon);font-size:13.5px;font-weight:700;letter-spacing:-.01em;
+  box-shadow:0 8px 18px -10px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.45);
+  transition:transform var(--dur-micro,.14s) ease,filter var(--dur-micro,.14s) ease}
+.vc-accion:hover{filter:brightness(1.04)}
+.vc-accion:active{transform:scale(.97)}
+.vc-accion:focus-visible{outline:2px solid #FBFBF8;outline-offset:2px}
+/* el principio de la página también es un imán (si no, al cargar se posa
+   en la primera card y corta el header) */
+.vista.con-mazo>.pila-marco{scroll-snap-align:start}
+/* los filos laminados se leen como hojas limpias, no como fotos oscuras */
+.pila-marco.mazo .pila-c::after{background:linear-gradient(180deg,#2E3531,#1C221F)}
+:root[data-tema="oscuro"] .pila-marco.mazo .pila-c::after{background:linear-gradient(180deg,#3A423D,#262C29)}
+
+/* A2 · R05 Reservar tu espacio, con Planet Clock Calendar como referencia:
+   fondo limpio (sin el degradé), UN panel de vidrio que contiene el
+   selector en su riel, el calendario sobre una superficie elevada y la
+   pista; mes a la izquierda y flechas a la derecha; días grandes y
+   limpios; elegido en carbón suave, tu reserva con el borde amarillo. */
+.residente #r05::before{height:520px;-webkit-mask-image:none;mask-image:none;
+  background:radial-gradient(120% 46% at 50% -8%,color-mix(in srgb,var(--sup) 72%,transparent) 0%,transparent 72%)}
+#r05 .tit h1{letter-spacing:-.03em}
+#r05 .res-contexto{margin-top:4px;font-size:14.5px}
+.res-panel{margin-top:18px;padding:8px 8px 10px;border-radius:32px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--sup) 66%,transparent),color-mix(in srgb,var(--sup) 36%,transparent));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.72),inset 0 0 0 1px color-mix(in srgb,var(--txt) 5%,transparent),0 34px 60px -44px rgba(17,22,20,.4);
+  -webkit-backdrop-filter:blur(24px) saturate(1.3);backdrop-filter:blur(24px) saturate(1.3)}
+:root[data-tema="oscuro"] .res-panel{box-shadow:inset 0 1px 0 rgba(255,255,255,.06),inset 0 0 0 1px rgba(255,255,255,.06),0 34px 60px -44px rgba(0,0,0,.7)}
+/* el selector: un riel hundido; el elegido, una superficie elevada (sin
+   bordes negros ni blancos duros) */
+#r05 .res-panel .esp-selector{margin:0;padding:4px;gap:4px;border-radius:24px;
+  background:color-mix(in srgb,var(--txt) 4.5%,transparent);box-shadow:inset 0 1px 2px rgba(17,22,20,.06)}
+#r05 .res-panel .esp-op{height:48px;padding:0 15px 0 6px;border-radius:20px;background:transparent;box-shadow:none;
+  -webkit-backdrop-filter:none;backdrop-filter:none;color:var(--txt2);transition:background .2s cubic-bezier(.22,1,.36,1),color .2s,box-shadow .2s}
+#r05 .res-panel .esp-op img{width:36px;height:36px;border-radius:14px}
+#r05 .res-panel .esp-op .nb{font-size:14px;font-weight:600}
+#r05 .res-panel .esp-op:hover{background:color-mix(in srgb,var(--sup) 50%,transparent);color:var(--txt)}
+#r05 .res-panel .esp-op[aria-checked="true"]{background:var(--sup);color:var(--txt);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 8px 18px -10px rgba(17,22,20,.3),0 1px 3px rgba(17,22,20,.07)}
+#r05 .res-panel .esp-op[aria-checked="true"] .nb{font-weight:700}
+:root[data-tema="oscuro"] #r05 .res-panel .esp-op[aria-checked="true"]{background:color-mix(in srgb,var(--txt) 12%,var(--sup));box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 18px -10px rgba(0,0,0,.6)}
+/* el calendario: superficie elevada dentro del panel */
+#r05 .res-panel .res-cal{margin-top:8px;padding:18px 10px 10px;border:0;border-radius:26px;background:var(--sup);
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 18px 36px -26px rgba(17,22,20,.34),0 2px 6px rgba(17,22,20,.05)}
+:root[data-tema="oscuro"] #r05 .res-panel .res-cal{background:color-mix(in srgb,var(--txt) 5%,var(--sup));box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 18px 36px -26px rgba(0,0,0,.7)}
+#r05 .cal.sin-caja .cal-cab{justify-content:flex-start;gap:2px;padding:0 4px 0 10px}
+#r05 .cal.sin-caja .cal-cab b{order:-1;margin-right:auto;font-size:22px;font-weight:650;letter-spacing:-.025em;align-items:baseline}
+#r05 .cal.sin-caja .cal-cab b em{font-size:13.5px;font-weight:500;color:var(--txt2)}
+#r05 .cal.sin-caja .cal-cab .circulo{width:38px;height:38px;border-radius:12px;background:transparent;color:var(--txt2)}
+#r05 .cal.sin-caja .cal-cab .circulo:hover{background:color-mix(in srgb,var(--txt) 6%,transparent);color:var(--txt)}
+#r05 .cal.sin-caja .cal-sem{margin-top:18px}
+#r05 .cal.sin-caja .cal-sem span{font-size:12.5px;font-weight:600;letter-spacing:0;color:var(--txt2)}
+#r05 .cal.sin-caja .cal-dia{border-radius:13px}
+#r05 .cal.sin-caja .cal-dia b{font-size:16.5px;font-weight:500}
+#r05 .cal-dia.sel{background:#2A302C}
+:root[data-tema="oscuro"] #r05 .cal-dia.sel{background:#E9ECE6}
+:root[data-tema="oscuro"] #r05 .cal-dia.sel b{color:#1A1F1C}
+#r05 .cal-dia.hoy:not(.sel){background:color-mix(in srgb,var(--txt) 7%,transparent)}
+/* pista y día elegido: dentro del panel, centrados */
+#r05 .res-panel .res-pista{margin:0;padding:12px 14px 4px;text-align:center;font-size:13.5px;line-height:1.5;text-wrap:balance}
+#r05 .res-panel .dia-elegido{margin:8px 0 0;padding:12px 8px 4px 14px;border:0;border-radius:0;background:none}
+#r05 .res-panel .dia-elegido .btn-sec{background:#2A302C;color:#FBFBF8}
+:root[data-tema="oscuro"] #r05 .res-panel .dia-elegido .btn-sec{background:#E9ECE6;color:#1A1F1C}
+#r05 .res-explorar{margin-top:30px}
+
+/* A2 · Explorar espacios: la foto arriba con la acción en vidrio; abajo el
+   nombre, dónde y para cuántos, y la disponibilidad de hoy (semáforo) */
+.esp-grilla{gap:12px}
+.esp-card{aspect-ratio:auto;min-height:0;display:flex;flex-direction:column;padding:6px;border-radius:24px;
+  background:var(--sup);color:var(--txt);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8),inset 0 0 0 1px color-mix(in srgb,var(--txt) 5%,transparent),0 18px 32px -24px rgba(17,22,20,.38);
+  transition:transform .22s cubic-bezier(.22,1,.36,1),box-shadow .22s}
+:root[data-tema="oscuro"] .esp-card{background:color-mix(in srgb,var(--txt) 5%,var(--sup));box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 18px 32px -24px rgba(0,0,0,.7)}
+.esp-card::after{content:none}
+.esp-card:hover{transform:translateY(-2px)}
+.esp-card-foto{position:relative;height:118px;border-radius:19px;overflow:hidden;background:linear-gradient(160deg,#27302A,#131916)}
+.esp-card-foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.9)}
+.esp-card-foto::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,11,9,.34),rgba(8,11,9,0) 46%)}
+.esp-card-ic{top:14px;left:14px}
+.esp-card-ver{z-index:1}
+.esp-card-pie{position:relative;z-index:2;display:flex;flex-direction:column;gap:2px;padding:10px 8px 6px;pointer-events:none}
+.esp-card-pie b{font-size:16px;font-weight:700;letter-spacing:-.02em;color:var(--txt)}
+.esp-card-pie i{font-style:normal;font-size:12.5px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.esp-card-disp{margin-top:7px;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;max-width:100%;
+  font-size:12px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.esp-card-disp::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:#3E9B63}
+.esp-card-disp[data-tono="poco"]::before{background:var(--amarillo);box-shadow:0 0 0 1px rgba(17,22,20,.25)}
+.esp-card-disp[data-tono="nada"]{color:var(--txt2)}
+.esp-card-disp[data-tono="nada"]::before{background:color-mix(in srgb,var(--txt) 30%,transparent)}
+.esp-card-cta{position:absolute;top:12px;right:12px;z-index:3;min-height:32px;padding:0 12px;font-size:12.5px;
+  color:#FBFBF8;background:rgba(14,19,17,.34);border:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);
+  -webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3)}
+.esp-card-cta:hover{background:rgba(14,19,17,.5)}
+.esp-card.elegida{box-shadow:0 0 0 2px var(--fondo),0 0 0 4px var(--txt),var(--sombra-2)}
+
+/* A2 · éxito (reserva y todos los "éxito protagonista"): la composición
+   compacta al centro, en una superficie de vidrio; las acciones más abajo,
+   centradas, sin ocupar todo el ancho, en carbón suave (no negro). */
+.exito{min-height:calc(100dvh - 230px);padding:8px 0 4px}
+.exito-cuerpo{flex:0 0 auto;margin:auto 0;align-self:center;width:100%;max-width:340px;padding:30px 22px 24px;border-radius:30px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--sup) 78%,transparent),color-mix(in srgb,var(--sup) 50%,transparent));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),inset 0 0 0 1px color-mix(in srgb,var(--txt) 5%,transparent),0 30px 56px -40px rgba(17,22,20,.42);
+  -webkit-backdrop-filter:blur(20px) saturate(1.3);backdrop-filter:blur(20px) saturate(1.3)}
+:root[data-tema="oscuro"] .exito-cuerpo{background:color-mix(in srgb,var(--txt) 5%,var(--sup));box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 30px 56px -40px rgba(0,0,0,.7)}
+.exito-tilde{width:96px;height:96px}
+.exito h1{margin-top:20px;font-size:28px}
+.exito-acciones{margin-top:0;padding:18px 0 10px;gap:6px}
+.exito-cta{min-width:200px;height:48px;padding:0 30px;background:#2A302C;color:#FBFBF8}
+.exito-cta:hover{background:#343B37}
+:root[data-tema="oscuro"] .exito-cta{background:#E9ECE6;color:#1A1F1C}
+/* días como en Planet: números limpios, sin cajitas; la caja sólo para el
+   elegido (carbón), hoy (gris suave) y tu reserva (borde amarillo) */
+#r05 .cal.sin-caja .cal-dia,#r05 .cal.sin-caja .cal-dia:disabled{background:transparent}
+#r05 .cal.sin-caja .cal-dia:not(:disabled):hover{background:color-mix(in srgb,var(--txt) 6%,transparent)}
+#r05 .cal.sin-caja .cal-dia:not(:disabled) b{font-weight:600}
+#r05 .cal.sin-caja .cal-dia:disabled b{color:color-mix(in srgb,var(--txt) 26%,transparent)}
+#r05 .cal.sin-caja .cal-dia.hoy:not(.sel){box-shadow:none;background:color-mix(in srgb,var(--txt) 7%,transparent)}
+#r05 .cal.sin-caja .cal-dia.propia{background:color-mix(in srgb,var(--amarillo) 14%,transparent);box-shadow:inset 0 0 0 2.5px var(--amarillo)}
+#r05 .cal.sin-caja .cal-dia.sel{background:#2A302C}
+:root[data-tema="oscuro"] #r05 .cal.sin-caja .cal-dia.sel{background:#E9ECE6}
+/* A2 · R13 disponibilidad de la semana: riel hundido con días elevados,
+   barra de lo tomado y turnos libres en palabras */
+#r13 .dispo{margin-top:12px;gap:6px;padding:5px;border-radius:24px;background:color-mix(in srgb,var(--txt) 4.5%,transparent);
+  box-shadow:inset 0 1px 2px rgba(17,22,20,.06)}
+#r13 .dia-d{width:66px;padding:10px 0 10px;border:0;border-radius:19px;display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:var(--sup);color:var(--txt);box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 6px 14px -10px rgba(17,22,20,.3);
+  transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s}
+:root[data-tema="oscuro"] #r13 .dia-d{background:color-mix(in srgb,var(--txt) 6%,var(--sup));box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+#r13 .dia-d:hover{transform:translateY(-1px)}
+#r13 .dia-d i{font-size:12px;font-weight:600;text-transform:capitalize;letter-spacing:0;color:var(--txt2)}
+#r13 .dia-d b{font-size:19px;font-weight:700;letter-spacing:-.02em}
+#r13 .dia-d-barra{position:relative;width:30px;height:4px;margin-top:3px;border-radius:2px;overflow:hidden;background:color-mix(in srgb,var(--txt) 10%,transparent)}
+#r13 .dia-d-barra em{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:color-mix(in srgb,var(--txt) 55%,transparent)}
+#r13 .dia-d.poco .dia-d-barra em{background:var(--amarillo-hundido,#D9C700)}
+#r13 .dia-d-tx{font-size:11.5px;font-weight:600;color:var(--txt2);white-space:nowrap}
+#r13 .dia-d.sin{opacity:1;background:transparent;box-shadow:none}
+#r13 .dia-d.sin b,#r13 .dia-d.sin .dia-d-tx{color:color-mix(in srgb,var(--txt) 38%,transparent)}
+
+/* A3 · R08 Entregas: una sola card de vidrio claro, se toca entera; el
+   estado en su pastilla, el recorrido limpio y la acción en su esquina */
+.ent-card{position:relative;display:flex;flex-direction:column;gap:14px;width:100%;padding:16px 16px 12px;text-align:left;
+  border-radius:24px;color:var(--txt);
+  background:linear-gradient(160deg,color-mix(in srgb,var(--sup) 86%,transparent),color-mix(in srgb,var(--sup) 60%,transparent));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85),inset 0 0 0 1px color-mix(in srgb,var(--txt) 6%,transparent),0 18px 34px -26px rgba(17,22,20,.4);
+  -webkit-backdrop-filter:blur(22px) saturate(1.35);backdrop-filter:blur(22px) saturate(1.35);
+  transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s}
+:root[data-tema="oscuro"] .ent-card{background:color-mix(in srgb,var(--txt) 6%,var(--sup));box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 18px 34px -26px rgba(0,0,0,.7)}
+.ent-card:hover{transform:translateY(-1px)}
+.ent-card:active{transform:scale(.99)}
+.ent-card.cerrada{background:color-mix(in srgb,var(--txt) 3.5%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--txt) 5%,transparent);
+  -webkit-backdrop-filter:none;backdrop-filter:none}
+.ent-card-cab{display:flex;align-items:center;gap:12px;min-width:0}
+.ent-card-ic{flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
+  background:var(--amarillo);color:var(--carbon);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.ent-card.cerrada .ent-card-ic{background:color-mix(in srgb,var(--txt) 7%,transparent);color:var(--txt);box-shadow:none}
+.ent-card-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ent-card-tx b{font-size:17.5px;font-weight:700;letter-spacing:-.02em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ent-card-tx i{font-style:normal;font-size:13px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ent-card-estado{flex:none;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px 0 9px;border-radius:999px;
+  font-size:12.5px;font-weight:700;color:var(--carbon);background:color-mix(in srgb,var(--amarillo) 55%,transparent)}
+.ent-card-estado::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--carbon)}
+.ent-card-estado.hecho{color:#2E6B47;background:rgba(62,155,99,.14)}
+.ent-card-estado.hecho::before{background:#3E9B63}
+:root[data-tema="oscuro"] .ent-card-estado.hecho{color:#8FD3A8;background:rgba(62,155,99,.2)}
+/* el recorrido, sobre superficie clara */
+.ent-card .ent-riel{margin:0}
+.ent-card .ent-riel-linea::before{background:color-mix(in srgb,var(--txt) 12%,transparent)}
+.ent-card .ent-riel-fill{background:var(--txt)}
+.ent-card .ent-riel-punto{background:var(--sup);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--txt) 26%,transparent)}
+.ent-card .ent-riel-punto.hecho{background:var(--txt);box-shadow:none}
+.ent-card .ent-riel-punto.actual{background:var(--amarillo);box-shadow:0 0 0 4px color-mix(in srgb,var(--amarillo) 30%,transparent),inset 0 0 0 2px rgba(17,22,20,.4)}
+.ent-card .ent-riel-pasos b{font-size:12.5px;font-weight:600;color:var(--txt2)}
+.ent-card .ent-riel-pasos .hecho b{color:var(--txt)}
+.ent-card-pie{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:10px;
+  border-top:1px solid color-mix(in srgb,var(--txt) 7%,transparent)}
+.ent-card-quien{font-size:12.5px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ent-card-ver{margin-left:auto;display:inline-flex;align-items:center;gap:4px;height:34px;padding:0 12px 0 14px;border-radius:999px;
+  font-size:13px;font-weight:700;background:#2A302C;color:#FBFBF8;transition:background .18s}
+.ent-card-ver svg{transition:transform .18s cubic-bezier(.22,1,.36,1)}
+.ent-card:hover .ent-card-ver svg{transform:translateX(2px)}
+.ent-card.cerrada .ent-card-ver{background:color-mix(in srgb,var(--txt) 7%,transparent);color:var(--txt)}
+:root[data-tema="oscuro"] .ent-card:not(.cerrada) .ent-card-ver{background:#E9ECE6;color:#1A1F1C}
+
+/* A3 · R06 Visitas programadas: card redondeada, sin talón ni troquel; la
+   fecha grande queda, como una ficha dentro de la card */
+.vis-ticket{align-items:center;gap:0;padding:8px;border-radius:24px;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--sup) 88%,transparent),color-mix(in srgb,var(--sup) 62%,transparent));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85),inset 0 0 0 1px color-mix(in srgb,var(--txt) 6%,transparent),0 18px 34px -26px rgba(17,22,20,.4)}
+:root[data-tema="oscuro"] .vis-ticket{background:color-mix(in srgb,var(--txt) 6%,var(--sup));box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 18px 34px -26px rgba(0,0,0,.7)}
+.vt-corte{display:none}
+.vt-talon{align-self:stretch;width:76px;padding:12px 0;border-radius:18px;
+  background:color-mix(in srgb,var(--amarillo) 30%,var(--sup));color:var(--carbon)}
+:root[data-tema="oscuro"] .vt-talon{background:color-mix(in srgb,var(--amarillo) 16%,var(--sup));color:var(--txt)}
+.vt-talon b{font-size:32px;font-weight:800}
+.vt-talon i{font-size:12px;font-weight:600;letter-spacing:0;text-transform:capitalize}
+.vt-cuerpo{padding:6px 6px 6px 16px}
+.vt-falta{background:color-mix(in srgb,var(--txt) 6%,transparent)}
+.vt-cuerpo b{margin-top:4px}
+.vt-pase{margin-top:6px}
+
+/* A3 · Mis reservas (y todas las pestañas del residente): más contraste
+   entre riel y elegida, y un escalón más de peso */
+.residente .chips{background:color-mix(in srgb,var(--txt) 7.5%,transparent);box-shadow:inset 0 1px 2px rgba(17,22,20,.07)}
+.residente .chips button{color:color-mix(in srgb,var(--txt) 72%,transparent);font-weight:650}
+.residente .chips button[aria-pressed="true"]{color:var(--txt);font-weight:800}
+.residente .chips .marca{box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 0 0 1px color-mix(in srgb,var(--txt) 6%,transparent),0 8px 18px -10px rgba(17,22,20,.38)}
+:root[data-tema="oscuro"] .residente .chips .marca{background:color-mix(in srgb,var(--txt) 16%,var(--sup));box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 18px -10px rgba(0,0,0,.6)}
+#r18 .subtit h2{font-weight:750}
+
+/* A3 · Historial: íconos con el tinte amarillo siempre (lleno al pasar o
+   al filtrar), marca un poco más grande y ritmo parejo */
+#r17 .linea-t .marca{width:30px;height:30px;background:color-mix(in srgb,var(--amarillo) 24%,var(--fondo));color:var(--carbon);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--amarillo) 55%,transparent)}
+:root[data-tema="oscuro"] #r17 .linea-t .marca{background:color-mix(in srgb,var(--amarillo) 14%,var(--sup));color:var(--txt)}
+#r17 .linea-t.con-hora .hito{padding-top:16px;padding-bottom:18px}
+#r17 .linea-t .arr b{font-size:15.5px}
+#r17 .linea-t .quien{margin-top:8px}
+
+/* A4 · Onboarding: el bloque de títulos se apoya abajo, cerca de los
+   puntos y del botón, con aire entre título y texto (no queda colgado
+   arriba de su caja cuando el texto es corto) */
+.onb-txt{min-height:176px}
+.onb-txt .par{top:auto;bottom:0}
+.onb-txt h1{margin:0}
+.onb-txt p{margin-top:14px}
+.onb-foot{gap:18px;padding-top:24px}
+
+/* ══ v05 · MICRO-RONDA DE PULIDO · RESIDENTE ════════════════════════════ */
+
+/* El mazo, continuo y laminar: la siguiente sube por encima de la dominante
+   (sombra hacia arriba), la dominante se va atrás como filo. La pila recorta
+   abajo para que de la siguiente sólo asome el filo. */
+.vista.con-mazo{scroll-snap-type:none}
+.pila-marco.mazo .pila{margin-top:6px;clip-path:inset(-6px -28px 0 -28px)}
+.pila-marco.mazo .pila-grupo .pila-c{transform-origin:50% 0;will-change:transform}
+.pila-marco.mazo .pila-c .viva.vc{box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 -16px 30px -18px rgba(8,11,9,.55),0 16px 30px -24px rgba(8,11,9,.6)}
+.pila-marco.mazo .pila-c::after{transition:none}
+.pila-cab{display:flex;flex-direction:column;align-items:center;gap:8px}
+.pila-pasos{display:flex;align-items:center;gap:6px;height:6px}
+.pila-pasos i{width:6px;height:6px;border-radius:3px;background:color-mix(in srgb,var(--txt) 18%,transparent);
+  transition:width .36s cubic-bezier(.22,1,.36,1),background .36s}
+.pila-pasos i[data-on]{width:20px;background:var(--txt)}
+.vista.inicio .pila-marco .pila-cab h2.sec{margin-top:18px}
+
+/* El widget del campo: el monto centrado de verdad (el ojo va aparte, con
+   más aire) y el cambio de pestaña sin saltos: alto fijo y un fundido largo */
+.widget.en-campo .cifra-fila{position:relative;display:inline-flex;gap:0}
+.widget.en-campo .cifra-fila .ojo-importe{position:absolute;left:100%;top:50%;margin-left:14px;transform:translateY(-50%)}
+.widget.en-campo .widget-panel{min-height:234px}
+.widget-panel.cruza-izq{animation:v5-cruza-der .42s cubic-bezier(.22,1,.36,1) both}
+.widget-panel.cruza-der{animation:v5-cruza-izq .42s cubic-bezier(.22,1,.36,1) both}
+@keyframes v5-cruza-der{from{opacity:0;transform:translate3d(14px,0,0)}to{opacity:1;transform:none}}
+@keyframes v5-cruza-izq{from{opacity:0;transform:translate3d(-14px,0,0)}to{opacity:1;transform:none}}
+.widget.en-campo .det{color:rgba(251,251,248,.66)}
+
+/* La card de "En tu edificio" (entrega incluida): el estado arriba, en su
+   línea; el remitente grande; el dato debajo; la acción a la derecha,
+   centrada en el panel */
+.vc-vidrio{min-height:78px;padding:12px 12px 12px 16px;align-items:center}
+.vc-vidrio .vc-tx{gap:4px}
+.vc-vidrio .vc-estado{align-self:flex-start;margin-bottom:1px}
+.vc-vidrio .vc-tx b{font-size:19px;line-height:1.12}
+.vc-vidrio .vc-tx i{font-size:12.5px}
+.vc-accion{height:40px}
+
+/* Reservas: el mensaje destacado en amarillo, sin hablar de bordes */
+.res-pista-mia{display:inline-block;margin-top:2px;padding:1px 8px;border-radius:8px;box-shadow:none;
+  background:color-mix(in srgb,var(--amarillo) 55%,transparent);color:var(--carbon);font-weight:650}
+:root[data-tema="oscuro"] .res-pista-mia{background:color-mix(in srgb,var(--amarillo) 26%,transparent);color:var(--txt)}
+#r05 .res-panel .dia-elegido{align-items:center}
+#r05 .res-panel .dia-elegido .d{min-width:0}
+
+/* Notificaciones como "En tu edificio": foto del lugar, el aviso en un
+   panel de vidrio, la marca "Nueva" y "Marcar como leída" en la esquina.
+   Lo leído, en un panel de filas como "Tu unidad". */
+.noti-cards{gap:12px}
+.noti-card{position:relative;border-radius:26px;background:#1A211D;isolation:isolate;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 18px 34px -24px rgba(8,11,9,.6)}
+.noti-card .noti-abrir{position:relative;display:block;min-height:168px;padding:0;overflow:hidden;border-radius:inherit}
+.noti-foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;filter:saturate(.7) brightness(.8)}
+.noti-card .noti-abrir::after{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,rgba(8,11,9,.46),rgba(8,11,9,.06) 42%,rgba(8,11,9,.3))}
+.noti-card .arr{position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:8px;height:28px;padding:0 11px 0 6px;
+  border-radius:999px;background:rgba(14,19,17,.36);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+.noti-card .nueva{height:20px;padding:0 8px;font-size:11.5px}
+.noti-card .arr time{font-size:12.5px;color:rgba(251,251,248,.86)}
+.noti-vidrio{position:absolute;left:8px;right:8px;bottom:8px;display:flex;align-items:center;gap:12px;padding:12px 14px;
+  border-radius:19px;color:#FBFBF8;
+  background:linear-gradient(135deg,rgba(255,255,255,.22),rgba(255,255,255,.08) 60%,rgba(255,255,255,.12));
+  -webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.34),inset 0 0 0 1px rgba(255,255,255,.14)}
+.noti-vidrio .ic{width:40px;height:40px;border-radius:13px;background:var(--amarillo);color:var(--carbon)}
+.noti-vidrio .d{gap:2px}
+.noti-vidrio b{margin:0;font-size:16.5px;line-height:1.2;color:#FBFBF8}
+.noti-vidrio .desc{font-size:12.5px;line-height:1.4;color:rgba(251,251,248,.82);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.noti-card .noti-leer{position:absolute;top:12px;right:12px;width:auto;min-height:28px;height:28px;padding:0 11px;border-radius:999px;
+  font-size:12px;color:#FBFBF8;background:rgba(14,19,17,.36);border:0;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);transition:background .2s}
+.noti-card .noti-leer:hover{background:var(--amarillo);color:var(--carbon)}
+.noti-filas{margin-top:8px;padding:4px 14px;border-radius:24px;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--sup) 86%,transparent),color-mix(in srgb,var(--sup) 60%,transparent));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8),inset 0 0 0 1px color-mix(in srgb,var(--txt) 6%,transparent),0 16px 30px -26px rgba(17,22,20,.35)}
+:root[data-tema="oscuro"] .noti-filas{background:color-mix(in srgb,var(--txt) 5%,var(--sup));box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.noti-fila{padding:14px 2px}
+.noti-fila .ic{border-radius:12px;background:color-mix(in srgb,var(--amarillo) 22%,transparent);transition:background .2s}
+.noti-fila:hover .ic{background:var(--amarillo);color:var(--carbon)}
+.noti-grupo .dia{margin-top:22px}
+
+/* Despliegues sin golpe: las hojas suben con una curva larga */
+.residente .hoja{animation-duration:.42s!important;animation-timing-function:cubic-bezier(.22,1,.36,1)!important}
+#r05 .res-panel .res-pista .res-pista-mia{display:table;margin:7px auto 0}
+
+/* v05 · onboarding: el círculo amarillo de cada foto se funde con el
+   siguiente (desenfoque cruzado), así pasa de lugar en lugar sin salto */
+.mosaico figure{transition:opacity 1.1s cubic-bezier(.22,1,.36,1),filter 1.1s cubic-bezier(.22,1,.36,1)}
+.mosaico figure[data-on="0"]{filter:blur(14px) saturate(1.2)}
+.mosaico figure[data-on="1"]{filter:none}
+:root[data-movimiento="reducido"] .mosaico figure{filter:none!important}

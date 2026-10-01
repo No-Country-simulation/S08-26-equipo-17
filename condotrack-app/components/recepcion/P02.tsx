@@ -1,249 +1,124 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ReceptionPage } from "./ReceptionPage";
+import { OperationalSearchField } from "./ReceptionSearch";
 import { Icon } from "../ui/Icon";
-import { Linea, type Hito } from "../ui/Linea";
-import { Ficha, Dato } from "../ui/Panel";
-import { Aviso } from "../ui/Estados";
-import { RESIDENTE, type VistaP } from "@/lib/data";
-import { buscarUnidades, unidadPorCodigo, type Unidad } from "@/lib/edificio";
-import { PERMISOS, ROTULO_PERMISO, historialOrdenado, ICONO_EVENTO } from "@/lib/unidad";
-import type { NombreIcono } from "../ui/Icon";
-import { hace, pesos } from "@/lib/formato";
-import { diaEnPalabras } from "@/lib/reservas";
+import { Segmentado } from "../sistema/Segmentado";
+import { EDIFICIO, RESIDENTE, type VistaP } from "@/lib/data";
+import { UNIDADES, buscarUnidades, unidadPorCodigo } from "@/lib/edificio";
+import { ROTULO_PERMISO } from "@/lib/unidad";
+import { hace } from "@/lib/formato";
 import { useApp } from "@/lib/estado";
 
-/** P02 · Unidades y búsqueda.
- *  Recepción busca por unidad o por persona, porque quien llega dice
- *  "vengo a lo de Osorio" y no "vengo al 7D". Desde el resultado se abre el
- *  contexto completo de esa unidad sin cambiar de pantalla. */
-
-const ROTULO_CUENTA = { "al-dia": "Al día", debe: "Debe", informado: "Pago informado" } as const;
-
+/** P02 · Unidades. Referencia primaria: U07 Timepiece.
+ *
+ *  USER GOAL: encontrar una unidad y saber quién vive, quién la visita y
+ *  qué espera en recepción. Es el benchmark de Recepción: se conserva la
+ *  composición y se suma una cabecera de identidad en la ficha (foto del
+ *  edificio aprobada, unidad y piso) para que el detalle no sea un vacío.
+ *
+ *  Un solo marco partido por filetes, como U07: dos tercios para el
+ *  directorio y un tercio para lo que se está mirando. La columna derecha
+ *  nunca queda vacía ni cambia la grilla: sin unidad elegida muestra lo
+ *  que el mostrador tiene pendiente por unidad; con una elegida, su ficha.
+ *  Recepción no ve cuenta, saldo, deuda ni metros: sólo lo operativo. */
 export function P02({ ir, refe }: { ir: (v: VistaP, ref?: string) => void; refe?: string }) {
   const { estado } = useApp();
   const [q, setQ] = useState("");
+  const [piso, setPiso] = useState<number | null>(null);
   const [abierta, setAbierta] = useState<string | null>(refe ?? null);
+  const detalle = useRef<HTMLElement>(null);
+  const origen = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => { setAbierta(refe ?? null); }, [refe]);
+  useEffect(() => { if (abierta) { detalle.current?.focus({ preventScroll: true }); if (matchMedia("(max-width:900px)").matches) detalle.current?.scrollIntoView({ block: "start" }); } }, [abierta]);
+  const resultados = buscarUnidades(q).filter(u => piso === null || u.piso === piso);
+  const u = abierta ? unidadPorCodigo(abierta) : undefined;
+  const visitas = estado.visitas.filter(v => v.unidad === u?.codigo && v.cuando !== "historial");
+  const entregas = estado.entregas.filter(e => e.unidad === u?.codigo);
+  const permisos = u?.codigo === RESIDENTE.unidad ? estado.permisos.filter(p => p.activo) : [];
+  const conEntregas = UNIDADES.map(x => ({ x, n: estado.entregas.filter(e => e.unidad === x.codigo && e.estado === "retirar").length })).filter(r => r.n > 0);
+  const conVisitas = UNIDADES.map(x => ({ x, n: estado.visitas.filter(v => v.unidad === x.codigo && v.cuando === "hoy" && v.estado !== "cancelada").length })).filter(r => r.n > 0);
+  function elegir(codigo: string, el?: HTMLButtonElement | null) { if (el) origen.current = el; setAbierta(codigo); }
+  function cerrar() { setAbierta(null); origen.current?.focus({ preventScroll: true }); }
 
-  const resultados = buscarUnidades(q);
-  const u: Unidad | undefined = abierta ? unidadPorCodigo(abierta) : undefined;
-
-  if (u) {
-    const visitas = estado.visitas.filter((v) => v.unidad === u.codigo && v.cuando !== "historial");
-    const entregas = estado.entregas.filter((e) => e.unidad === u.codigo);
-    const aRetirar = entregas.filter((e) => e.estado === "retirar");
-    const permisos = u.codigo === RESIDENTE.unidad
-      ? estado.permisos.filter((p) => p.activo)
-      : [];
-    const eventos = u.codigo === RESIDENTE.unidad
-      ? historialOrdenado(estado.eventos).slice(0, 8)
-      : [];
-    const hitos: Hito[] = eventos.map((e) => ({
-      id: e.id, cuando: e.cuando, icono: ICONO_EVENTO[e.tipo] as NombreIcono,
-      titulo: e.titulo, detalle: e.detalle, autor: e.responsable, rol: e.rol,
-    }));
-
-    return (
-      <>
-        <button className="btn-desk" type="button" onClick={() => setAbierta(null)}>
-          <Icon n="volver" s={16} w={2.1} />Volver a la búsqueda
-        </button>
-
-        <div className="ent-cab" style={{ marginTop: 18 }}>
-          <div>
-            <span className="id">{u.codigo}</span>
-            <p className="meta">
-              Piso {u.piso} · {u.ambientes} · {u.metros} m²
-              {u.telefono && ` · ${u.telefono}`}
-            </p>
-          </div>
-          <div className="der">
-            <span className={"pastilla" + (u.cuenta === "al-dia" ? " gris" : "")}>
-              <Icon n={u.cuenta === "al-dia" ? "check" : "reloj"} s={13} w={2.2} />
-              {ROTULO_CUENTA[u.cuenta]}
-              {u.saldo > 0 && ` · ${pesos(u.saldo)}`}
-            </span>
-          </div>
+  return <ReceptionPage titulo="Unidades" descripcion="Quién vive, quién la visita y qué espera en recepción." icono="personas" clase="op-units un">
+    <div className="un-marco">
+      <section className="un-directorio" aria-label="Directorio de unidades">
+        <div className="un-banda">
+          <OperationalSearchField label="Buscar unidad o persona" placeholder="7D, Osorio, piso 7…" value={q} onChange={setQ} />
         </div>
+        <div className="un-banda un-pisos"><span aria-hidden="true">Piso</span>
+          <Segmentado etiqueta="Filtrar por piso" className="un-pisos-seg" valor={piso === null ? "todos" : String(piso)}
+            onCambio={v => setPiso(v === "todos" ? null : Number(v))}
+            opciones={[{ id: "todos", label: "Todos" }, ...[...new Set(UNIDADES.map(x => x.piso))].sort((a, b) => a - b).map(p => ({ id: String(p), label: String(p), aria: `Piso ${p}` }))]} />
+          <span className="un-cuenta" role="status">{resultados.length} unidades</span>
+        </div>
+        {(piso !== null || q) && <div className="un-banda op-active-filters">{piso !== null && <button type="button" onClick={() => setPiso(null)}>Piso {piso} ×</button>}{q && <button type="button" onClick={() => setQ("")}>“{q}” ×</button>}</div>}
+        <div className="un-tabla ct-refiltra" key={`${piso}-${q}`}>
+          <div className="un-fila un-cab" aria-hidden="true"><span>Unidad</span><span>Residentes</span><span>En recepción</span><span /></div>
+          {resultados.map(x => {
+            const pend = estado.entregas.filter(e => e.unidad === x.codigo && e.estado === "retirar").length;
+            const vis = estado.visitas.filter(v => v.unidad === x.codigo && v.cuando === "hoy" && v.estado !== "cancelada").length;
+            return <button className="un-fila" type="button" key={x.codigo} aria-expanded={abierta === x.codigo} aria-controls="un-ficha"
+              onClick={e => elegir(x.codigo, e.currentTarget)}>
+              <span><b>{x.codigo}</b><small>Piso {x.piso}</small></span>
+              <span>{x.residentes.join(", ")}</span>
+              <span className="un-op">{pend ? `${pend} entrega${pend === 1 ? "" : "s"}` : "Sin entregas"}<small>{vis ? `${vis} visita${vis === 1 ? "" : "s"} hoy` : "Sin visitas hoy"}</small></span>
+              <Icon n="chevron" s={18} />
+            </button>;
+          })}
+          {!resultados.length && <p className="un-vacio">Sin coincidencias. Probá con otra unidad o apellido.</p>}
+        </div>
+      </section>
 
-        <div className="columnas" style={{ marginTop: 20 }}>
-          <section className="tarjeta">
-            <h2><Icon n="personas" s={17} w={1.9} />Quiénes viven acá<span className="cnt">{u.residentes.length}</span></h2>
-            <div className="cuerpo">
-              {u.residentes.map((r) => (
-                <div className="fila-op" key={r}>
-                  <span className="av">{r.split(" ").map((x) => x[0]).slice(0, 2).join("")}</span>
-                  <span className="d"><b>{r}</b><i>Unidad {u.codigo}</i></span>
-                </div>
-              ))}
-            </div>
-
-            {permisos.length > 0 && (
-              <>
-                <h2 style={{ borderTop: "1px solid var(--borde)" }}>
-                  <Icon n="candado" s={17} w={1.9} />
-                  Entran sin autorización
-                  <span className="cnt">{permisos.length}</span>
-                </h2>
-                <div className="cuerpo">
-                  {permisos.map((p) => (
-                    <div className="fila-op" key={p.id}>
-                      <span className="av">{p.iniciales}</span>
-                      <span className="d">
-                        <b>{p.nombre}</b>
-                        <i>{ROTULO_PERMISO[p.tipo]} · {p.detalle}</i>
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
+      <aside className="un-columna" id="un-ficha" ref={detalle} tabIndex={-1}
+        aria-label={u ? `Unidad ${u.codigo}` : "Pendientes por unidad"} onKeyDown={e => { if (e.key === "Escape" && u) cerrar(); }}>
+        {u ? <div key={u.codigo} className="un-ficha ct-resuelve">
+          <section className="un-banner" aria-label={`Unidad ${u.codigo}, piso ${u.piso}`}>
+            <span className="un-banner-foto" aria-hidden="true" />
+            <div className="un-banner-txt"><span>{EDIFICIO.nombre} · Piso {u.piso}</span><h2>{u.codigo}</h2></div>
+            <button type="button" className="ct-panel-cerrar un-cerrar" onClick={cerrar}><Icon n="cerrar" s={16} />Cerrar</button>
           </section>
-
-          <section className="tarjeta">
-            <h2><Icon n="credencial" s={17} w={1.9} />Visitas de hoy y próximas<span className="cnt">{visitas.length}</span></h2>
-            <div className="cuerpo">
-              {visitas.length === 0 ? (
-                <p className="mensaje-vacio">No hay visitas autorizadas.</p>
-              ) : (
-                visitas.map((v) => (
-                  <button className="fila-op" type="button" key={v.id} onClick={() => ir("p04", v.codigo)}>
-                    <span className="ic"><Icon n="qr" s={18} w={1.8} /></span>
-                    <span className="d">
-                      <b>{v.nombre}</b>
-                      <i>{diaEnPalabras(new Date(v.fecha))} · {v.horario} · {v.codigo}</i>
-                    </span>
-                    <span className="der">
-                      <span className={"pastilla" + (v.estado === "vigente" ? "" : " gris")}>
-                        {v.estado === "vigente" ? "Vigente" : "Programada"}
-                      </span>
-                    </span>
-                  </button>
-                ))
-              )}
-            </div>
-            <div className="pie-t">
-              <button type="button" onClick={() => ir("p04")}>
-                <Icon n="credencial" s={15} w={1.9} />Validar un pase de esta unidad
-              </button>
-            </div>
+          <section className="un-bloque un-id">
+            <h3>Residentes · {u.residentes.length}</h3>
+            <ul className="un-personas">{u.residentes.map(r => <li key={r}>{r}</li>)}</ul>
+            {u.telefono && <a className="un-accion" href={`tel:${u.telefono}`}><Icon n="telefono" s={18} />{u.telefono}</a>}
           </section>
-
-          <section className="tarjeta">
-            <h2><Icon n="caja" s={17} w={1.9} />Entregas<span className="cnt">{entregas.length}</span></h2>
-            <div className="cuerpo">
-              {entregas.length === 0 ? (
-                <p className="mensaje-vacio">Nunca llegó nada para esta unidad.</p>
-              ) : (
-                entregas.map((e) => (
-                  <div className="fila-op" key={e.id}>
-                    <span className="ic"><Icon n="caja" s={18} w={1.8} /></span>
-                    <span className="d">
-                      <b>{e.titulo}</b>
-                      <i>{e.estado === "retirar" ? `Recibido ${hace(e.recibidoEl)}` : `Retirado por ${e.retiradoPor}`}</i>
-                    </span>
-                    <span className="der">
-                      <span className={"pastilla" + (e.estado === "retirar" ? "" : " gris")}>
-                        {e.estado === "retirar" ? "Para retirar" : "Retirado"}
-                      </span>
-                    </span>
-                  </div>
-                ))
-              )}
-            </div>
-            {aRetirar.length > 0 && (
-              <div className="pie-t">
-                <button type="button" onClick={() => ir("p05")}>
-                  <Icon n="caja" s={15} w={1.9} />Entregar lo que está guardado
-                </button>
-              </div>
-            )}
+          <section className="un-bloque">
+            <h3>Visitas · {visitas.length}</h3>
+            {visitas.length ? <ul className="un-lista">{visitas.map(v => <li key={v.id}><button type="button" onClick={() => ir("p04", v.codigo)}>
+              <span><b>{v.nombre}</b><small>{v.horario} · {v.codigo}</small></span><Icon n="chevron" s={16} /></button></li>)}</ul>
+              : <p className="un-nada">Sin visitas autorizadas.</p>}
           </section>
-        </div>
-
-        <Ficha>
-          <Dato k="Estado de cuenta" v={`${ROTULO_CUENTA[u.cuenta]}${u.saldo > 0 ? ` · ${pesos(u.saldo)}` : ""}`} />
-          <Dato k="Metros" v={`${u.metros} m²`} />
-          <Dato k="Teléfono" v={u.telefono ?? "No registrado"} />
-          <Dato k="Piso" v={String(u.piso)} />
-        </Ficha>
-
-        {hitos.length > 0 ? (
-          <>
-            <h2 className="sec">Historial de la unidad</h2>
-            <Linea hitos={hitos} relativo />
-          </>
-        ) : (
-          <Aviso icono="info">
-            El historial completo de esta unidad lo ve administración (A05). Recepción ve lo
-            operativo del día: accesos, entregas y visitas.
-          </Aviso>
-        )}
-      </>
-    );
-  }
-
-  return (
-    <>
-      <div className="desk-tit">
-        <div>
-          <h1>Buscar unidad</h1>
-          <p>Por número de unidad, por piso o por el nombre de quien vive ahí.</p>
-        </div>
-      </div>
-
-      <div className="buscador">
-        <span className="gl"><Icon n="ojo" s={19} w={1.9} /></span>
-        <input value={q} onChange={(e) => setQ(e.target.value)} autoFocus
-          placeholder="7D, Osorio, piso 7…" aria-label="Buscar unidad o persona" />
-        {q && (
-          <button className="limpiar" type="button" onClick={() => setQ("")} aria-label="Borrar la búsqueda">
-            <Icon n="mas" s={15} w={2.4} />
-          </button>
-        )}
-      </div>
-
-      <div className="grilla">
-        <div className="cab" style={{ gridTemplateColumns: "90px 1fr 150px 130px 40px" }}>
-          <span>Unidad</span><span>Quiénes viven</span><span>Cuenta</span><span>Operativo</span><span />
-        </div>
-        {resultados.length === 0 ? (
-          <p className="mensaje-vacio">
-            No hay ninguna unidad ni persona que coincida con “{q}”. Probá con el número de
-            unidad o con el apellido.
-          </p>
-        ) : (
-          resultados.map((x) => {
-            const pend = estado.entregas.filter((e) => e.unidad === x.codigo && e.estado === "retirar").length;
-            const vis = estado.visitas.filter((v) => v.unidad === x.codigo && v.cuando === "hoy").length;
-            return (
-              <button className="fil" type="button" key={x.codigo}
-                style={{ gridTemplateColumns: "90px 1fr 150px 130px 40px" }}
-                onClick={() => setAbierta(x.codigo)}>
-                <span>
-                  <span className="cod">{x.codigo}</span>
-                  <span className="sub">Piso {x.piso}</span>
-                </span>
-                <span>
-                  {x.residentes.join(", ")}
-                  <span className="sub">{x.ambientes} · {x.metros} m²</span>
-                </span>
-                <span>
-                  <span className={"pastilla" + (x.cuenta === "al-dia" ? " gris" : "")}>
-                    {ROTULO_CUENTA[x.cuenta]}
-                  </span>
-                </span>
-                <span className="sub" style={{ margin: 0 }}>
-                  {pend > 0 && `${pend} sin retirar`}
-                  {pend > 0 && vis > 0 && " · "}
-                  {vis > 0 && `${vis} visita${vis > 1 ? "s" : ""} hoy`}
-                  {pend === 0 && vis === 0 && "Sin pendientes"}
-                </span>
-                <span><Icon n="chevron" s={15} w={2.2} /></span>
-              </button>
-            );
-          })
-        )}
-      </div>
-    </>
-  );
+          <section className="un-bloque">
+            <h3>Entregas · {entregas.length}</h3>
+            {entregas.length ? <ul className="un-lista">{entregas.map(e => <li key={e.id}><span><b>{e.titulo}</b><small>{e.estado === "retirar" ? `${e.avisadoEl ? "Avisado" : "Recibido"} · ${hace(e.recibidoEl)}` : `Retirado por ${e.retiradoPor}`}</small></span></li>)}</ul>
+              : <p className="un-nada">Sin entregas registradas.</p>}
+            {entregas.some(e => e.estado === "retirar") && <button type="button" className="un-accion" onClick={() => ir("p05")}><Icon n="mas" s={16} />Registrar retiro</button>}
+            {permisos.length > 0 && <details className="un-permisos"><summary>Accesos habituales · {permisos.length}</summary>{permisos.map(p => <p key={p.id}><b>{p.nombre}</b><small>{ROTULO_PERMISO[p.tipo]} · {p.detalle}</small></p>)}</details>}
+          </section>
+        </div> : <div key="directorio" className="un-ficha ct-resuelve">
+          <section className="un-bloque un-id">
+            {/* REC-UNITS-01/02 · el directorio con presencia: el ícono de
+                recepción a la izquierda y el título como título */}
+            <header className="un-dir-cab"><span className="un-dir-ic" aria-hidden="true"><Icon n="credencial" s={22} /></span><span className="un-dir-tit">Directorio</span></header>
+            <h2>{UNIDADES.length}</h2>
+            <p className="un-nada">unidades en {new Set(UNIDADES.map(x => x.piso)).size} pisos. Elegí una para ver quién vive, quién la visita y qué espera.</p>
+          </section>
+          <section className="un-bloque">
+            <h3>Entregas esperando</h3>
+            {conEntregas.length ? <ul className="un-lista">{conEntregas.map(({ x, n }) => <li key={x.codigo}><button type="button" onClick={e => elegir(x.codigo, e.currentTarget)}>
+              <span><b>Unidad {x.codigo}</b><small>{n} entrega{n === 1 ? "" : "s"} · {x.residentes[0]}</small></span><Icon n="chevron" s={16} /></button></li>)}</ul>
+              : <p className="un-nada">No hay entregas esperando.</p>}
+          </section>
+          <section className="un-bloque">
+            <h3>Visitas de hoy</h3>
+            {conVisitas.length ? <ul className="un-lista">{conVisitas.map(({ x, n }) => <li key={x.codigo}><button type="button" onClick={e => elegir(x.codigo, e.currentTarget)}>
+              <span><b>Unidad {x.codigo}</b><small>{n} visita{n === 1 ? "" : "s"} autorizada{n === 1 ? "" : "s"}</small></span><Icon n="chevron" s={16} /></button></li>)}</ul>
+              : <p className="un-nada">Ninguna unidad espera visitas hoy.</p>}
+          </section>
+        </div>}
+      </aside>
+    </div>
+  </ReceptionPage>;
 }

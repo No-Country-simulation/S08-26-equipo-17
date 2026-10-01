@@ -1,11 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "../ui/Icon";
 import { TopBar } from "../ui/TopBar";
 import { Chips } from "../ui/Chips";
 import { Vacio } from "../ui/Vacio";
 import { FinLista } from "../ui/FinLista";
 import { Hoja } from "../ui/Hoja";
+import { ExitoProtagonista } from "../ui/Estados";
 import { RESIDENTE, type Reserva, type Vista } from "@/lib/data";
 import {
   proximas, historial, historialEdificio, cuandoLargo, espacioDe, recursoDe,
@@ -64,15 +65,41 @@ function Fila({ r, onCancelar }: { r: Reserva; onCancelar?: () => void }) {
   );
 }
 
-export function R18({ ir }: { ir: (v: Vista, ref?: string) => void }) {
+export function R18({ ir, refe }: { ir: (v: Vista, ref?: string) => void; refe?: string }) {
   const { estado, hacer } = useApp();
+  /* RES-007 · entrar desde el Home con una reserva abre ESA reserva: queda
+     marcada y a la vista, en su filtro. */
+  useEffect(() => {
+    if (!refe) return;
+    document.getElementById("res-" + refe)?.scrollIntoView({ block: "center" });
+  }, [refe]);
   const [f, setF] = useState<Filtro>("proximas");
   const [cancelar, setCancelar] = useState<Reserva | null>(null);
+  const [cancelada, setCancelada] = useState<{ donde: string; cuando: string } | null>(null);
 
   const prox = proximas(estado.reservas);
   const hist = historial(estado.reservas);
   const edificio = historialEdificio(estado.reservas);
   const lista = f === "proximas" ? prox : f === "historial" ? hist : edificio;
+
+  /* Ronda 3 · cancelar tiene su pantalla de resultado, como autorizar una
+     visita o confirmar una reserva */
+  if (cancelada) {
+    return (
+      <div className="vista" id="r18">
+        <TopBar volverA="r05" ir={ir} onVolver={() => setCancelada(null)} />
+        <ExitoProtagonista
+          titulo="Reserva cancelada"
+          resumen={<><b>{cancelada.donde}</b> · {cancelada.cuando}</>}
+          nota="El turno quedó libre para otras unidades."
+          accion="Reservar otro espacio"
+          onAccion={() => ir("r05")}
+          alterna="Volver a mis reservas"
+          onAlterna={() => setCancelada(null)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="vista" id="r18">
@@ -100,8 +127,9 @@ export function R18({ ir }: { ir: (v: Vista, ref?: string) => void }) {
       ) : (
         <>
           {lista.map((r) => (
-            <Fila key={r.id} r={r}
-              onCancelar={f === "proximas" ? () => setCancelar(r) : undefined} />
+            <div key={r.id} id={"res-" + r.id} aria-current={r.id === refe ? "true" : undefined}>
+              <Fila r={r} onCancelar={f === "proximas" ? () => setCancelar(r) : undefined} />
+            </div>
           ))}
           <FinLista texto={
             f === "proximas" ? "No hay más reservas próximas"
@@ -121,6 +149,7 @@ export function R18({ ir }: { ir: (v: Vista, ref?: string) => void }) {
               t: "reserva/cancelar", id: cancelar.id,
               rotulo: espacioDe(cancelar.recursoId)?.nombre ?? "Espacio",
             });
+            setCancelada({ donde: espacioDe(cancelar.recursoId)?.nombre ?? "Espacio", cuando: cuandoLargo(cancelar) });
             setCancelar(null);
           }}
           onCancelar={() => setCancelar(null)}

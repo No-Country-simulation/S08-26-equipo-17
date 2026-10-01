@@ -1,5 +1,6 @@
 "use client";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
+import { CursorSuave } from "./ui/CursorSuave";
 import { CUENTAS, type Perfil } from "@/lib/data";
 import { Icon } from "./ui/Icon";
 
@@ -10,6 +11,8 @@ export function Login({ onEntrar, onRecuperar }:
   const [verPass, setVerPass] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const refMail = useRef<HTMLInputElement>(null);
+  const refPass = useRef<HTMLInputElement>(null);
 
   function enviar(e: FormEvent) {
     e.preventDefault();
@@ -38,8 +41,10 @@ export function Login({ onEntrar, onRecuperar }:
           <label className="sr" htmlFor="mail">Correo electrónico</label>
           <div className="campo">
             <span className="glifo-campo"><Icon n="sobre" s={20} w={1.8} /></span>
-            <input id="mail" type="email" autoComplete="username" placeholder="Correo electrónico"
+            <input ref={refMail} id="mail" type="text" inputMode="email" autoCapitalize="none" spellCheck={false}
+              autoComplete="username" placeholder="Correo electrónico"
               value={mail} onChange={(e) => { setMail(e.target.value); setError(null); }} />
+            <CursorSuave input={refMail} />
           </div>
         </div>
 
@@ -47,9 +52,10 @@ export function Login({ onEntrar, onRecuperar }:
           <label className="sr" htmlFor="pass">Contraseña</label>
           <div className="campo pw">
             <span className="glifo-campo"><Icon n="candado" s={20} w={1.8} /></span>
-            <input id="pass" type={verPass ? "text" : "password"} autoComplete="current-password"
+            <input ref={refPass} id="pass" type={verPass ? "text" : "password"} autoComplete="current-password"
               placeholder="Contraseña" value={pass}
               onChange={(e) => { setPass(e.target.value); setError(null); }} />
+            <CursorSuave input={refPass} />
             <button className="ver" type="button" aria-pressed={verPass}
               aria-label={verPass ? "Ocultar contraseña" : "Mostrar contraseña"}
               onClick={() => setVerPass(!verPass)}>

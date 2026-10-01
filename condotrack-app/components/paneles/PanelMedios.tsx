@@ -22,25 +22,25 @@ export function PanelMedios() {
   return (
     <div className="medios">
       {trans && (
-        <section className="medio-principal">
-          <span className="k">Transferencia</span>
-          {trans.alias && (
-            <div className="copia grande">
-              <span className="v mono">{trans.alias}</span>
-              <Copiar valor={trans.alias} etiqueta="el alias" />
-            </div>
-          )}
-          {trans.cbu && (
-            <div className="copia">
-              <span className="k">CBU</span>
-              <span className="v mono">{trans.cbu}</span>
-              <Copiar valor={trans.cbu} etiqueta="el CBU" />
-            </div>
-          )}
-          <p className="meta">
-            {trans.titular}{trans.banco ? " · " + trans.banco.split(" · ")[0] : ""}
-          </p>
-          <p className="meta fuerte">Referencia: <b>{RESIDENTE.unidad}</b></p>
+        /* RES-033 · una grilla de datos y no una tarjeta dentro de la hoja:
+           titular y banco para saber a quién, alias y CBU en líneas propias
+           con copia inequívoca, y el siguiente paso dicho. Copiar no es pagar. */
+        <section className="medio-principal" aria-labelledby="mp-transf">
+          <h3 className="k" id="mp-transf">Por transferencia</h3>
+          <dl className="transf">
+            <div><dt>Titular</dt><dd>{trans.titular}</dd></div>
+            {trans.banco && <div><dt>Banco</dt><dd>{trans.banco.split(" · ")[0]}</dd></div>}
+            {trans.alias && (
+              <div className="copia grande"><dt>Alias</dt>
+                <dd><span className="v mono">{trans.alias}</span><Copiar valor={trans.alias} etiqueta="el alias" /></dd></div>
+            )}
+            {trans.cbu && (
+              <div className="copia"><dt>CBU</dt>
+                <dd><span className="v mono">{trans.cbu}</span><Copiar valor={trans.cbu} etiqueta="el CBU" /></dd></div>
+            )}
+            <div><dt>Concepto</dt><dd><b>Unidad {RESIDENTE.unidad}</b></dd></div>
+          </dl>
+          <p className="paso">Transferí desde tu banco y después informá el pago con <b>Ya pagué</b>.</p>
         </section>
       )}
 

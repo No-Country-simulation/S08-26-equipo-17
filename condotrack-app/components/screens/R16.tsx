@@ -59,7 +59,10 @@ export function R16({ ir, refe }: { ir: (v: Vista, r?: string) => void; refe?: s
 
       {/* La llave: quién entra, cuándo puede entrar, en qué estado está y
           con qué pase. Lo administrativo va después, no en una ficha. */}
-      <section className={"acceso" + (v.estado === "vigente" ? " vigente" : "")} aria-label="Acceso">
+      {/* RES-VIS-01 · el acceso lleva de fondo el asset de visitas de
+          CondoTrack, velado, en lugar del carbón liso */}
+      <section className={"acceso con-foto" + (v.estado === "vigente" ? " vigente" : "")} aria-label="Acceso">
+        <img className="acceso-foto" src="/img/visitas_fondo.jpg" alt="" aria-hidden="true" />
         <span className={"estado-acceso" + (v.estado === "vigente" ? "" : " gris")}>
           {v.estado === "vigente" ? "Vigente"
             : v.estado === "programada" ? "Programada"

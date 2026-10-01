@@ -1,8 +1,9 @@
 "use client";
+import { Importe, OjoImporte } from "../ui/Importe";
 import { TopBar } from "../ui/TopBar";
 import { Descarga } from "../ui/Descarga";
 import { type Vista } from "@/lib/data";
-import { EXPENSAS, archivoEstadoCuenta, saldoUnidad } from "@/lib/expensas";
+import { archivoEstadoCuenta, expensasDeLaUnidad, saldoUnidad } from "@/lib/expensas";
 import { pesos, periodoLargo, diaMes } from "@/lib/formato";
 import { useApp } from "@/lib/estado";
 
@@ -15,6 +16,7 @@ import { useApp } from "@/lib/estado";
 export function R23({ ir }: { ir: (v: Vista, ref?: string) => void }) {
   const { estado } = useApp();
   const saldo = saldoUnidad();
+  const EXPENSAS = expensasDeLaUnidad(estado.pagos);
   const proxima = EXPENSAS.find((e) => e.estado !== "pagada");
 
   /* Movimientos de la unidad, no sólo las expensas: lo que se debe y lo
@@ -51,8 +53,8 @@ export function R23({ ir }: { ir: (v: Vista, ref?: string) => void }) {
 
       <section className={"saldo-card" + (saldo > 0 ? " debe" : "")} aria-label="Saldo">
         <img className="campo-foto" src="/img/fachada.jpg" alt="" aria-hidden="true" />
-        <span className="k">Saldo</span>
-        <b>{pesos(saldo)}</b>
+        <span className="k">Saldo <OjoImporte claro /></span>
+        <b><Importe valor={saldo} /></b>
         {proxima && <span className="pie">Vence el {diaMes(proxima.vencimiento)}</span>}
       </section>
 
@@ -67,7 +69,7 @@ export function R23({ ir }: { ir: (v: Vista, ref?: string) => void }) {
                 {m.estado && <span className={"est-t " + m.tono}>{" · "}{m.estado}</span>}
               </i>
             </span>
-            <span className="n">{m.tipo === "pago" ? "− " : ""}{pesos(m.importe)}</span>
+            <span className="n">{m.tipo === "pago" ? "− " : ""}<Importe valor={m.importe} /></span>
           </div>
         ))}
       </div>

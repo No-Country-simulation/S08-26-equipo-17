@@ -1,0 +1,612 @@
+/* ══ CondoTrack · sistema compartido (R1.7) ══════════════════════════════
+   Una sola fuente de tokens y primitivas para Recepción y Administración.
+   Residente conserva su hoja (globals.css) y sus nombres de token; los
+   valores oscuros de acá son los suyos: #0E1210 de fondo, #171D19 de
+   superficie. Ningún rol define un oscuro propio.
+
+   Orden: tokens → modos de movimiento → primitivas → movimiento.       */
+
+:root{
+  /* ── superficies y texto · claro ── */
+  --bg:#F4F5F1;
+  --surface:#FFFFFF;
+  --surface-elevated:#FFFFFF;
+  --surface-sunken:#ECEEE9;
+  --surface-glass:rgba(255,255,255,.56);
+  --surface-glass-strong:rgba(255,255,255,.82);
+  --surface-overlay:rgba(255,255,255,.94);
+  --glass-edge:rgba(255,255,255,.92);
+  --glass-edge-low:rgba(17,22,20,.06);
+  --glass-highlight:inset 0 1px 0 rgba(255,255,255,.85);
+  --glass-blur:blur(22px) saturate(1.45);
+  --text-primary:#111614;
+  --text-secondary:#515A56;
+  --text-tertiary:#666E6A;
+  --divider:rgba(17,22,20,.09);
+  --divider-strong:rgba(17,22,20,.16);
+
+  /* ── interacción ── el control activo es de contraste (carbón en claro,
+     hueso en oscuro). El amarillo es acción primaria, foco y novedad. */
+  --interactive:#111614;
+  --on-interactive:#FFFFFF;
+  --interactive-hover:rgba(17,22,20,.055);
+  --interactive-press:rgba(17,22,20,.10);
+  --accent:#F5E500;
+  --accent-press:#E3D400;
+  --on-accent:#111614;
+  --focus:#F5E500;
+  --disabled:#E4E6E0;
+  --on-disabled:#737B77;
+
+  /* ── estados semánticos · un significado en los tres roles ── */
+  --status-success:#0B6B45;
+  --status-success-bg:rgba(11,107,69,.09);
+  --status-warning:#8A5A00;
+  --status-warning-bg:rgba(138,90,0,.09);
+  --status-danger:#A32B28;
+  --status-danger-bg:rgba(163,43,40,.08);
+
+  /* ── profundidad ── */
+  --shadow-1:0 1px 2px rgba(17,22,20,.05);
+  --shadow-2:0 14px 34px -16px rgba(17,22,20,.24);
+  --shadow-3:0 28px 64px -28px rgba(17,22,20,.38);
+
+  --r-s:10px; --r-m:14px; --r-l:20px; --r-xl:26px;
+
+  /* ── movimiento · tiempos del sistema (master v02 · §07 MOT-001…014) ──
+     Una sola tabla para los tres roles. E1 entra, E2 sale; sin rebote. */
+  --dur-press:120ms;      /* MOT-003 · press */
+  --dur-micro:140ms;      /* MOT-003 hover/focus · MOT-013 enlace */
+  --dur-focus:160ms;      /* MOT-002 campo · MOT-001 selector */
+  --dur-count:180ms;      /* MOT-009 · cambio real de N */
+  --dur-close:180ms;      /* cierre de búsqueda, detalle y panel (E2) */
+  --dur-state:190ms;      /* botón, chip, estado chico */
+  --dur-theme:200ms;      /* MOT-011 */
+  --dur-panel:240ms;      /* MOT-010 · expandir/plegar módulo o familia */
+  --dur-confirm:240ms;    /* MOT-012 · confirmación */
+  --dur-reflow:250ms;     /* filtros que reordenan */
+  --dur-search:260ms;     /* MOT-004 · lupa → campo */
+  --dur-drawer:280ms;     /* MOT-006 · panel contextual */
+  --dur-reveal:300ms;     /* MOT-014 · grupo/módulo que aparece */
+  --dur-page:300ms;       /* MOT-007 · entrada de destino */
+  --dur-exit:130ms;       /* MOT-007 · lo que sale, siempre más rápido */
+  --stagger:50ms;
+  --ease-out:cubic-bezier(.22,1,.36,1);   /* E1 */
+  --ease-in:cubic-bezier(.4,0,1,1);       /* E2 */
+  --ease-spatial:cubic-bezier(.3,.75,.25,1);
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-tema="claro"]){
+    --bg:#0E1210;
+    --surface:#171D19;
+    --surface-elevated:#1E2420;
+    --surface-sunken:#0B0E0C;
+    --surface-glass:rgba(23,29,25,.58);
+    --surface-glass-strong:rgba(23,29,25,.86);
+    --surface-overlay:rgba(26,32,28,.95);
+    --glass-edge:rgba(255,255,255,.16);
+    --glass-edge-low:rgba(255,255,255,.02);
+    --glass-highlight:inset 0 1px 0 rgba(255,255,255,.07);
+    --text-primary:#F1F3EF;
+    --text-secondary:#A2AAA3;
+    --text-tertiary:#8E968F;
+    --divider:rgba(255,255,255,.09);
+    --divider-strong:rgba(255,255,255,.17);
+    --interactive:#F1F3EF;
+    --on-interactive:#111614;
+    --interactive-hover:rgba(255,255,255,.065);
+    --interactive-press:rgba(255,255,255,.11);
+    --disabled:#252B27;
+    --on-disabled:#838B85;
+    --status-success:#7CD3A2;
+    --status-success-bg:rgba(124,211,162,.11);
+    --status-warning:#E6C063;
+    --status-warning-bg:rgba(230,192,99,.11);
+    --status-danger:#F29A92;
+    --status-danger-bg:rgba(242,154,146,.10);
+    --shadow-1:0 1px 2px rgba(0,0,0,.4);
+    --shadow-2:0 16px 36px -16px rgba(0,0,0,.7);
+    --shadow-3:0 30px 70px -28px rgba(0,0,0,.85);
+  }
+}
+:root[data-tema="oscuro"]{
+  --bg:#0E1210;
+  --surface:#171D19;
+  --surface-elevated:#1E2420;
+  --surface-sunken:#0B0E0C;
+  --surface-glass:rgba(23,29,25,.58);
+  --surface-glass-strong:rgba(23,29,25,.86);
+  --surface-overlay:rgba(26,32,28,.95);
+  --glass-edge:rgba(255,255,255,.16);
+  --glass-edge-low:rgba(255,255,255,.02);
+  --glass-highlight:inset 0 1px 0 rgba(255,255,255,.07);
+  --text-primary:#F1F3EF;
+  --text-secondary:#A2AAA3;
+  --text-tertiary:#8E968F;
+  --divider:rgba(255,255,255,.09);
+  --divider-strong:rgba(255,255,255,.17);
+  --interactive:#F1F3EF;
+  --on-interactive:#111614;
+  --interactive-hover:rgba(255,255,255,.065);
+  --interactive-press:rgba(255,255,255,.11);
+  --disabled:#252B27;
+  --on-disabled:#838B85;
+  --status-success:#7CD3A2;
+  --status-success-bg:rgba(124,211,162,.11);
+  --status-warning:#E6C063;
+  --status-warning-bg:rgba(230,192,99,.11);
+  --status-danger:#F29A92;
+  --status-danger-bg:rgba(242,154,146,.10);
+  --shadow-1:0 1px 2px rgba(0,0,0,.4);
+  --shadow-2:0 16px 36px -16px rgba(0,0,0,.7);
+  --shadow-3:0 30px 70px -28px rgba(0,0,0,.85);
+}
+
+/* ── modo reducido forzado (?motionreduce=1) ─────────────────────────────
+   Espeja la regla de prefers-reduced-motion de globals.css para poder
+   revisar el modo reducido sin cambiar el sistema operativo. El modo
+   normal forzado (?motionreduce=0) es data-movimiento="forzado", que ya
+   excluye la regla del sistema. Sin parámetro manda el sistema. */
+:root[data-movimiento="reducido"] *{animation-duration:.01ms!important;animation-iteration-count:1!important;
+  transition-duration:.01ms!important;scroll-behavior:auto!important}
+:root[data-movimiento="reducido"] .swipe .relleno,:root[data-movimiento="reducido"] .swipe .pulgar{transition-duration:.16s!important}
+:root[data-movimiento="reducido"] .giro,:root[data-movimiento="reducido"] .rueda{animation-duration:1.1s!important;animation-iteration-count:infinite!important}
+@media (prefers-reduced-motion:reduce){
+  :root:not([data-movimiento="forzado"]) .ct-desk *{scroll-behavior:auto!important}
+}
+
+/* ══ Primitivas ═══════════════════════════════════════════════════════════
+   Se usan dentro de .ct-desk (Recepción y Administración).               */
+
+.ct-desk{--ct-pad:clamp(16px,3.25vw,48px);color:var(--text-primary);font-family:var(--ff-ui)}
+.ct-desk :focus-visible{outline:2px solid var(--text-primary);outline-offset:2px;
+  box-shadow:0 0 0 5px color-mix(in srgb,var(--focus) 72%,transparent)}
+.ct-desk [hidden]{display:none!important}
+/* Regiones que reciben foco por programa (detalle abierto, fila marcada): no son controles. */
+.ct-desk [tabindex="-1"]:focus-visible{outline:none;box-shadow:none}
+
+/* ── tipografía · la jerarquía la hace el tipo antes que la caja ── */
+.ct-eyebrow{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--text-secondary)}
+.ct-h1{font-size:clamp(34px,3vw,44px);line-height:1.02;font-weight:700;letter-spacing:-.035em}
+.ct-h2{font-size:21px;line-height:1.2;font-weight:700;letter-spacing:-.02em}
+.ct-h3{font-size:16px;line-height:1.3;font-weight:700;letter-spacing:-.01em}
+.ct-meta{font-size:13px;line-height:1.4;color:var(--text-secondary)}
+.ct-label{font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary)}
+.ct-cifra{font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.ct-num{font-variant-numeric:tabular-nums}
+
+/* Cabecera de pantalla: afuera de toda superficie. */
+.ct-cabecera{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin:8px 0 26px}
+.ct-cabecera>div:first-child{min-width:0}
+.ct-cabecera .ct-h1{margin-top:6px}
+.ct-cabecera p{margin-top:10px;max-width:62ch;font-size:15px;line-height:1.45;color:var(--text-secondary)}
+.ct-cabecera-acciones{display:flex;align-items:center;gap:10px;flex:none}
+.ct-volver{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px 0 8px;margin-bottom:10px;
+  border-radius:999px;font-size:13px;font-weight:500;color:var(--text-primary);background:var(--interactive-hover);
+  transition:background var(--dur-micro) var(--ease-out)}
+.ct-volver:hover{background:var(--interactive-press)}
+
+/* ── material · vidrio real ──────────────────────────────────────────────
+   Translucidez + desenfoque del fondo + filo interno con gradiente (claro
+   arriba, nada abajo). No es una caja blanca con borde gris.            */
+.ct-glass,.ct-surface{position:relative;border-radius:var(--r-xl);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  box-shadow:var(--glass-highlight),var(--shadow-2)}
+.ct-glass{background:var(--surface-glass)}
+.ct-surface{background:var(--surface-glass-strong)}
+.ct-glass::after,.ct-surface::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+  background:linear-gradient(172deg,var(--glass-edge) 0%,color-mix(in srgb,var(--glass-edge) 30%,transparent) 36%,var(--glass-edge-low) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+/* Superficie hundida: controles y pistas. */
+.ct-sunken{background:var(--interactive-hover);border-radius:var(--r-m)}
+
+/* ── FolderGlassCard ─────────────────────────────────────────────────────
+   Silueta de carpeta: rectángulo arquitectónico con una solapa arriba a la
+   izquierda y un chaflán suave. El contorno se calcula en JS (clip-path
+   path) para que los radios no se deformen con el tamaño. La sombra es un
+   hermano, no un filtro del padre: un filtro en un ancestro apaga el
+   backdrop-filter. */
+.ct-folder{position:relative;isolation:isolate;--pestana:15px}
+.ct-folder-sombra{position:absolute;inset:0;z-index:-1;overflow:visible;pointer-events:none;opacity:.85;
+  transition:opacity var(--dur-state) var(--ease-out)}
+.ct-folder-sombra path{fill:rgba(17,22,20,.2)}
+:root[data-tema="oscuro"] .ct-folder-sombra path{fill:rgba(0,0,0,.6)}
+@media (prefers-color-scheme:dark){:root:not([data-tema="claro"]) .ct-folder-sombra path{fill:rgba(0,0,0,.6)}}
+.ct-folder-cuerpo{position:relative;height:100%;background:var(--surface-glass);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border-radius:var(--r-l)}
+.ct-folder[data-medido] .ct-folder-cuerpo{border-radius:0}
+.ct-folder[data-material="denso"] .ct-folder-cuerpo{background:var(--surface-glass-strong)}
+.ct-folder[data-material="overlay"] .ct-folder-cuerpo{background:var(--surface-overlay)}
+.ct-folder-filo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.ct-folder-filo path{fill:none;stroke-width:2.2;vector-effect:non-scaling-stroke}
+.ct-folder-pestana{position:absolute;left:18px;top:1px;height:calc(var(--pestana) - 1px);display:flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text-secondary);white-space:nowrap}
+.ct-folder-contenido{position:relative;padding:calc(var(--pestana) + 18px) 22px 20px;height:100%;display:flex;flex-direction:column}
+.ct-folder:hover .ct-folder-sombra,.ct-folder:focus-within .ct-folder-sombra{opacity:1}
+
+/* ── botones · tres niveles y un modificador ── */
+.ct-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:48px;padding:0 20px;
+  border-radius:var(--r-m);font-size:15px;font-weight:700;letter-spacing:-.005em;white-space:nowrap;
+  transition:background var(--dur-micro) var(--ease-out),color var(--dur-micro) var(--ease-out),
+    transform var(--dur-press) var(--ease-out),box-shadow var(--dur-state) var(--ease-out)}
+.ct-btn:active:not(:disabled){transform:scale(.975)}
+/* SYS-BTN · ocupado: la operación está en curso, un segundo toque no la duplica. */
+.ct-btn[aria-busy="true"]{cursor:progress;pointer-events:none;opacity:.72}
+.ct-btn svg{flex:none}
+.ct-btn--primario{background:var(--accent);color:var(--on-accent);
+  box-shadow:inset 0 -2px 0 rgba(17,22,20,.10),0 8px 20px -12px rgba(110,100,0,.7)}
+.ct-btn--primario:hover:not(:disabled){background:var(--accent-press)}
+.ct-btn--fuerte{background:var(--interactive);color:var(--on-interactive)}
+.ct-btn--fuerte:hover:not(:disabled){background:color-mix(in srgb,var(--interactive) 88%,var(--bg))}
+.ct-btn--secundario{background:var(--interactive-hover);color:var(--text-primary)}
+.ct-btn--secundario:hover:not(:disabled){background:var(--interactive-press)}
+.ct-btn--texto{height:auto;padding:4px 0;border-radius:4px;background:none;font-weight:500;
+  text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
+.ct-btn--chico{height:38px;padding:0 14px;font-size:14px;border-radius:12px}
+.ct-btn--ancho{width:100%}
+.ct-btn:disabled{background:var(--disabled);color:var(--on-disabled);box-shadow:none;cursor:not-allowed}
+.ct-btn--texto:disabled{background:none}
+.ct-icono-btn{width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:var(--r-m);color:var(--text-primary);
+  transition:background var(--dur-micro) var(--ease-out),transform var(--dur-micro) var(--ease-out)}
+.ct-icono-btn:hover{background:var(--interactive-hover)}
+.ct-icono-btn:active{transform:scale(.95)}
+.ct-icono-btn[aria-expanded="true"]{background:var(--interactive-press)}
+
+/* ── StatusTag · informa, no acciona ─────────────────────────────────────
+   Sin borde, sin fondo de botón: marca + palabra. La forma de la marca
+   cambia con el estado, así no depende sólo del color. */
+.ct-status{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;line-height:1.2;
+  color:var(--text-secondary);white-space:nowrap}
+.ct-status>i{width:7px;height:7px;border-radius:50%;flex:none;background:currentColor}
+.ct-status[data-tono="ok"]{color:var(--status-success)}
+.ct-status[data-tono="alerta"]{color:var(--status-warning)}
+.ct-status[data-tono="error"]{color:var(--status-danger)}
+.ct-status[data-tono="error"]>i{border-radius:1.5px;transform:rotate(45deg);width:6.5px;height:6.5px}
+.ct-status[data-tono="pendiente"]>i{background:transparent;box-shadow:inset 0 0 0 1.6px currentColor}
+.ct-status[data-tono="neutro"]{color:var(--text-secondary)}
+.ct-status[data-tono="curso"]{color:var(--text-primary)}
+.ct-status[data-tono="hecho"]>i{background:transparent;box-shadow:inset 0 0 0 1.6px currentColor;position:relative}
+.ct-status[data-fuerte]{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:12px}
+
+/* Severidad: marca vertical + palabra. No se confunde con el estado. */
+.ct-sev{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.ct-sev>i{display:flex;gap:2px;align-items:flex-end;height:12px}
+.ct-sev>i>b{width:3px;border-radius:1px;background:var(--divider-strong)}
+.ct-sev>i>b:nth-child(1){height:5px}.ct-sev>i>b:nth-child(2){height:8px}.ct-sev>i>b:nth-child(3){height:12px}
+.ct-sev[data-g="baja"]>i>b:nth-child(1),
+.ct-sev[data-g="media"]>i>b:nth-child(-n+2){background:var(--text-primary)}
+.ct-sev[data-g="alta"]{color:var(--status-danger)}
+.ct-sev[data-g="alta"]>i>b{background:var(--status-danger)}
+
+/* ── selección · marca + profundidad, nunca un relleno de color ── */
+.ct-fila{position:relative;display:grid;align-items:center;gap:16px;min-height:60px;padding:12px 16px;
+  border-bottom:1px solid var(--divider);text-align:left;width:100%;
+  transition:background var(--dur-micro) var(--ease-out)}
+.ct-fila:hover{background:var(--interactive-hover)}
+.ct-fila[aria-selected="true"],.ct-fila[aria-current="true"],.ct-fila[aria-expanded="true"]{background:var(--interactive-hover)}
+.ct-fila::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0;
+  background:var(--interactive);transform:scaleY(0);transition:transform var(--dur-state) var(--ease-out)}
+.ct-fila[aria-selected="true"]::before,.ct-fila[aria-current="true"]::before,.ct-fila[aria-expanded="true"]::before{transform:scaleY(1)}
+.ct-tabla-cab{display:grid;gap:16px;padding:0 16px 10px;border-bottom:1px solid var(--divider-strong)}
+.ct-tabla-cab>*{font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary)}
+
+/* ── Segmentado · FilterControl con indicador que se desliza ──────────
+   El indicador se mide en JS (offset del activo) y se mueve con transform:
+   la selección se traslada, no parpadea. Antes de medir, el activo se
+   pinta solo. */
+.ct-seg{position:relative;display:inline-flex;flex-wrap:wrap;gap:2px;padding:4px;border-radius:var(--r-m);
+  background:var(--interactive-hover);isolation:isolate}
+.ct-seg>button{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;
+  border-radius:10px;font-size:14px;font-weight:500;color:var(--text-secondary);white-space:nowrap;
+  transition:color var(--dur-state) var(--ease-out)}
+.ct-seg>button:hover{color:var(--text-primary)}
+.ct-seg>button[aria-checked="true"],.ct-seg>button[aria-pressed="true"]{color:var(--on-interactive)}
+.ct-seg>button b{font-weight:700;font-variant-numeric:tabular-nums}
+.ct-seg>button small{font-size:12px;font-variant-numeric:tabular-nums;opacity:.8}
+.ct-seg-ind{position:absolute;z-index:0;left:0;top:0;width:var(--ind-w,0);height:var(--ind-h,0);
+  transform:translate(var(--ind-x,0),var(--ind-y,0));border-radius:10px;background:var(--interactive);
+  box-shadow:0 4px 12px -6px rgba(17,22,20,.5);opacity:0;
+  transition:transform var(--dur-reflow) var(--ease-spatial),width var(--dur-reflow) var(--ease-spatial),
+    height var(--dur-reflow) var(--ease-spatial),opacity var(--dur-micro)}
+.ct-seg[data-medido] .ct-seg-ind{opacity:1}
+.ct-seg:not([data-medido])>button[aria-checked="true"],.ct-seg:not([data-medido])>button[aria-pressed="true"]{background:var(--interactive)}
+.ct-seg[data-vacio] .ct-seg-ind{opacity:0}
+.ct-seg--bloque{display:grid;width:100%}
+.ct-seg--bloque>button{justify-content:space-between}
+/* Variante U01: el elegido se eleva en vez de invertirse. */
+.ct-seg--elevado{background:transparent;padding:0}
+.ct-seg--elevado>button[aria-checked="true"]{color:var(--text-primary);font-weight:700}
+.ct-seg--elevado .ct-seg-ind{background:var(--surface-elevated);box-shadow:var(--shadow-1),0 6px 16px -8px rgba(17,22,20,.28),inset 0 0 0 1px var(--divider)}
+.ct-seg--elevado:not([data-medido])>button[aria-checked="true"]{background:var(--surface-elevated)}
+
+/* ── línea de tiempo · hora en columna, marca en el eje ── */
+.ct-tl{list-style:none;position:relative}
+.ct-tl>li{position:relative;display:grid;grid-template-columns:62px 20px 1fr;gap:0 12px;padding:12px 0}
+.ct-tl>li>time{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;padding-top:1px}
+.ct-tl>li>i{position:relative;justify-self:center;width:9px;height:9px;margin-top:5px;border-radius:50%;
+  background:var(--surface);box-shadow:inset 0 0 0 2px var(--text-primary)}
+.ct-tl>li:not(:last-child)>i::after{content:"";position:absolute;left:50%;top:13px;width:1px;height:calc(100% + 24px);
+  transform:translateX(-50%);background:var(--divider-strong)}
+
+/* ── popover y paneles contextuales ── */
+.ct-pop{position:absolute;z-index:80;border-radius:var(--r-l);background:var(--surface-overlay);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  box-shadow:var(--glass-highlight),var(--shadow-3);transform-origin:top right;
+  animation:ct-pop-entra var(--dur-state) var(--ease-out) both}
+.ct-pop::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+  background:linear-gradient(172deg,var(--glass-edge),transparent 40%,var(--glass-edge-low));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+@keyframes ct-pop-entra{from{opacity:0;transform:translateY(-6px) scale(.985)}}
+
+.ct-panel{animation:ct-panel-entra var(--dur-drawer) var(--ease-out) both}
+@keyframes ct-panel-entra{from{opacity:0;transform:translateX(18px)}}
+.ct-panel-cerrar{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px 0 10px;border-radius:999px;
+  font-size:13px;font-weight:500;background:var(--interactive-hover);color:var(--text-primary);
+  transition:background var(--dur-micro) var(--ease-out)}
+.ct-panel-cerrar:hover{background:var(--interactive-press)}
+
+/* ── campos ── */
+.ct-campo{display:grid;gap:8px}
+.ct-campo>label,.ct-campo>span.ct-campo-rot{font-size:14px;font-weight:700}
+.ct-campo>label small,.ct-campo-rot small{font-weight:400;color:var(--text-secondary);margin-left:6px}
+.ct-campo input,.ct-campo select,.ct-campo textarea{width:100%;min-height:50px;padding:13px 16px;border-radius:var(--r-m);
+  border:1px solid var(--divider);background:var(--interactive-hover);color:var(--text-primary);font:inherit;font-size:16px;
+  box-shadow:inset 0 1px 2px rgba(17,22,20,.05);
+  transition:background var(--dur-focus) var(--ease-out),border-color var(--dur-focus) var(--ease-out),box-shadow var(--dur-focus) var(--ease-out)}
+.ct-campo textarea{min-height:112px;resize:vertical;line-height:1.45}
+.ct-campo input::placeholder,.ct-campo textarea::placeholder{color:var(--text-tertiary)}
+.ct-campo input:hover,.ct-campo select:hover,.ct-campo textarea:hover{background:var(--interactive-press)}
+.ct-campo input:focus,.ct-campo select:focus,.ct-campo textarea:focus{outline:none;background:var(--surface);border-color:var(--text-primary);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--focus) 60%,transparent)}
+.ct-campo select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:calc(100% - 22px) 22px,calc(100% - 17px) 22px;background-size:5px 5px;background-repeat:no-repeat;padding-right:44px}
+.ct-campo-error{font-size:13px;font-weight:500;color:var(--status-danger)}
+.ct-campo input[aria-invalid="true"],.ct-campo textarea[aria-invalid="true"]{border-color:var(--status-danger)}
+
+/* ══ Movimiento · gramática compartida ════════════════════════════════════ */
+
+/* Cambio de destino: el shell no se mueve; sólo entra el contenido. */
+.ct-vista{animation:ct-vista-entra var(--dur-page) var(--ease-out) both}
+.ct-vista[data-fase="sale"]{animation:ct-vista-sale var(--dur-exit) var(--ease-in) both}
+@keyframes ct-vista-entra{from{opacity:0;transform:translateY(12px)}}
+@keyframes ct-vista-sale{to{opacity:0;transform:translateY(-6px)}}
+
+/* Grupos chicos: primario primero, 3–4 módulos como máximo. */
+.ct-escalonar>*{animation:ct-modulo-entra var(--dur-reveal) var(--ease-out) both}
+.ct-escalonar>*:nth-child(2){animation-delay:var(--stagger)}
+.ct-escalonar>*:nth-child(3){animation-delay:calc(var(--stagger) * 2)}
+.ct-escalonar>*:nth-child(4){animation-delay:calc(var(--stagger) * 3)}
+.ct-escalonar>*:nth-child(n+5){animation:none}
+@keyframes ct-modulo-entra{from{opacity:0;transform:translateY(10px)}}
+
+/* Región que cambia de estado: sólo la región, no la pantalla. */
+.ct-resuelve{animation:ct-resuelve var(--dur-state) var(--ease-out) both}
+@keyframes ct-resuelve{from{opacity:0;transform:translateY(5px)}}
+
+/* Elemento insertado en una lista. */
+.ct-insertado{animation:ct-inserta 340ms var(--ease-out) both}
+@keyframes ct-inserta{from{opacity:0;transform:translateY(-10px)}}
+
+/* Lista filtrada: se reorganiza como un solo bloque. */
+.ct-refiltra{animation:ct-refiltra var(--dur-reflow) var(--ease-out) both}
+@keyframes ct-refiltra{from{opacity:.25;transform:translateY(4px)}}
+
+/* ── Sensor de novedad · producto, no Recepción ──────────────────────────
+   Exactamente dos pulsos (2 × 800 ms) y queda el punto quieto. Se dispara
+   sólo cuando el estado es nuevo; montar o navegar no lo repite. */
+.ct-novedad{position:relative}
+.ct-novedad-punto{position:absolute;right:7px;top:7px;width:9px;height:9px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 0 2px var(--bg)}
+.ct-novedad-punto::after{content:"";position:absolute;inset:-5px;border-radius:50%;
+  box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 70%,transparent);opacity:0}
+.ct-novedad[data-pulso="true"] .ct-novedad-punto::after{animation:ct-pulso 800ms var(--ease-out) 2}
+@keyframes ct-pulso{0%{opacity:1;box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 75%,transparent)}
+  100%{opacity:0;box-shadow:0 0 0 12px color-mix(in srgb,var(--accent) 0%,transparent)}}
+.ct-novedad-cuenta{position:absolute;right:-4px;top:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;
+  display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-size:11px;font-weight:700;
+  box-shadow:0 0 0 2px var(--bg);font-variant-numeric:tabular-nums}
+
+/* ══ Header · una sola capa de navegación ═════════════════════════════════
+   Marca · navegación · utilidades. Nada de botones encajonados uno por
+   uno: la navegación es una cápsula de vidrio con un indicador de carbón
+   que se desliza; las utilidades, otra cápsula con controles sin borde. */
+.ct-top{position:relative;z-index:60;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;
+  gap:20px;height:104px;padding:0 var(--ct-pad);max-width:1700px;margin:0 auto}
+.ct-top-marca{justify-self:start}
+.ct-ancla{position:relative}
+.ct-marca-btn{display:flex;align-items:center;gap:8px;height:52px;padding:4px 10px 4px 4px;border-radius:16px;color:var(--text-secondary);
+  transition:background var(--dur-micro) var(--ease-out)}
+.ct-marca-btn img{height:40px;width:auto}
+.ct-marca-btn:hover,.ct-marca-btn[aria-expanded="true"]{background:var(--interactive-hover)}
+.ct-marca-btn svg{transform:rotate(90deg);transition:transform var(--dur-state) var(--ease-out)}
+.ct-marca-btn[aria-expanded="true"] svg{transform:rotate(-90deg)}
+
+.ct-nav,.ct-utilidades{position:relative;display:flex;align-items:center;gap:2px;padding:4px;border-radius:18px;
+  background:var(--surface-glass);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  box-shadow:var(--glass-highlight),var(--shadow-1)}
+.ct-nav::after,.ct-utilidades::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+  background:linear-gradient(172deg,var(--glass-edge),transparent 45%,var(--glass-edge-low));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.ct-nav{justify-self:center;isolation:isolate}
+.ct-nav>button{position:relative;z-index:1;height:44px;padding:0 20px;border-radius:14px;font-size:15px;font-weight:500;
+  color:var(--text-secondary);white-space:nowrap;transition:color var(--dur-state) var(--ease-out)}
+.ct-nav>button:hover{color:var(--text-primary)}
+.ct-nav>button[aria-current="page"]{color:var(--on-interactive);font-weight:700}
+.ct-nav-ind{position:absolute;z-index:0;left:0;top:0;width:var(--ind-w,0);height:var(--ind-h,0);border-radius:14px;
+  transform:translate(var(--ind-x,0),var(--ind-y,0));background:var(--interactive);opacity:0;
+  box-shadow:0 6px 14px -8px rgba(17,22,20,.55);
+  transition:transform var(--dur-reflow) var(--ease-spatial),width var(--dur-reflow) var(--ease-spatial),opacity var(--dur-micro)}
+.ct-nav[data-medido] .ct-nav-ind{opacity:1}
+.ct-nav:not([data-medido])>button[aria-current="page"]{background:var(--interactive)}
+
+.ct-utilidades{justify-self:end;gap:4px;min-width:0;
+  transition:min-width var(--dur-close) var(--ease-in)}
+.ct-utilidades>.ct-ancla,.ct-utilidades>.ct-icono-btn{transition:opacity var(--dur-micro) var(--ease-out) 90ms,visibility 0s 0s}
+.ct-header-btn{display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;border-radius:14px;font-size:14px;font-weight:500;
+  color:var(--text-primary);white-space:nowrap;transition:background var(--dur-micro) var(--ease-out)}
+.ct-header-btn:hover,.ct-header-btn[aria-expanded="true"]{background:var(--interactive-hover)}
+.ct-header-btn>svg:last-child{transform:rotate(90deg);opacity:.6}
+.ct-avatar{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:13px;font-weight:700;letter-spacing:.02em;
+  color:var(--text-primary);transition:background var(--dur-micro) var(--ease-out)}
+.ct-avatar:hover,.ct-avatar[aria-expanded="true"]{background:var(--interactive-hover)}
+.ct-avatar.grande{width:48px;height:48px;border-radius:16px;background:var(--interactive);color:var(--on-interactive);font-size:15px}
+
+/* ── búsqueda que se estira hacia la izquierda ── */
+.ct-buscar{position:static;width:44px;height:44px;flex:none}
+.ct-buscar-campo{position:absolute;z-index:2;right:4px;top:4px;height:44px;width:44px;display:flex;align-items:center;border-radius:14px;overflow:hidden;
+  transition:width var(--dur-close) var(--ease-in),background var(--dur-state) var(--ease-out),box-shadow var(--dur-state) var(--ease-out)}
+.ct-buscar-lupa{width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:14px;color:var(--text-primary);
+  transition:background var(--dur-micro) var(--ease-out)}
+.ct-buscar[data-abierto="false"] .ct-buscar-lupa:hover{background:var(--interactive-hover)}
+/* Cerrado, el campo no existe para el layout: ni el input ni la X quedan asomados. */
+.ct-buscar[data-abierto="false"] .ct-buscar-campo input{flex:0 0 0;width:0;padding:0}
+.ct-buscar[data-abierto="false"] .ct-buscar-cerrar{display:none}
+.ct-buscar-campo input{flex:1;min-width:0;height:44px;border:0;background:none;color:var(--text-primary);font:inherit;font-size:16px;
+  opacity:0;transition:opacity var(--dur-micro) var(--ease-out)}
+.ct-buscar-campo input:focus{outline:none;box-shadow:none}
+.ct-buscar-campo input::placeholder{color:var(--text-tertiary)}
+.ct-buscar-campo input::-webkit-search-cancel-button{display:none}
+.ct-buscar-cerrar{width:36px;height:36px;margin-right:4px;flex:none;display:grid;place-items:center;border-radius:12px;opacity:0;
+  color:var(--text-secondary);transition:opacity var(--dur-micro) var(--ease-out),background var(--dur-micro)}
+.ct-buscar-cerrar:hover{background:var(--interactive-hover);color:var(--text-primary)}
+.ct-buscar[data-abierto="true"] .ct-buscar-campo{width:calc(100% - 8px);background:var(--surface);
+  transition:width var(--dur-search) var(--ease-out),background var(--dur-state) var(--ease-out),box-shadow var(--dur-state) var(--ease-out);
+  box-shadow:inset 0 0 0 1px var(--divider),0 6px 18px -10px rgba(17,22,20,.35)}
+.ct-buscar[data-abierto="true"] .ct-buscar-campo:focus-within{box-shadow:inset 0 0 0 1.5px var(--text-primary),0 0 0 4px color-mix(in srgb,var(--focus) 55%,transparent)}
+.ct-buscar[data-abierto="true"] .ct-buscar-campo input,.ct-buscar[data-abierto="true"] .ct-buscar-cerrar{opacity:1;transition-delay:80ms}
+/* El ancho se pide al viewport y no al contenedor: en Administración las
+   utilidades son sólo tres botones y el % dejaba una caja de 140 px. */
+.ct-top[data-buscando="true"] .ct-utilidades{min-width:min(440px,calc(100vw - 32px));
+  transition:min-width var(--dur-search) var(--ease-out)}
+.ct-top[data-buscando="true"] .ct-utilidades>:not(.ct-buscar){opacity:0;visibility:hidden;
+  transition:opacity 90ms var(--ease-in),visibility 0s 90ms}
+.ct-buscar-res{position:absolute;right:0;top:calc(100% + 10px);width:100%;min-width:360px;max-height:min(62vh,480px);overflow:auto;padding:8px;
+  border-radius:var(--r-l);background:var(--surface-overlay);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  box-shadow:var(--glass-highlight),var(--shadow-3);animation:ct-pop-entra var(--dur-state) var(--ease-out) 60ms both}
+.ct-buscar-estado{padding:8px 12px 6px;font-size:13px;color:var(--text-secondary)}
+.ct-buscar-res ul{list-style:none}
+.ct-buscar-res h3{padding:12px 12px 6px;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary)}
+.ct-buscar-res li button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px;padding:8px 12px;border-radius:12px;
+  transition:background var(--dur-micro) var(--ease-out)}
+.ct-buscar-res li button:hover,.ct-buscar-res li button:focus-visible{background:var(--interactive-hover)}
+.ct-buscar-res li button span{display:grid;gap:3px;min-width:0}
+.ct-buscar-res li button b{font-size:15px;font-weight:700}
+.ct-buscar-res li button small{font-size:13px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── paneles del header ── */
+.ct-ancla>.ct-pop{top:calc(100% + 12px);right:0}
+.ct-ancla>.ct-pop[data-alineado="izquierda"]{right:auto;left:0;transform-origin:top left}
+.ct-edificio-pop{display:grid;gap:4px;width:280px;padding:18px 20px}
+.ct-edificio-pop b{font-size:17px;font-weight:700;margin-top:6px}
+.ct-edificio-pop p{font-size:14px;color:var(--text-secondary)}
+.ct-edificio-pop small{margin-top:10px;padding-top:10px;border-top:1px solid var(--divider);font-size:13px;color:var(--text-secondary)}
+
+.ct-avisos{width:min(420px,calc(100vw - 32px));padding:8px 8px 10px}
+.ct-avisos header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 12px 10px}
+.ct-avisos h2{font-size:17px;font-weight:700;letter-spacing:-.015em}
+.ct-avisos header button{font-size:13px;font-weight:500;text-decoration:underline;text-underline-offset:3px;color:var(--text-secondary)}
+.ct-avisos section{padding-top:4px}
+.ct-avisos h3{padding:10px 12px 6px;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);
+  border-top:1px solid var(--divider)}
+.ct-avisos ul{list-style:none}
+.ct-aviso{position:relative;width:100%;display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:12px;align-items:start;padding:12px;border-radius:12px;
+  transition:background var(--dur-micro) var(--ease-out)}
+.ct-aviso:hover,.ct-aviso:focus-visible{background:var(--interactive-hover)}
+.ct-avisos li+li .ct-aviso::before{content:"";position:absolute;left:56px;right:12px;top:0;height:1px;background:var(--divider)}
+.ct-aviso-icono{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--interactive-hover);color:var(--text-primary)}
+.ct-aviso-txt{font-size:14px;line-height:1.35;color:var(--text-primary)}
+.ct-aviso-txt b{font-weight:700}
+.ct-aviso-txt small{display:block;margin-top:3px;font-size:13px;color:var(--text-secondary)}
+.ct-aviso time{font-size:13px;font-weight:500;color:var(--text-secondary);font-variant-numeric:tabular-nums;padding-top:1px}
+.ct-aviso[data-no-leido] .ct-aviso-icono{box-shadow:inset 0 0 0 1.5px var(--text-primary)}
+.ct-aviso[data-no-leido]::after{content:"";position:absolute;left:4px;top:24px;width:6px;height:6px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 0 2px var(--surface)}
+.ct-avisos-vacio{padding:10px 12px 14px;font-size:14px;color:var(--text-secondary)}
+
+.ct-perfil{width:320px;padding:8px}
+.ct-perfil header{display:flex;gap:14px;align-items:center;padding:14px 12px 16px}
+.ct-perfil h2{font-size:17px;font-weight:700}
+.ct-perfil header p{font-size:14px;color:var(--text-primary)}
+.ct-perfil header small{font-size:13px;color:var(--text-secondary)}
+.ct-perfil section{padding:10px 12px;border-top:1px solid var(--divider)}
+.ct-perfil h3{font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:8px}
+.ct-perfil-roles{display:grid;gap:2px}
+.ct-perfil-roles button{display:flex;justify-content:space-between;align-items:center;height:40px;padding:0 10px;border-radius:10px;font-size:14px;font-weight:500;
+  transition:background var(--dur-micro) var(--ease-out)}
+.ct-perfil-roles button:hover:not(:disabled){background:var(--interactive-hover)}
+.ct-perfil-roles button:disabled{cursor:default;font-weight:700}
+.ct-perfil-roles small{font-size:12px;color:var(--text-secondary);font-weight:400}
+.ct-perfil-tema{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:12px;background:var(--interactive-hover)}
+.ct-perfil-tema button{display:flex;align-items:center;justify-content:center;gap:8px;height:38px;border-radius:9px;font-size:14px;font-weight:500;color:var(--text-secondary);
+  transition:background var(--dur-state) var(--ease-out),color var(--dur-state) var(--ease-out)}
+.ct-perfil-tema button[aria-pressed="true"]{background:var(--interactive);color:var(--on-interactive)}
+.ct-perfil-salir{display:flex;align-items:center;gap:10px;width:100%;height:46px;margin-top:4px;padding:0 12px;border-top:1px solid var(--divider);font-size:14px;font-weight:500;
+  border-radius:0 0 12px 12px;transition:background var(--dur-micro) var(--ease-out)}
+.ct-perfil-salir:hover{background:var(--interactive-hover)}
+
+.ct-menu{width:300px;padding:10px}
+.ct-menu nav{display:grid;gap:10px}
+.ct-menu .rec-nav-group{display:grid;gap:2px}
+.ct-menu .rec-nav-group+.rec-nav-group{padding-top:10px;border-top:1px solid var(--divider)}
+.ct-menu nav button{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:12px;font-size:15px;font-weight:500;color:var(--text-primary);
+  transition:background var(--dur-micro) var(--ease-out)}
+.ct-menu nav button:hover{background:var(--interactive-hover)}
+.ct-menu nav button[aria-current="page"]{background:var(--interactive);color:var(--on-interactive);font-weight:700}
+.ct-menu footer{display:grid;gap:2px;margin-top:10px;padding:12px 12px 6px;border-top:1px solid var(--divider)}
+.ct-menu footer b{font-size:14px}
+.ct-menu footer small{font-size:13px;color:var(--text-secondary)}
+
+@media (max-width:1150px){
+  .ct-top{gap:12px}
+  .ct-nav>button{padding:0 14px}
+  .ct-edificio .ct-header-btn span{display:none}
+}
+@media (max-width:900px){
+  .ct-top{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"marca util" "nav nav";height:auto;row-gap:12px;padding-block:14px 8px}
+  .ct-top-marca{grid-area:marca}
+  .ct-utilidades{grid-area:util}
+  .ct-nav{grid-area:nav;justify-self:stretch;justify-content:space-between}
+  .ct-nav>button{flex:1;padding:0 8px;text-align:center}
+  .ct-top[data-buscando="true"] .ct-utilidades{min-width:min(420px,calc(100vw - 120px))}
+}
+@media (max-width:480px){
+  .ct-marca-btn img{height:32px}
+  .ct-nav>button{font-size:14px;padding:0 4px}
+  .ct-top[data-buscando="true"] .ct-utilidades{min-width:calc(100vw - 2 * var(--ct-pad))}
+  .ct-top[data-buscando="true"] .ct-top-marca{visibility:hidden}
+  .ct-buscar-res{min-width:0}
+}
+
+/* SYS-MOTION-THEME-001 · el cambio de tema es un fundido de la página entera
+   (lib/movimiento.ts · cambiarTema, View Transitions). Sin destello ni
+   rebote; con movimiento reducido no hay transición. */
+::view-transition-old(root),::view-transition-new(root){animation-duration:420ms;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+
+/* ── Tostada · feedback específico de una acción (audit v03 · F) ─────
+   Carbón en vidrio con texto claro, en los tres roles. No bloquea. */
+.ct-tostada-zona{position:absolute;left:0;right:0;bottom:24px;z-index:120;display:flex;justify-content:center;pointer-events:none;padding:0 16px}
+.ct-tostada-zona.movil{top:auto;bottom:96px}
+.ct-tostada-zona.escritorio{position:fixed;top:auto;bottom:28px}
+.ct-tostada{pointer-events:auto;display:flex;align-items:center;gap:12px;max-width:min(460px,100%);padding:10px 8px 10px 12px;border-radius:18px;
+  color:#F1F3EF;background:rgba(30,36,32,.86);-webkit-backdrop-filter:blur(22px) saturate(1.4);backdrop-filter:blur(22px) saturate(1.4);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 0 0 1px rgba(255,255,255,.06),0 18px 40px -18px rgba(8,11,9,.7);
+  animation:ct-tostada-entra 260ms cubic-bezier(.22,1,.36,1) both}
+.ct-tostada.sale{animation:ct-tostada-sale 220ms cubic-bezier(.4,0,1,1) both}
+.ct-tostada .ic{flex:none;width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:#F5E500;color:#111614}
+.ct-tostada.mal .ic{background:#F29A92;color:#2A0F0D}
+.ct-tostada.neutro .ic{background:rgba(255,255,255,.14);color:#F1F3EF}
+.ct-tostada .tx{display:grid;gap:1px;min-width:0}
+.ct-tostada b{font-size:14.5px;font-weight:700;letter-spacing:-.01em}
+.ct-tostada small{font-size:12.5px;color:rgba(241,243,239,.72);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ct-tostada .x{flex:none;width:30px;height:30px;border-radius:10px;display:grid;place-items:center;color:rgba(241,243,239,.7)}
+.ct-tostada .x:hover{background:rgba(255,255,255,.1);color:#fff}
+@keyframes ct-tostada-entra{from{opacity:0;transform:translateY(14px) scale(.98)}}
+@keyframes ct-tostada-sale{to{opacity:0;transform:translateY(8px)}}
+:root[data-movimiento="reducido"] .ct-tostada,:root[data-movimiento="reducido"] .ct-tostada.sale{animation-name:ct-tostada-funde}
+@media (prefers-reduced-motion:reduce){:root:not([data-movimiento="forzado"]) .ct-tostada,:root:not([data-movimiento="forzado"]) .ct-tostada.sale{animation-name:ct-tostada-funde}}
+@keyframes ct-tostada-funde{from{opacity:0}}

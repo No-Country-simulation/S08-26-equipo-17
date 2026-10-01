@@ -1,8 +1,9 @@
 "use client";
+import { importeTexto, useImportesOcultos } from "@/lib/privacidad";
 import { Icon, type NombreIcono } from "../ui/Icon";
 import { TopBar } from "../ui/TopBar";
-import { AVISOS, RESIDENTE, type Vista } from "@/lib/data";
-import { avisosExpensa, expensaDelMes } from "@/lib/expensas";
+import { RESIDENTE, type Vista } from "@/lib/data";
+import { avisosConLectura, expensaDelMes } from "@/lib/expensas";
 import { pesos, vencimientoEnPalabras } from "@/lib/formato";
 import { useApp } from "@/lib/estado";
 
@@ -15,12 +16,12 @@ type Item = {
 
 export function Mas({ ir, onSalir }: { ir: (v: Vista, ref?: string) => void; onSalir: () => void }) {
   const { estado } = useApp();
-  const exp = expensaDelMes();
+  const exp = expensaDelMes(estado.pagos);
+  const ocultos = useImportesOcultos();
 
   /* El contador sale de los avisos reales, no de un número escrito a mano. */
-  const sinLeer = estado.avisosLeidos
-    ? 0
-    : [...avisosExpensa(), ...AVISOS].filter((a) => a.estado === "sinleer").length;
+  const sinLeer = avisosConLectura(estado.avisosLeidos, estado.avisosAbiertos)
+    .filter((a) => a.estado === "sinleer").length;
   const abiertos = estado.reclamos.filter(
     (r) => r.estado !== "resuelto" && r.estado !== "cerrado"
   ).length;
@@ -43,7 +44,7 @@ export function Mas({ ir, onSalir }: { ir: (v: Vista, ref?: string) => void; onS
      los movimientos y los comprobantes. */
   const PLATA: Item[] = [
     { icono: "lista", titulo: "Estado de cuenta",
-      desc: `${pesos(exp.total)} · ${vencimientoEnPalabras(exp.vencimiento).toLowerCase()}`, va: "r23" },
+      desc: `${importeTexto(exp.total, ocultos)} · ${vencimientoEnPalabras(exp.vencimiento).toLowerCase()}`, va: "r23" },
     { icono: "credencial", titulo: "Medios de pago", va: "r22" },
     { icono: "torta", titulo: "Gastos", va: "r21" },
     { icono: "check", titulo: "Informar un pago", va: "f03" },
@@ -76,38 +77,49 @@ export function Mas({ ir, onSalir }: { ir: (v: Vista, ref?: string) => void; onS
       <TopBar volverA="r01" ir={ir} />
       <div className="tit"><h1>Más</h1></div>
 
-      <button className="perfil" type="button" onClick={() => ir("r15")}>
-        <span className="avatar">{RESIDENTE.iniciales}</span>
-        <span className="d">
-          <b>{RESIDENTE.nombre}</b>
-          <i>{RESIDENTE.rol} · Unidad {RESIDENTE.unidad}</i>
-        </span>
-        <span className="flech"><Icon n="chevron" s={16} w={2.1} /></span>
-      </button>
+      {/* RES-017 · tres grupos explícitos —Tu cuenta, Edificio y
+          Preferencias— en vez de una lista pareja. A 390 px van uno debajo
+          del otro; en escritorio, dos columnas. Ningún destino se perdió. */}
+      <div className="mas-grilla">
+        <section className="mas-grupo" aria-labelledby="mg-cuenta">
+          <h2 className="grupo" id="mg-cuenta">Tu cuenta</h2>
+          <button className="perfil" type="button" onClick={() => ir("r15")}>
+            <span className="avatar">{RESIDENTE.iniciales}</span>
+            <span className="d">
+              <b>{RESIDENTE.nombre}</b>
+              <i>{RESIDENTE.rol} · Unidad {RESIDENTE.unidad}</i>
+            </span>
+            <span className="flech"><Icon n="chevron" s={16} w={2.1} /></span>
+          </button>
+          <h3 className="sub-grupo">Expensas</h3>
+          <div className="menu">{PLATA.map(fila)}</div>
+        </section>
 
-      <h3 className="grupo">Expensas</h3>
-      <div className="menu">{PLATA.map(fila)}</div>
+        <section className="mas-grupo" aria-labelledby="mg-edificio">
+          <h2 className="grupo" id="mg-edificio">Edificio</h2>
+          <div className="menu">{EDIFICIO_ITEMS.map(fila)}</div>
+          <h3 className="sub-grupo">Gestiones</h3>
+          <div className="menu">{GESTIONES.map(fila)}</div>
+        </section>
 
-      <h3 className="grupo">Edificio</h3>
-      <div className="menu">{EDIFICIO_ITEMS.map(fila)}</div>
-
-      <h3 className="grupo">Gestiones</h3>
-      <div className="menu">{GESTIONES.map(fila)}</div>
-
-      <h3 className="grupo">Ayuda</h3>
-      <div className="menu">{APOYO.map(fila)}</div>
-
-      <h3 className="grupo">Mi cuenta</h3>
-      <div className="menu">
-        <button type="button" onClick={() => ir("r15")}>
-          <span className="ic"><Icon n="engranaje" s={20} w={1.8} /></span>
-          <span className="d"><b>Preferencias y seguridad</b></span>
-          <span className="flech"><Icon n="chevron" s={16} w={2.1} /></span>
-        </button>
-        <button className="salir" type="button" onClick={onSalir}>
-          <span className="ic"><Icon n="salir" s={20} w={1.8} /></span>
-          <span className="d"><b>Cerrar sesión</b></span>
-        </button>
+        <section className="mas-grupo" aria-labelledby="mg-pref">
+          <h2 className="grupo" id="mg-pref">Preferencias</h2>
+          <div className="menu">
+            <button type="button" onClick={() => ir("r15")}>
+              <span className="ic"><Icon n="engranaje" s={20} w={1.8} /></span>
+              <span className="d"><b>Preferencias y seguridad</b><i>Avisos, tema y datos de la cuenta</i></span>
+              <span className="flech"><Icon n="chevron" s={16} w={2.1} /></span>
+            </button>
+          </div>
+          <h3 className="sub-grupo">Ayuda</h3>
+          <div className="menu">{APOYO.map(fila)}</div>
+          <div className="menu mas-salir">
+            <button className="salir" type="button" onClick={onSalir}>
+              <span className="ic"><Icon n="salir" s={20} w={1.8} /></span>
+              <span className="d"><b>Cerrar sesión</b></span>
+            </button>
+          </div>
+        </section>
       </div>
 
     </div>
